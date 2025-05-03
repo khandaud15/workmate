@@ -16,8 +16,11 @@ export default function Header() {
         <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-full px-8 py-4">
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
-            <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-gray-600 flex-shrink-0">
-              WorkMate
+            <Link href="/" className="flex items-center space-x-3 text-[1.375rem] text-gray-900 hover:opacity-90 flex-shrink-0">
+              <div className="bg-blue-600 w-9 h-9 flex items-center justify-center rounded-lg shadow-lg">
+                <span className="text-white font-bold">W</span>
+              </div>
+              <span className="font-semibold">WorkMate</span>
             </Link>
 
             {/* Main Navigation */}
@@ -108,8 +111,24 @@ export default function Header() {
               </div>
             </nav>
 
-            {/* Mobile menu button */}
-            <div className="md:hidden">
+            {/* Mobile icons */}
+            <div className="md:hidden flex items-center space-x-4">
+              {/* Profile Icon */}
+              <button className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8">
+                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
+
+              {/* Sign Up Button */}
+              <Link 
+                href="/signup"
+                className="bg-black text-white px-4 py-1.5 rounded-full text-sm font-semibold"
+              >
+                Sign Up
+              </Link>
+
+              {/* Menu Button */}
               <button 
                 type="button" 
                 className="text-gray-900 hover:text-gray-600"
