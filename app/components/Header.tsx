@@ -112,9 +112,9 @@ export default function Header() {
             </nav>
 
             {/* Mobile icons */}
-            <div className="md:hidden flex items-center space-x-4">
+            <div className="md:hidden flex items-center">
               {/* Profile Icon */}
-              <button className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8">
+              <button className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-4">
                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -123,7 +123,7 @@ export default function Header() {
               {/* Sign Up Button */}
               <Link 
                 href="/signup"
-                className="bg-black text-white px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap"
+                className="bg-black text-white px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap mr-3"
               >
                 Sign Up
               </Link>
@@ -136,7 +136,7 @@ export default function Header() {
                 aria-expanded={isMobileMenuOpen}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
