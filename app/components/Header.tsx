@@ -11,9 +11,9 @@ export default function Header() {
   const searchId = useId();
 
   return (
-    <header className="bg-transparent py-6 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm py-4 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white shadow-lg rounded-[30px] px-6 py-4">
+        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-full px-8 py-4">
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
             <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-gray-600 flex-shrink-0">
