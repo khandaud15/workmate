@@ -1,16 +1,18 @@
 'use client';
-import Link from 'next/link';
 
+import Link from 'next/link';
 import { useState, useId } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Header() {
+  const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchId = useId();
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+    <header className="bg-transparent py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         <div className="bg-white shadow-lg rounded-[30px] px-6 py-4">
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
@@ -77,18 +79,32 @@ export default function Header() {
 
               {/* Auth Buttons */}
               <div className="flex items-center space-x-4">
-                <Link 
-                  href="/login"
-                  className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
-                >
-                  Log in
-                </Link>
-                <Link 
-                  href="/signup"
-                  className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
-                >
-                  Sign up
-                </Link>
+                {session ? (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-gray-700">Hello, {session.user?.name}</span>
+                    <button
+                      onClick={() => signOut({ callbackUrl: '/' })}
+                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Link 
+                      href="/signup"
+                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
+                    >
+                      Log in
+                    </Link>
+                    <Link 
+                      href="/signup"
+                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
+                    >
+                      Sign up
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
 
@@ -167,18 +183,32 @@ export default function Header() {
 
                 {/* Mobile Auth Buttons */}
                 <div className="flex flex-col space-y-2 px-2">
-                  <Link 
-                    href="/login"
-                    className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
-                  >
-                    Log in
-                  </Link>
-                  <Link 
-                    href="/signup"
-                    className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
-                  >
-                    Sign up
-                  </Link>
+                  {session ? (
+                    <div className="space-y-2">
+                      <p className="text-gray-700 px-2">Hello, {session.user?.name}</p>
+                      <button
+                        onClick={() => signOut({ callbackUrl: '/' })}
+                        className="w-full bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Link 
+                        href="/signup"
+                        className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
+                      >
+                        Log in
+                      </Link>
+                      <Link 
+                        href="/signup"
+                        className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
+                      >
+                        Sign up
+                      </Link>
+                    </>
+                  )}
                 </div>
               </nav>
             </div>

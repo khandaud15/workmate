@@ -1,10 +1,8 @@
-import Header from './components/Header';
 import Pricing from './components/Pricing';
 
 export default function Home() {
   return (
     <div className="bg-white">
-      <Header />
       <main>
         {/* Hero Section */}
         <div className="bg-white py-16 sm:py-24">
