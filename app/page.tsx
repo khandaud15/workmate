@@ -2,17 +2,17 @@ import Pricing from './components/Pricing';
 
 export default function Home() {
   return (
-    <div className="bg-white">
+    <div className="bg-[#0a0a0a]">
       <main>
         {/* Hero Section */}
-        <div className="bg-white py-16 sm:py-24">
+        <div className="py-16 sm:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+              <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
                 <span className="block">Streamline Your</span>
                 <span className="block text-blue-600">Job Search Journey</span>
               </h1>
-              <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+              <p className="mt-3 max-w-md mx-auto text-base text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
                 Upload once, apply everywhere. Let WorkMate automate your job applications while you focus on what matters most.
               </p>
               <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
@@ -39,13 +39,13 @@ export default function Home() {
 
         {/* Pricing Section */}
         <section className="relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-white to-gray-900 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-black pointer-events-none" />
           <div className="relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-4 text-center">
-              <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl">
+              <h2 className="text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">
                 Choose Your Plan
               </h2>
-              <p className="mt-4 text-xl text-gray-600">
+              <p className="mt-4 text-xl text-gray-400">
                 Start automating your job search today
               </p>
             </div>

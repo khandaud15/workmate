@@ -23,8 +23,8 @@ interface FormStates {
 const pricingPlans: PricingPlan[] = [
   {
     name: 'BASIC PLAN',
-    originalPrice: 119,
-    discountedPrice: 99,
+    originalPrice: 99,
+    discountedPrice: 79,
     neonColor: 'from-blue-400 to-blue-600',
     glowColor: 'rgba(59, 130, 246, 0.5)', // blue-500 with opacity
     features: [
@@ -37,8 +37,8 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     name: 'PREMIUM PLAN',
-    originalPrice: 179,
-    discountedPrice: 149,
+    originalPrice: 149,
+    discountedPrice: 129,
     isPopular: true,
     neonColor: 'from-pink-400 to-pink-600',
     glowColor: 'rgba(236, 72, 153, 0.5)', // pink-500 with opacity
@@ -52,8 +52,8 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     name: 'ULTIMATE PLAN',
-    originalPrice: 1099,
-    discountedPrice: 999,
+    originalPrice: 599,
+    discountedPrice: 499,
     neonColor: 'from-orange-400 to-orange-600',
     glowColor: 'rgba(249, 115, 22, 0.5)', // orange-500 with opacity
     features: [
@@ -110,7 +110,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="bg-white py-24 sm:py-32">
+    <div className="py-24 sm:py-32 bg-transparent">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {pricingPlans.map((plan, index) => {
@@ -120,7 +120,7 @@ export default function Pricing() {
                 ref={el => {
                   if (el) cardRefs.current[index] = el;
                 }}
-                className={`relative rounded-2xl bg-[#1a1a1a] p-8 transition-all duration-700 hover:scale-105 hover:shadow-[0_0_50px_rgba(0,0,0,0.3)]`}
+                className={`relative rounded-2xl bg-[#1a1a1a] p-8 transition-all duration-700 hover:scale-105 hover:shadow-[0_0_50px_rgba(255,255,255,0.1)]`}
               >
                 {plan.isPopular && (
                   <div className="absolute -top-4 right-8 inline-flex items-center rounded-full bg-pink-600 px-4 py-1.5 text-sm font-extrabold text-white shadow-[0_0_30px_rgba(236,72,153,0.7)] animate-pulse">
