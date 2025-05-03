@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm py-4 px-2">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-full pl-4 pr-2 sm:px-8 py-4">
+        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-full pl-4 pr-1 sm:px-8 py-4">
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 text-[1.375rem] text-gray-900 hover:opacity-90 flex-shrink-0">
@@ -112,9 +112,9 @@ export default function Header() {
             </nav>
 
             {/* Mobile icons */}
-            <div className="md:hidden flex items-center -mr-1">
+            <div className="md:hidden flex items-center -mr-2">
               {/* Profile Icon */}
-              <button className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-3">
+              <button className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5">
                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
