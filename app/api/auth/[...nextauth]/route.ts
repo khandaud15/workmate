@@ -1,6 +1,28 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
+// Function to get the actual running port, regardless of NEXTAUTH_URL setting
+const getCurrentPort = () => {
+  // First try to get the port from the request headers (most accurate)
+  if (typeof window !== 'undefined') {
+    const port = window.location.port;
+    if (port) return port;
+  }
+
+  // Then try getting it from NEXTAUTH_URL
+  const url = process.env.NEXTAUTH_URL;
+  if (url) {
+    try {
+      const port = new URL(url).port;
+      if (port) return port;
+    } catch {}
+  }
+
+  // Finally, check if we're running on a non-standard port
+  const port = process.env.PORT || process.env.NODE_ENV === 'development' ? '3000' : '';
+  return port;
+};
+
 const handler = NextAuth({
   providers: [
     GoogleProvider({
@@ -22,7 +44,14 @@ const handler = NextAuth({
     signOut: '/',
   },
   callbacks: {
-    async redirect({ baseUrl }) {
+    async redirect({ url, baseUrl }) {
+      // Get the current port
+      const currentPort = getCurrentPort();
+      // Replace any localhost URL with the correct port
+      if (url.startsWith('http://localhost:')) {
+        const path = url.split('/', 4).slice(3).join('/');
+        return `http://localhost:${currentPort}/${path}`;
+      }
       return `${baseUrl}/dashboard`;
     },
     async session({ session }) {
