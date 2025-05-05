@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   title: "WorkMate - Streamline Your Job Search",
   description: "Automate your job applications with WorkMate. Upload once, apply everywhere.",
   icons: {
-    icon: [{ url: 'https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png', type: 'image/png' }],
-    shortcut: ['https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png'],
+    icon: [{ url: 'https://raw.githubusercontent.com/khandaud15/files/main/Fevicon.png', type: 'image/png' }],
+    shortcut: ['https://raw.githubusercontent.com/khandaud15/files/main/Fevicon.png'],
     apple: [
-      { url: 'https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png', type: 'image/png' },
+      { url: 'https://raw.githubusercontent.com/khandaud15/files/main/Fevicon.png', type: 'image/png' },
     ],
   },
 };
