@@ -87,7 +87,7 @@ export default function Header() {
                     <span className="text-gray-700">Hello, {session.user?.name}</span>
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
-                      className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold"
+                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
                     >
                       Sign Out
                     </button>
@@ -96,13 +96,13 @@ export default function Header() {
                   <>
                     <Link 
                       href="/signup"
-                      className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold"
+                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
                     >
                       Sign up
                     </Link>
                     <Link 
                       href="/login"
-                      className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold"
+                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
                     >
                       Log in
                     </Link>
@@ -127,7 +127,7 @@ export default function Header() {
               {/* Sign Up Button */}
               <Link 
                 href="/signup"
-                className="bg-[#4292FF] text-white px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap mr-2 hover:bg-[#237DFF] transition-colors"
+                className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] text-[13px] font-medium whitespace-nowrap mr-2 hover:bg-[#237DFF] transition-colors"
               >
                 Sign Up
               </Link>
@@ -212,7 +212,7 @@ export default function Header() {
                       <p className="text-gray-700 px-2">Hello, {session.user?.name}</p>
                       <button
                         onClick={() => signOut({ callbackUrl: '/' })}
-                        className="w-full bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold text-center"
+                        className="w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
                       >
                         Sign Out
                       </button>
