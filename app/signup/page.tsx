@@ -113,7 +113,7 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              className="w-full bg-[#00A6E6] text-white py-3 rounded-lg font-medium hover:bg-[#0095D1] transition-colors"
+              className="w-full bg-[#4292FF] text-white py-3 rounded-[8px] font-medium hover:bg-[#237DFF] transition-colors"
             >
               Register
             </button>
@@ -124,17 +124,17 @@ export default function SignupPage() {
             <div className="space-y-3">
               <button
                 onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full relative flex items-center justify-center px-6 py-4 border border-gray-300 rounded-[8px] bg-white hover:bg-gray-50 transition-colors text-[16px] font-medium text-gray-700"
               >
-                <img src="/google.svg" alt="Google" className="w-5 h-5 mr-3" />
-                Continue with Google
+                <div className="absolute left-6 flex items-center justify-center w-6 h-6 rounded-[3px] bg-[#4285F4] text-white font-bold text-sm">G</div>
+                <span>Continue with Google</span>
               </button>
               
               <button
-                className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full relative flex items-center justify-center px-6 py-4 border border-gray-300 rounded-[8px] bg-white hover:bg-gray-50 transition-colors text-[16px] font-medium text-gray-700"
               >
-                <img src="/linkedin.svg" alt="LinkedIn" className="w-5 h-5 mr-3" />
-                Continue with LinkedIn
+                <div className="absolute left-6 flex items-center justify-center w-6 h-6 rounded-[3px] bg-[#0A66C2] text-white font-bold text-xs">in</div>
+                <span>Continue with LinkedIn</span>
               </button>
             </div>
           </div>
