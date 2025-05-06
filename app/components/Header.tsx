@@ -16,9 +16,11 @@ export default function Header() {
         <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-full pl-4 pr-1 sm:px-8 py-4">
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2 text-[1.375rem] text-gray-900 hover:opacity-90 flex-shrink-0">
-              <img src="https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png" alt="WorkMate Logo" className="w-8 h-8 object-contain" />
-              <span className="font-semibold">WorkMate</span>
+            <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
+              <img src="https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png" alt="WorkMate Logo" className="w-10 h-10 object-contain" />
+              <span className="px-4 py-[6px] bg-[#4292FF] text-white rounded-[8px] font-medium text-[13px] hover:bg-[#237DFF] transition-colors">
+                WorkMate
+              </span>
             </Link>
 
             {/* Main Navigation */}
@@ -26,19 +28,19 @@ export default function Header() {
               <div className="flex items-center space-x-8">
                 <Link 
                   href="/features" 
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-bold"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
                 >
                   Core Features
                 </Link>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-bold"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
                 >
                   Pricing
                 </Link>
                 <a 
                   href="#"
-                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors font-bold"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
                   title="Download Browser Extension"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -85,7 +87,7 @@ export default function Header() {
                     <span className="text-gray-700">Hello, {session.user?.name}</span>
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
-                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
+                      className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold"
                     >
                       Sign Out
                     </button>
@@ -94,15 +96,15 @@ export default function Header() {
                   <>
                     <Link 
                       href="/signup"
-                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
-                    >
-                      Log in
-                    </Link>
-                    <Link 
-                      href="/signup"
-                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold"
+                      className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold"
                     >
                       Sign up
+                    </Link>
+                    <Link 
+                      href="/login"
+                      className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold"
+                    >
+                      Log in
                     </Link>
                   </>
                 )}
@@ -114,7 +116,7 @@ export default function Header() {
               {/* Profile Icon */}
               <button
                 onClick={() => signIn('google')}
-                className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
+                className="p-1.5 bg-[#4292FF] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#237DFF] transition-colors"
                 aria-label="Sign in"
               >
                 <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -125,21 +127,22 @@ export default function Header() {
               {/* Sign Up Button */}
               <Link 
                 href="/signup"
-                className="bg-black text-white px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap mr-2"
+                className="bg-[#4292FF] text-white px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap mr-2 hover:bg-[#237DFF] transition-colors"
               >
                 Sign Up
               </Link>
 
-              {/* Menu Button */}
-              <button 
-                type="button" 
-                className="text-gray-900 hover:text-gray-600"
-                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-                aria-expanded={isMobileMenuOpen}
+              {/* Mobile Menu Button */}
+              <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-[#4292FF] hover:text-[#237DFF] focus:outline-none transition-colors"
               >
-                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
                 </svg>
               </button>
             </div>
@@ -151,19 +154,19 @@ export default function Header() {
               <nav className="flex flex-col space-y-4">
                 <Link 
                   href="/features" 
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-bold px-2"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
                 >
                   Core Features
                 </Link>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-bold px-2"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
                 >
                   Pricing
                 </Link>
                 <a 
                   href="#"
-                  className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors font-bold px-2"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
                   title="Download Browser Extension"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -209,7 +212,7 @@ export default function Header() {
                       <p className="text-gray-700 px-2">Hello, {session.user?.name}</p>
                       <button
                         onClick={() => signOut({ callbackUrl: '/' })}
-                        className="w-full bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
+                        className="w-full bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold text-center"
                       >
                         Sign Out
                       </button>
@@ -218,15 +221,15 @@ export default function Header() {
                     <>
                       <Link 
                         href="/signup"
-                        className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
-                      >
-                        Log in
-                      </Link>
-                      <Link 
-                        href="/signup"
-                        className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
+                        className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold text-center"
                       >
                         Sign up
+                      </Link>
+                      <Link 
+                        href="/login"
+                        className="bg-[#4292FF] text-white px-6 py-2 rounded-full hover:bg-[#237DFF] transition-colors font-bold text-center"
+                      >
+                        Log in
                       </Link>
                     </>
                   )}
