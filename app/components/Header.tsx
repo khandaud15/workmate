@@ -40,16 +40,6 @@ export default function Header() {
                 >
                   Pricing
                 </Link>
-                <a 
-                  href="#"
-                  className="flex items-center space-x-2 text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
-                  title="Download Browser Extension"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  <span>Get Extension</span>
-                </a>
               </div>
 
               {/* Search Bar */}
