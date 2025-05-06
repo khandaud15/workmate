@@ -30,7 +30,9 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
       authorization: {
         params: {
-          prompt: "select_account"
+          prompt: "select_account",
+          access_type: 'offline',
+          response_type: 'code'
         }
       }
     }),
@@ -38,6 +40,7 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: '/login',
@@ -45,17 +48,31 @@ const handler = NextAuth({
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Get the current port
-      const currentPort = getCurrentPort();
-      // Replace any localhost URL with the correct port
-      if (url.startsWith('http://localhost:')) {
-        const path = url.split('/', 4).slice(3).join('/');
-        return `http://localhost:${currentPort}/${path}`;
+      // Always redirect to dashboard after successful sign in
+      if (url === '/login') {
+        return `${baseUrl}/dashboard`
       }
-      return `${baseUrl}/dashboard`;
+      // Allow relative URLs
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`
+      }
+      // Allow same-origin URLs
+      if (new URL(url).origin === baseUrl) {
+        return url
+      }
+      return baseUrl
     },
-    async session({ session }) {
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.id = token.sub
+      }
       return session;
+    },
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id
+      }
+      return token
     },
   },
 });

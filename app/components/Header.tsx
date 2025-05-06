@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useId } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 export default function Header() {
+  const router = useRouter();
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -115,7 +117,7 @@ export default function Header() {
             <div className="md:hidden flex items-center -mr-2">
               {/* Profile Icon */}
               <button
-                onClick={() => signIn('google')}
+                onClick={() => router.push('/login')}
                 className="p-1.5 bg-[#4292FF] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#237DFF] transition-colors"
                 aria-label="Sign in"
               >
