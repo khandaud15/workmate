@@ -13,17 +13,15 @@ export default function Home() {
               {/* Hero Text */}
               <div className="text-center md:text-left max-w-2xl md:max-w-xl order-1 md:order-2 md:self-center">
                 <h1 className="text-[40px] md:text-[52px] leading-[1.15] tracking-tight font-extrabold text-black">
-                  <span className="block">Cast a wider net — 10x</span>
-                  <span className="block">your job applications<span className="text-sm align-top ml-0.5">1</span></span>
+                  Land Jobs Faster. Stay Organized Effortlessly.
                 </h1>
                 <p className="mt-6 text-xl leading-normal text-[#1A1A1A] max-w-xl mx-auto md:mx-0">
-                  Our AI-powered job search automation platform continuously finds and
-                  applies to relevant job openings until you're hired
+                  From auto-applying to interviews to syncing your calendar, WorkMate keeps every part of your job journey on track.
                 </p>
                 <div className="mt-8">
                   <a
                     href="/signup"
-                    className="inline-flex items-center px-8 py-4 text-lg font-semibold rounded-full text-white bg-[#0066F5] hover:bg-[#0052CC] transition-colors"
+                    className="inline-flex items-center px-6 py-3 text-base font-semibold rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
                   >
                     Get Started →
                   </a>
