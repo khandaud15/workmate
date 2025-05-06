@@ -63,16 +63,20 @@ const handler = NextAuth({
       return baseUrl
     },
     async session({ session, token }) {
-      if (session?.user) {
-        session.user.id = token.sub
-      }
-      return session;
+      return {
+        ...session,
+        user: {
+          ...session?.user,
+          id: token.sub || ''
+        }
+      };
     },
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.id = user.id
+    async jwt({ token }) {
+      // Use the token.sub as the user ID
+      if (token?.sub) {
+        token.id = token.sub;
       }
-      return token
+      return token;
     },
   },
 });

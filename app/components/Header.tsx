@@ -138,26 +138,35 @@ export default function Header() {
                   </svg>
                 </button>
               ) : (
-                <button
-                  onClick={() => router.push('/login')}
-                  className="p-1.5 bg-[#4292FF] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#237DFF] transition-colors"
-                  aria-label="Sign in"
-                >
-                  <svg
-                    className="h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                <>
+                  <button
+                    onClick={() => router.push('/login')}
+                    className="p-1.5 bg-[#4292FF] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#237DFF] transition-colors"
+                    aria-label="Sign in"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      className="h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </button>
+                  <Link 
+                    href="/signup"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] text-[13px] font-medium whitespace-nowrap mr-2 hover:bg-[#237DFF] transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </>
               )}
 
               {/* Mobile Menu Button */}
