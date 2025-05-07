@@ -54,62 +54,67 @@ export default function Home() {
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/1.png"
                     alt="Build your profile"
-                    className="w-full rounded-lg"
+                    className="w-full h-auto max-w-[280px] mx-auto rounded-lg relative z-10"
                   />
                 </div>
               </div>
 
               {/* Apply Image */}
-              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
-                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/2.png"
-                    alt="Apply to jobs"
-                    className="w-full rounded-lg"
+                    alt="AI Cover Letter"
+                    className="w-full h-auto max-w-[280px] mx-auto rounded-lg relative z-10"
                   />
                 </div>
               </div>
 
               {/* Stay Organized Image */}
-              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
-                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/3.png"
-                    alt="Stay organized"
-                    className="w-full rounded-lg"
+                    alt="AI Resume Builder"
+                    className="w-full h-auto max-w-[280px] mx-auto rounded-lg relative z-10"
                   />
                 </div>
               </div>
 
               {/* Mock Image */}
-              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
-                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/4.png"
-                    alt="Mock interviews"
-                    className="w-full rounded-lg"
+                    alt="Mock Interviews"
+                    className="w-full h-auto max-w-[280px] mx-auto rounded-lg relative z-10"
                   />
                 </div>
               </div>
 
               {/* Image 5 */}
-              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
-                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/5.png"
-                    alt="Process step 5"
-                    className="w-full rounded-lg"
+                    alt="AI Job Search"
+                    className="w-full h-auto max-w-[280px] mx-auto rounded-lg relative z-10"
                   />
                 </div>
               </div>
 
               {/* Image 6 */}
-              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
-                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/6.png"
-                    alt="Process step 6"
-                    className="w-full rounded-lg"
+                    alt="AI Interview Prep"
+                    className="w-full h-auto max-w-[280px] mx-auto rounded-lg relative z-10"
                   />
                 </div>
               </div>
