@@ -19,7 +19,7 @@ export default function Header() {
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
-              <img src="https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png" alt="WorkMate Logo" className="w-10 h-10 object-contain" />
+              <img src="https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png" alt="WorkMate Logo" className="w-11 h-11 object-contain -mt-1" />
               <span className="px-4 py-[6px] bg-[#4292FF] text-white rounded-[8px] font-medium text-[13px] hover:bg-[#237DFF] transition-colors">
                 WorkMate
               </span>
@@ -39,6 +39,12 @@ export default function Header() {
                   className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
                 >
                   Pricing
+                </Link>
+                <Link 
+                  href="/copilot" 
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
+                >
+                  Copilot
                 </Link>
               </div>
 
@@ -193,17 +199,14 @@ export default function Header() {
                 >
                   Pricing
                 </Link>
-                <a 
-                  href="#"
-                  className="flex items-center space-x-2 text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
-                  title="Download Browser Extension"
+                <Link 
+                  href="/copilot" 
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                  </svg>
-                  <span>Get Extension</span>
-                </a>
+                  Copilot
+                </Link>
+
                 
                 {/* Mobile Search */}
                 <div className="px-2">
