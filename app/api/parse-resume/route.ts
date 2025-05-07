@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const completion = await openai.chat.completions.create({
       messages: [{ role: "system", content: "You are a resume parser that extracts key information accurately." },
                 { role: "user", content: prompt }],
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       temperature: 0.1,
       response_format: { type: "json_object" }
     });

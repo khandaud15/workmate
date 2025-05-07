@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "encoding": "^0.1.13",
     "framer-motion": "^12.10.0",
     "next": "13.5.11",
     "next-auth": "^4.24.5",

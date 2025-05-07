@@ -18,11 +18,11 @@ Job Description:
 ${jobDescription}
 
 Candidate Information:
-Name: ${parsedResume.name}
-Email: ${parsedResume.email}
-Phone: ${parsedResume.phone}
-Key Skills: ${parsedResume.skills.join(', ')}
-Relevant Experience: ${parsedResume.experience}
+Name: ${parsedResume?.name || 'Not provided'}
+Email: ${parsedResume?.email || 'Not provided'}
+Phone: ${parsedResume?.phone || 'Not provided'}
+Key Skills: ${parsedResume?.skills?.join(', ') || 'Not provided'}
+Relevant Experience: ${parsedResume?.experience || 'Not provided'}
 
 Instructions:
 1. Match the candidate's experience and skills with the job requirements
@@ -39,7 +39,7 @@ Format the letter professionally with proper spacing and paragraphs.`;
     const completion = await openai.chat.completions.create({
       messages: [{ role: "system", content: "You are an expert career advisor who writes compelling cover letters." },
                 { role: "user", content: prompt }],
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       temperature: 0.7,
       max_tokens: 1000,
     });
