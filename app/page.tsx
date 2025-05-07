@@ -42,11 +42,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Feature Cards */}
-        <FeatureCards />
-
         {/* Company Logos */}
         <CompanyLogos />
+
+        {/* Feature Cards */}
+        <FeatureCards />
 
         {/* Process Images Section */}
         <section className="py-16 bg-white">
