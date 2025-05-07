@@ -1,5 +1,6 @@
 import FeatureCards from './components/FeatureCards';
 import CompanyLogos from './components/CompanyLogos';
+import Hero3DImage from './components/Hero3DImage';
 
 export default function Home() {
   return (
@@ -29,15 +30,7 @@ export default function Home() {
               </div>
 
               {/* Hero Image */}
-              <div className="relative order-2 md:order-1 w-full max-w-xl md:max-w-none">
-                <div className="aspect-[4/3] relative rounded-2xl overflow-hidden bg-[#F5F5F5]">
-                  <img
-                    src="https://raw.githubusercontent.com/khandaud15/files/main/main1.png"
-                    alt="Job Applications"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
+              <Hero3DImage />
             </div>
           </div>
         </div>
@@ -56,39 +49,47 @@ export default function Home() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
               {/* Build Image */}
-              <div className="relative">
-                <img
-                  src="https://raw.githubusercontent.com/khandaud15/files/main/build.png"
-                  alt="Build your profile"
-                  className="w-full"
-                />
+              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
+                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/build.png"
+                    alt="Build your profile"
+                    className="w-full rounded-lg"
+                  />
+                </div>
               </div>
 
               {/* Apply Image */}
-              <div className="relative">
-                <img
-                  src="https://raw.githubusercontent.com/khandaud15/files/main/apply.png"
-                  alt="Apply to jobs"
-                  className="w-full"
-                />
+              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
+                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/apply.png"
+                    alt="Apply to jobs"
+                    className="w-full rounded-lg"
+                  />
+                </div>
               </div>
 
               {/* Stay Organized Image */}
-              <div className="relative">
-                <img
-                  src="https://raw.githubusercontent.com/khandaud15/files/main/stay_organized.png"
-                  alt="Stay organized"
-                  className="w-full"
-                />
+              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
+                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/stay_organized.png"
+                    alt="Stay organized"
+                    className="w-full rounded-lg"
+                  />
+                </div>
               </div>
 
               {/* Mock Image */}
-              <div className="relative">
-                <img
-                  src="https://raw.githubusercontent.com/khandaud15/files/main/mock.png"
-                  alt="Mock interviews"
-                  className="w-full"
-                />
+              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
+                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/mock.png"
+                    alt="Mock interviews"
+                    className="w-full rounded-lg"
+                  />
+                </div>
               </div>
             </div>
           </div>

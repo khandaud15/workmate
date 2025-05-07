@@ -76,13 +76,15 @@ export default function CompanyLogos() {
               {[...companies, ...companies].map((company, index) => (
                 <div
                   key={`${company.name}-${index}`}
-                  className="inline-block mx-16"
+                  className="inline-block mx-16 transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1"
                 >
-                  <img
-                    src={company.logo}
-                    alt={company.name}
-                    className="h-16 w-auto object-contain"
-                  />
+                  <div className="bg-white rounded-lg p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <img
+                      src={company.logo}
+                      alt={company.name}
+                      className="h-16 w-auto object-contain"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
