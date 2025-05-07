@@ -44,10 +44,22 @@ export default function Header() {
                   </button>
                   <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
                     <Link 
-                      href="/cover-letter" 
+                      href="/resume-builder" 
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
                     >
-                      Cover Letter Generator
+                      Resume Builder
+                    </Link>
+                    <Link 
+                      href="/jobs" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                    >
+                      Job Search
+                    </Link>
+                    <Link 
+                      href="/applications" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                    >
+                      Application Tracker
                     </Link>
                   </div>
                 </div>
@@ -212,11 +224,25 @@ export default function Header() {
                   </button>
                   <div className={`mt-2 bg-white rounded-lg shadow-lg py-2 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}>
                     <Link 
-                      href="/cover-letter" 
+                      href="/resume-builder" 
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Cover Letter Generator
+                      Resume Builder
+                    </Link>
+                    <Link 
+                      href="/jobs" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Job Search
+                    </Link>
+                    <Link 
+                      href="/applications" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Application Tracker
                     </Link>
                   </div>
                 </div>
