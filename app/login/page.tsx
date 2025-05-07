@@ -51,23 +51,23 @@ export default function LoginPage() {
             </p>
             <div className="flex items-center">
               <div className="flex -space-x-2">
-                <img className="w-8 h-8 rounded-full border-2 border-white" src="/avatar1.png" alt="User" />
-                <img className="w-8 h-8 rounded-full border-2 border-white" src="/avatar2.png" alt="User" />
-                <img className="w-8 h-8 rounded-full border-2 border-white" src="/avatar3.png" alt="User" />
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-medium">JD</div>
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-green-100 flex items-center justify-center text-green-600 text-xs font-medium">AM</div>
+                <div className="w-8 h-8 rounded-full border-2 border-white bg-purple-100 flex items-center justify-center text-purple-600 text-xs font-medium">SK</div>
               </div>
               <span className="ml-4 text-[15px] text-[#666]">Trusted by 1,000,000+ job seekers</span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <img src="/companies/airbnb.svg" alt="Airbnb" className="h-8" />
-            <img src="/companies/notion.svg" alt="Notion" className="h-8" />
-            <img src="/companies/spotify.svg" alt="Spotify" className="h-8" />
-            <img src="/companies/stripe.svg" alt="Stripe" className="h-8" />
-            <img src="/companies/slack.svg" alt="Slack" className="h-8" />
-            <img src="/companies/visa.svg" alt="Visa" className="h-8" />
-            <img src="/companies/netflix.svg" alt="Netflix" className="h-8" />
-            <img src="/companies/openai.svg" alt="OpenAI" className="h-8" />
+          <div className="grid grid-cols-2 gap-8">
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/Airbnb_logo_PNG3.png" alt="Airbnb" className="h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/Meta_Logo_PNG7.png" alt="Meta" className="h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/Apple_logo_PNG1.png" alt="Apple" className="h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/Amazon-Logo.png" alt="Amazon" className="h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/Tesla_logo_PNG2.png" alt="Tesla" className="h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/Cisco_logo_PNG2.png" alt="Cisco" className="h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/Dell_logo_PNG1.png" alt="Dell" className="h-12 object-contain" />
+            <img src="https://raw.githubusercontent.com/khandaud15/files/main/OpenAI-Logo-PNG_004.png" alt="OpenAI" className="h-12 object-contain" />
           </div>
         </div>
       </div>

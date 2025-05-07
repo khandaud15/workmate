@@ -10,6 +10,7 @@ export default function Header() {
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const searchId = useId();
 
   return (
@@ -28,12 +29,28 @@ export default function Header() {
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
               <div className="flex items-center space-x-8">
-                <Link 
-                  href="/features" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
-                >
-                  Core Features
-                </Link>
+                <div className="relative group">
+                  <button 
+                    type="button"
+                    role="button"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold flex items-center gap-1"
+                  >
+                    Core Features
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
+                    <Link 
+                      href="/cover-letter" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                    >
+                      Cover Letter Generator
+                    </Link>
+                  </div>
+                </div>
                 <Link 
                   href="/pricing" 
                   className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
@@ -79,7 +96,7 @@ export default function Header() {
               </div>
 
               {/* Auth Buttons */}
-              <div className="flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-4">
                 {session ? (
                   <div className="flex items-center space-x-4">
                     <span className="text-gray-700">Hello, {session.user?.name}</span>
@@ -91,20 +108,20 @@ export default function Header() {
                     </button>
                   </div>
                 ) : (
-                  <>
+                  <div className="flex items-center space-x-4">
                     <Link 
-                      href="/signup"
-                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
-                    >
-                      Sign up
-                    </Link>
-                    <Link 
-                      href="/login"
+                      href="/login" 
                       className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
                     >
                       Log in
                     </Link>
-                  </>
+                    <Link 
+                      href="/signup" 
+                      className="hidden md:block bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
                 )}
               </div>
             </nav>
@@ -155,13 +172,7 @@ export default function Header() {
                       />
                     </svg>
                   </button>
-                  <Link 
-                    href="/signup"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] text-[13px] font-medium whitespace-nowrap mr-2 hover:bg-[#237DFF] transition-colors"
-                  >
-                    Sign Up
-                  </Link>
+
                 </>
               )}
 
@@ -185,13 +196,30 @@ export default function Header() {
           {isMobileMenuOpen && (
             <div className="md:hidden mt-4 py-4 border-t border-gray-200">
               <nav className="flex flex-col space-y-4">
-                <Link 
-                  href="/features" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Core Features
-                </Link>
+                <div className="relative px-2">
+                  <button 
+                    type="button"
+                    role="button"
+                    aria-haspopup="true"
+                    aria-expanded={isMobileDropdownOpen}
+                    onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+                    className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold flex items-center gap-1 w-full justify-between"
+                  >
+                    Core Features
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  <div className={`mt-2 bg-white rounded-lg shadow-lg py-2 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}>
+                    <Link 
+                      href="/cover-letter" 
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Cover Letter Generator
+                    </Link>
+                  </div>
+                </div>
                 <Link 
                   href="/pricing" 
                   className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
@@ -256,7 +284,7 @@ export default function Header() {
                   <div className="flex flex-col space-y-2 px-2">
                     <Link 
                       href="/signup"
-                      className="w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
+                      className="hidden w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign up
