@@ -47,12 +47,12 @@ export default function Home() {
             <h2 className="text-[24px] md:text-[28px] leading-[1.3] font-semibold text-black text-center mb-12">
               AI that applies and syncs — so you don't have to
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {/* Build Image */}
               <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
                 <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
-                    src="https://raw.githubusercontent.com/khandaud15/files/main/build.png"
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/1.png"
                     alt="Build your profile"
                     className="w-full rounded-lg"
                   />
@@ -63,7 +63,7 @@ export default function Home() {
               <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
                 <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
-                    src="https://raw.githubusercontent.com/khandaud15/files/main/apply.png"
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/2.png"
                     alt="Apply to jobs"
                     className="w-full rounded-lg"
                   />
@@ -74,7 +74,7 @@ export default function Home() {
               <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
                 <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
-                    src="https://raw.githubusercontent.com/khandaud15/files/main/stay_organized.png"
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/3.png"
                     alt="Stay organized"
                     className="w-full rounded-lg"
                   />
@@ -85,8 +85,30 @@ export default function Home() {
               <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
                 <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
                   <img
-                    src="https://raw.githubusercontent.com/khandaud15/files/main/mock.png"
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/4.png"
                     alt="Mock interviews"
+                    className="w-full rounded-lg"
+                  />
+                </div>
+              </div>
+
+              {/* Image 5 */}
+              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
+                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/5.png"
+                    alt="Process step 5"
+                    className="w-full rounded-lg"
+                  />
+                </div>
+              </div>
+
+              {/* Image 6 */}
+              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
+                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <img
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/6.png"
+                    alt="Process step 6"
                     className="w-full rounded-lg"
                   />
                 </div>
