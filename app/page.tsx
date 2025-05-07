@@ -1,4 +1,5 @@
 import FeatureCards from './components/FeatureCards';
+import CompanyLogos from './components/CompanyLogos';
 
 export default function Home() {
   return (
@@ -43,6 +44,9 @@ export default function Home() {
 
         {/* Feature Cards */}
         <FeatureCards />
+
+        {/* Company Logos */}
+        <CompanyLogos />
 
         {/* Process Images Section */}
         <section className="py-16 bg-white">
