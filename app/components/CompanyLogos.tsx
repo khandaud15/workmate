@@ -62,7 +62,7 @@ export default function CompanyLogos() {
     <div className="w-full bg-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-semibold text-center text-gray-900 mb-8">
-          Trusted by top companies worldwide
+          Get hired by top companies worldwide
         </h2>
         <div className="relative p-8 bg-gray-50 border border-gray-200 rounded-2xl shadow-lg">
           <div className="absolute left-8 top-8 bottom-8 w-32 bg-gradient-to-r from-gray-50 to-transparent z-10" />
