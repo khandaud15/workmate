@@ -12,7 +12,7 @@ export default function Hero3DImage() {
         }}
       >
         <img
-          src="https://raw.githubusercontent.com/khandaud15/files/main/main1.png"
+          src="https://raw.githubusercontent.com/khandaud15/files/main/Main2.png"
           alt="Job Applications"
           className="w-full h-full object-contain"
         />
