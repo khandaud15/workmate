@@ -49,8 +49,11 @@ export default function Home() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {/* Build Image */}
-              <div className="transform transition-all duration-300 hover:scale-[1.02] hover:-rotate-1">
-                <div className="bg-white rounded-xl p-4 shadow-md hover:shadow-xl transition-shadow duration-300">
+              <div className="relative group">
+                {/* 3D Shadow Effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/1.png"
                     alt="Build your profile"
@@ -60,9 +63,11 @@ export default function Home() {
               </div>
 
               {/* Apply Image */}
-              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
-                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
+              <div className="relative group">
+                {/* 3D Shadow Effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/2.png"
                     alt="AI Cover Letter"
@@ -72,9 +77,11 @@ export default function Home() {
               </div>
 
               {/* Stay Organized Image */}
-              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
-                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
+              <div className="relative group">
+                {/* 3D Shadow Effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/3.png"
                     alt="AI Resume Builder"
@@ -84,9 +91,11 @@ export default function Home() {
               </div>
 
               {/* Mock Image */}
-              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
-                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
+              <div className="relative group">
+                {/* 3D Shadow Effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/4.png"
                     alt="Mock Interviews"
@@ -96,11 +105,13 @@ export default function Home() {
               </div>
 
               {/* Image 5 */}
-              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
-                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
+              <div className="relative group">
+                {/* 3D Shadow Effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
                   <img
-                    src="https://raw.githubusercontent.com/khandaud15/files/main/5.png"
+                    src="https://raw.githubusercontent.com/khandaud15/files/main/8.png"
                     alt="AI Job Search"
                     className="w-full h-auto max-w-[280px] mx-auto rounded-lg relative z-10"
                   />
@@ -108,9 +119,11 @@ export default function Home() {
               </div>
 
               {/* Image 6 */}
-              <div className="w-full transform hover:-rotate-6 transition-transform duration-300">
-                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-white opacity-50 rounded-xl"></div>
+              <div className="relative group">
+                {/* 3D Shadow Effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
+                <div className="bg-white rounded-xl p-4 shadow-lg hover:shadow-xl transition-all duration-300 relative transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
                   <img
                     src="https://raw.githubusercontent.com/khandaud15/files/main/6.png"
                     alt="AI Interview Prep"
@@ -130,7 +143,7 @@ export default function Home() {
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
             
             {/* Main Card */}
-            <section className="relative py-16 bg-[#111827] rounded-3xl transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
+            <section className="relative py-8 sm:py-16 bg-[#111827] rounded-3xl transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
               <div className="max-w-4xl mx-auto text-center px-4">
                 <h2 className="text-[32px] sm:text-[40px] font-bold text-white mb-8">Ready to automate your job search?</h2>
                 <a
