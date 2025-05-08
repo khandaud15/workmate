@@ -123,17 +123,26 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-[#111827] rounded-3xl mx-4 sm:mx-8 my-8">
-          <div className="max-w-4xl mx-auto text-center px-4">
-            <h2 className="text-[40px] font-bold text-white mb-8">Ready to automate your job search?</h2>
-            <a
-              href="/jobs"
-              className="inline-flex items-center px-6 py-3 text-base font-semibold rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
-            >
-              Find jobs <span className="ml-2">→</span>
-            </a>
+        <div className="mx-4 sm:mx-8 my-8">
+          <div className="relative group">
+            {/* 3D Shadow Effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
+            
+            {/* Main Card */}
+            <section className="relative py-16 bg-[#111827] rounded-3xl transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
+              <div className="max-w-4xl mx-auto text-center px-4">
+                <h2 className="text-[32px] sm:text-[40px] font-bold text-white mb-8">Ready to automate your job search?</h2>
+                <a
+                  href="/jobs"
+                  className="inline-flex items-center px-6 py-3 text-base font-semibold rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
+                >
+                  Find jobs <span className="ml-2">→</span>
+                </a>
+              </div>
+            </section>
           </div>
-        </section>
+        </div>
       </main>
     </div>
   );
