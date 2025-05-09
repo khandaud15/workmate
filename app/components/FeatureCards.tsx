@@ -48,32 +48,32 @@ export default function FeatureCards() {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-8 sm:py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-center mb-12">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">
           We don't stop until you're hired
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative bg-white p-8 rounded-2xl shadow-lg border border-gray-200 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              className="group relative bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               style={{
                 perspective: '1000px',
                 transformStyle: 'preserve-3d',
               }}
             >
               <div 
-                className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
+                className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-xl sm:rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
                 style={{
                   transform: 'translateZ(2px)',
                 }}
               />
               <div className="flex flex-col items-center text-center relative">
-                <div className="mb-6 transform transition-transform duration-300 group-hover:scale-110">
+                <div className="mb-4 sm:mb-6 transform transition-transform duration-300 group-hover:scale-110">
                   {feature.icon}
                 </div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-900">
+                <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-900">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
