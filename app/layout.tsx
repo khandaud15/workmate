@@ -35,7 +35,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased min-h-screen flex flex-col`} suppressHydrationWarning>
         <Providers>
           <Header />
-          <div className="flex-grow">
+          <div className="flex-grow pt-24">
             {children}
           </div>
           <Footer />

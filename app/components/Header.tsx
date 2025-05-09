@@ -14,7 +14,7 @@ export default function Header() {
   const searchId = useId();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm py-4 px-2">
+    <header className="fixed w-full top-0 z-[9999] bg-white shadow-md py-4 px-2">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-full pl-4 pr-1 sm:px-8 py-4">
           <div className="flex items-center justify-between space-x-6">
@@ -122,7 +122,7 @@ export default function Header() {
                 ) : (
                   <div className="flex items-center space-x-4">
                     <Link 
-                      href="/login" 
+                      href="/signup" 
                       className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
                     >
                       Log in
@@ -165,7 +165,7 @@ export default function Header() {
               ) : (
                 <>
                   <button
-                    onClick={() => router.push('/login')}
+                    onClick={() => router.push('/signup')}
                     className="p-1.5 bg-[#4292FF] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#237DFF] transition-colors"
                     aria-label="Sign in"
                   >
@@ -324,17 +324,17 @@ export default function Header() {
                   <div className="flex flex-col space-y-2 px-2">
                     <Link 
                       href="/signup"
-                      className="hidden w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Sign up
-                    </Link>
-                    <Link 
-                      href="/login"
                       className="w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log in
+                    </Link>
+                    <Link 
+                      href="/signup"
+                      className="w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Sign up
                     </Link>
                   </div>
                 )}

@@ -1,6 +1,5 @@
-import FeatureCards from './components/FeatureCards';
-import CompanyLogos from './components/CompanyLogos';
 import Hero3DImage from './components/Hero3DImage';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -20,12 +19,12 @@ export default function Home() {
                   From auto-applying to interviews to syncing your calendar, WorkMate keeps every part of your job journey on track.
                 </p>
                 <div className="mt-8">
-                  <a
+                  <Link
                     href="/signup"
-                    className="inline-flex items-center px-6 py-3 text-base font-semibold rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
+                    className="inline-flex items-center px-5 py-2.5 text-[15px] font-medium rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
                   >
                     Get Started →
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -35,35 +34,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Company Logos */}
-        <CompanyLogos />
 
-        {/* Feature Cards */}
-        <FeatureCards />
-
-
-
-        {/* CTA Section */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4">
-          <div className="relative group">
-            {/* 3D Shadow Effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-200"></div>
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl blur-xl opacity-25 group-hover:opacity-40 transition duration-200 -rotate-3 scale-105"></div>
-            
-            {/* Main Card */}
-            <section className="relative py-6 sm:py-8 bg-[#111827] rounded-2xl transform transition duration-200 hover:-translate-y-1 hover:scale-[1.02]">
-              <div className="mx-auto text-center px-4">
-                <h2 className="text-[24px] sm:text-[32px] font-bold text-white mb-4">Ready to automate your job search?</h2>
-                <a
-                  href="/jobs"
-                  className="inline-flex items-center px-5 py-2.5 text-base font-semibold rounded-[6px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
-                >
-                  Find jobs <span className="ml-2">→</span>
-                </a>
-              </div>
-            </section>
-          </div>
-        </div>
       </main>
     </div>
   );

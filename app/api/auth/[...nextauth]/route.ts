@@ -43,13 +43,15 @@ const handler = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: '/login',
+    signIn: '/signup',
     signOut: '/',
+    newUser: '/signup'
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
       // Always redirect to dashboard after successful sign in
-      if (url === '/login') {
+      // Always redirect to dashboard after sign in
+      if (url.includes('/signup')) {
         return `${baseUrl}/dashboard`
       }
       // Allow relative URLs
