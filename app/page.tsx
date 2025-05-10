@@ -42,7 +42,7 @@ export default function Home() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {/* Card 1 */}
-              <div className="bg-white rounded-[20px] p-6 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
                 <div className="text-[#4292FF] text-3xl mb-4">→</div>
                 <h3 className="text-lg font-semibold mb-2">Automate your job search</h3>
                 <p className="text-gray-800 text-sm text-left">
@@ -51,7 +51,7 @@ export default function Home() {
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white rounded-[20px] p-6 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
                 <div className="text-[#FF69B4] text-3xl mb-4">⭕</div>
                 <h3 className="text-lg font-semibold mb-2">Wake up to your best matches</h3>
                 <p className="text-gray-800 text-sm text-left">
@@ -60,7 +60,7 @@ export default function Home() {
               </div>
 
               {/* Card 3 */}
-              <div className="bg-white rounded-[20px] p-6 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
                 <div className="text-[#00FF00] text-3xl mb-4">⚡</div>
                 <h3 className="text-lg font-semibold mb-2">10x your job applications</h3>
                 <p className="text-gray-800 text-sm text-left">
@@ -69,7 +69,7 @@ export default function Home() {
               </div>
 
               {/* Card 4 */}
-              <div className="bg-white rounded-[20px] p-6 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
                 <div className="text-gray-700 text-3xl mb-4">⏰</div>
                 <h3 className="text-lg font-semibold mb-2">Reclaim valuable hours every week</h3>
                 <p className="text-gray-800 text-sm text-left">
@@ -78,7 +78,7 @@ export default function Home() {
               </div>
 
               {/* Card 5 */}
-              <div className="bg-white rounded-[20px] p-6 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
                 <div className="text-[#9370DB] text-3xl mb-4">💬</div>
                 <h3 className="text-lg font-semibold mb-2">Mock interview preparation</h3>
                 <p className="text-gray-800 text-sm text-left">
