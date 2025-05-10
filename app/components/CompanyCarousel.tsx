@@ -29,12 +29,12 @@ export default function CompanyCarousel() {
           <div className="max-w-[1100px] mx-auto">
           <Swiper
             modules={[Autoplay]}
-            spaceBetween={20}
+            spaceBetween={16}
             slidesPerView={2}
             loop={true}
-            centeredSlides={true}
+            centeredSlides={false}
             autoplay={{
-              delay: 3000,
+              delay: 2000,
               disableOnInteraction: false,
               pauseOnMouseEnter: true
             }}
@@ -57,7 +57,7 @@ export default function CompanyCarousel() {
             {companies.map((company) => (
               <SwiperSlide key={company.name}>
                 <div className="flex items-center justify-center px-2">
-                  <div className="w-[120px] aspect-[4/3] bg-white/50 backdrop-blur-sm rounded-xl shadow-md flex items-center justify-center p-4 hover:shadow-xl hover:-translate-y-1 hover:bg-white transition-all duration-300 ease-in-out transform-gpu">
+                  <div className="w-[140px] aspect-[4/3] bg-white/50 backdrop-blur-sm rounded-xl shadow-md flex items-center justify-center p-4 hover:shadow-xl hover:-translate-y-1 hover:bg-white transition-all duration-300 ease-in-out transform-gpu">
                     <img
                       src={company.logo}
                       alt={`${company.name} logo`}
