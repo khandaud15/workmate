@@ -23,7 +23,7 @@ export default function SignUp() {
           <Link href="/" className="bg-black text-white text-[15px] font-medium px-6 py-2 rounded-[8px] hover:bg-gray-800 transition-colors cursor-pointer outline outline-2 outline-[#39FF14]">
             WorkMate
           </Link>
-          <h1 className="text-[40px] font-bold text-white leading-none">
+          <h1 className="text-[28px] sm:text-[40px] font-bold text-white whitespace-nowrap">
             Create your account
           </h1>
         </div>
