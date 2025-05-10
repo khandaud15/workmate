@@ -1,4 +1,5 @@
 import Hero3DImage from './components/Hero3DImage';
+import CompanyCarousel from './components/CompanyCarousel';
 import Link from 'next/link';
 
 export default function Home() {
@@ -33,6 +34,9 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Company Carousel */}
+        <CompanyCarousel />
 
         {/* Feature Cards Section */}
         <div className="bg-white py-10 sm:py-16">
