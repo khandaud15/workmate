@@ -17,7 +17,7 @@ export default function Home() {
                   <span className="block md:inline">Stay Organized Effortlessly.</span>
                 </h1>
                 <p className="mt-6 text-xl leading-normal text-[#1A1A1A] max-w-xl mx-auto md:mx-0">
-                  From auto-applying to interviews to syncing your calendar, WorkMate keeps every part of your job journey on track.
+                  From auto-applying to interviews to syncing your calendar, Talexus keeps every part of your job journey on track.
                 </p>
                 <div className="mt-8">
                   <Link

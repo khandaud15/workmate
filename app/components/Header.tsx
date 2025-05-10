@@ -23,7 +23,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
               <span className="text-[15px] md:text-[13px] font-medium px-4 py-1.5 rounded-[8px] bg-black text-white hover:bg-gray-800 transition-colors">
-                WorkMate
+                Talexus
               </span>
             </Link>
 
@@ -231,7 +231,7 @@ export default function Header() {
               <div className="flex justify-between items-center py-8 border-b border-gray-100">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
-                  <span className="text-[15px] font-medium px-4 py-1.5 rounded-[8px] bg-black text-white">WorkMate</span>
+                  <span className="text-[15px] font-medium px-4 py-1.5 rounded-[8px] bg-black text-white">Talexus</span>
                 </Link>
                 {/* Close Button */}
                 <button 
