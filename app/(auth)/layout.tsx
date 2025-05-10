@@ -1,13 +1,11 @@
-import './auth.css';
-
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <main className="auth-layout">
+    <div className="min-h-screen bg-black">
       {children}
-    </main>
+    </div>
   );
 }

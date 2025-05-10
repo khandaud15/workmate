@@ -225,9 +225,22 @@ export default function Header() {
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
             <div className="md:hidden bg-white fixed inset-0 z-50 px-6">
-              {/* Mobile Menu Logo */}
-              <div className="flex justify-center py-8 border-b border-gray-100">
-                <span className="px-4 py-[6px] bg-black text-white rounded-[8px] font-medium text-[13px]">WorkMate</span>
+              {/* Top Bar */}
+              <div className="flex justify-between items-center py-8 border-b border-gray-100">
+                {/* Logo */}
+                <Link href="/" className="flex-shrink-0">
+                  <span className="px-4 py-[6px] bg-black text-white rounded-[8px] font-medium text-[13px]">WorkMate</span>
+                </Link>
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 text-gray-600 hover:text-gray-900"
+                  aria-label="Close menu"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
               <nav className="flex flex-col space-y-6">
                 {/* Mobile Core Features Dropdown */}

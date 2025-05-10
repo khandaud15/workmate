@@ -30,6 +30,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // No need to detect auth pages here since we're using a separate auth layout
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-white`} suppressHydrationWarning>
