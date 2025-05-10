@@ -20,7 +20,7 @@ export default function Header() {
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <span className="px-4 py-[6px] bg-black text-white rounded-[8px] font-medium text-[13px] hover:bg-gray-800 transition-colors">
+              <span className="text-[15px] md:text-[13px] font-medium px-4 py-1.5 rounded-[8px] bg-black text-white hover:bg-gray-800 transition-colors">
                 WorkMate
               </span>
             </Link>
@@ -34,10 +34,10 @@ export default function Header() {
                     role="button"
                     aria-haspopup="true"
                     aria-expanded="false"
-                    className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold flex items-center gap-1"
+                    className="text-gray-700 hover:text-[#4292FF] transition-colors text-[22px] md:text-base font-bold flex items-center gap-1"
                   >
                     Core Features
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
@@ -64,13 +64,13 @@ export default function Header() {
                 </div>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[22px] md:text-base font-bold"
                 >
                   Pricing
                 </Link>
                 <Link 
                   href="/copilot" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[22px] md:text-base font-bold"
                 >
                   Copilot
                 </Link>
@@ -113,7 +113,7 @@ export default function Header() {
                     <span className="text-gray-700">Hello, {session.user?.name}</span>
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
-                      className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
+                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[20px] md:text-[13px]"
                     >
                       Sign Out
                     </button>
@@ -122,13 +122,13 @@ export default function Header() {
                   <div className="flex items-center space-x-4">
                     <Link 
                       href="/signup" 
-                      className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
+                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[20px] md:text-[13px]"
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup" 
-                      className="hidden md:block bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
+                      className="hidden md:block bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[20px] md:text-[13px]"
                     >
                       Sign Up
                     </Link>
@@ -147,7 +147,7 @@ export default function Header() {
                   aria-label="Sign out"
                 >
                   <svg
-                    className="h-4 w-4 text-white"
+                    className="w-6 h-6 stroke-current"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -169,11 +169,11 @@ export default function Header() {
                     aria-label="Sign in"
                   >
                     <svg
-                      className="h-4 w-4 text-white"
+                      className="w-6 h-6 md:w-5 md:h-5"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
-                      stroke="currentColor"
+                      stroke="white"
                     >
                       <path
                         strokeLinecap="round"
@@ -229,15 +229,15 @@ export default function Header() {
               <div className="flex justify-between items-center py-8 border-b border-gray-100">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
-                  <span className="px-4 py-[6px] bg-black text-white rounded-[8px] font-medium text-[13px]">WorkMate</span>
+                  <span className="text-[15px] font-medium px-4 py-1.5 rounded-[8px] bg-black text-white">WorkMate</span>
                 </Link>
                 {/* Close Button */}
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 text-gray-600 hover:text-gray-900"
+                <button 
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                  className="md:hidden p-2 text-gray-600 hover:text-gray-900"
                   aria-label="Close menu"
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
