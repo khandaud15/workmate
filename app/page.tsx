@@ -6,12 +6,12 @@ export default function Home() {
     <div>
       <main>
         {/* Hero Section */}
-        <div className="py-12 sm:py-16">
+        <div className="py-8 sm:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center md:items-center md:grid md:grid-cols-2 gap-16 lg:gap-20">
               {/* Hero Text */}
               <div className="text-center md:text-left max-w-2xl md:max-w-xl order-1 md:order-2 md:self-center">
-                <h1 className="text-[40px] md:text-[52px] leading-[1.15] tracking-tight font-extrabold text-black">
+                <h1 className="text-[40px] md:text-[52px] leading-[1.15] tracking-tight font-extrabold text-[#1A1A1A]">
                   <span className="block md:inline">Land Jobs Faster.</span>{' '}
                   <span className="block md:inline">Stay Organized Effortlessly.</span>
                 </h1>

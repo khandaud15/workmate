@@ -41,22 +41,22 @@ export default function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-                  <div className="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50">
+                  <div className="absolute left-0 mt-2 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50 min-w-[300px]">
                     <Link 
                       href="/resume-builder" 
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      className="block px-10 py-2 text-[15px] text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Resume Builder
                     </Link>
                     <Link 
                       href="/jobs" 
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      className="block px-10 py-2 text-[15px] text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Job Search
                     </Link>
                     <Link 
                       href="/applications" 
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      className="block px-10 py-2 text-[15px] text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Application Tracker
                     </Link>
