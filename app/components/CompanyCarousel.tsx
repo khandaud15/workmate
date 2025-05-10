@@ -29,7 +29,7 @@ export default function CompanyCarousel() {
           <Swiper
             modules={[Autoplay]}
             spaceBetween={20}
-            slidesPerView={3}
+            slidesPerView={2.2}
             loop={true}
             autoplay={{
               delay: 3000,
@@ -38,15 +38,15 @@ export default function CompanyCarousel() {
             }}
             breakpoints={{
               640: {
-                slidesPerView: 4,
+                slidesPerView: 3.5,
                 spaceBetween: 24,
               },
               768: {
-                slidesPerView: 5,
+                slidesPerView: 4.5,
                 spaceBetween: 24,
               },
               1024: {
-                slidesPerView: 6,
+                slidesPerView: 5.5,
                 spaceBetween: 24,
               },
             }}
@@ -55,7 +55,7 @@ export default function CompanyCarousel() {
             {companies.map((company) => (
               <SwiperSlide key={company.name}>
                 <div className="flex items-center justify-center px-4">
-                  <div className="w-[140px] h-[90px] bg-white rounded-lg shadow-sm flex items-center justify-center p-6 hover:shadow-md transition-shadow">
+                  <div className="w-[120px] aspect-[4/3] bg-white rounded-lg shadow-sm flex items-center justify-center p-4 hover:shadow-md transition-shadow">
                     <img
                       src={company.logo}
                       alt={`${company.name} logo`}
