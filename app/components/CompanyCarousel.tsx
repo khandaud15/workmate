@@ -20,16 +20,16 @@ const companies = [
 
 export default function CompanyCarousel() {
   return (
-    <div className="bg-gray-50 py-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-6">
+    <div className="bg-gray-50 pt-4 pb-6 overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-4">
           <h2 className="text-2xl font-semibold text-[#1A1A1A]">Top companies hiring</h2>
         </div>
         <div className="overflow-hidden">
           <Swiper
             modules={[Autoplay]}
             spaceBetween={20}
-            slidesPerView={2.2}
+            slidesPerView={2}
             loop={true}
             autoplay={{
               delay: 3000,
@@ -38,15 +38,15 @@ export default function CompanyCarousel() {
             }}
             breakpoints={{
               640: {
-                slidesPerView: 3.5,
+                slidesPerView: 3,
                 spaceBetween: 24,
               },
               768: {
-                slidesPerView: 4.5,
+                slidesPerView: 4,
                 spaceBetween: 24,
               },
               1024: {
-                slidesPerView: 5.5,
+                slidesPerView: 5,
                 spaceBetween: 24,
               },
             }}
@@ -54,8 +54,8 @@ export default function CompanyCarousel() {
           >
             {companies.map((company) => (
               <SwiperSlide key={company.name}>
-                <div className="flex items-center justify-center px-4">
-                  <div className="w-[120px] aspect-[4/3] bg-white rounded-lg shadow-sm flex items-center justify-center p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-center px-2">
+                  <div className="w-[120px] aspect-[4/3] bg-white rounded-xl shadow-md flex items-center justify-center p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out transform-gpu">
                     <img
                       src={company.logo}
                       alt={`${company.name} logo`}
