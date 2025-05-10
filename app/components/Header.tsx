@@ -14,9 +14,9 @@ export default function Header() {
   const searchId = useId();
 
   return (
-    <header className="fixed w-full top-0 z-[9999] bg-transparent py-4 px-2">
+    <header className="fixed w-full top-0 z-[9999] bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white shadow-sm rounded-full pl-4 pr-1 sm:px-8 py-4">
+        <div className="px-4 py-4 md:px-8">
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
@@ -187,28 +187,33 @@ export default function Header() {
                 </>
               )}
 
-              {/* Mobile Menu Button */}
+              {/* Mobile Menu */}
               <button
+                type="button"
+                className="md:hidden p-2 text-gray-700"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-black hover:text-gray-800 focus:outline-none transition-colors"
+                aria-expanded={isMobileMenuOpen}
+                aria-label="Toggle mobile menu"
               >
                 <svg
-                  className="h-8 w-8"
+                  className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={1.5}
+                  aria-hidden="true"
                 >
                   {isMobileMenuOpen ? (
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeWidth={2}
                       d="M6 18L18 6M6 6l12 12"
                     />
                   ) : (
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      strokeWidth={2}
                       d="M4 6h16M4 12h16M4 18h16"
                     />
                   )}
@@ -217,42 +222,49 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Mobile menu */}
+          {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="md:hidden mt-4 py-4 border-t border-gray-200">
-              <nav className="flex flex-col space-y-4">
-                <div className="relative px-2">
-                  <button 
-                    type="button"
-                    role="button"
-                    aria-haspopup="true"
-                    aria-expanded={isMobileDropdownOpen}
+            <div className="md:hidden bg-white fixed inset-0 z-50 px-6">
+              {/* Mobile Menu Logo */}
+              <div className="flex justify-center py-8 border-b border-gray-100">
+                <span className="px-4 py-[6px] bg-black text-white rounded-[8px] font-medium text-[13px]">WorkMate</span>
+              </div>
+              <nav className="flex flex-col space-y-6">
+                {/* Mobile Core Features Dropdown */}
+                <div>
+                  <button
                     onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                    className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold flex items-center gap-1 w-full justify-between"
+                    className="flex items-center justify-between w-full text-left text-gray-900 text-xl font-semibold"
                   >
                     Core Features
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`h-5 w-5 transform transition-transform ${isMobileDropdownOpen ? 'rotate-180' : ''}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </button>
-                  <div className={`mt-2 bg-white rounded-lg shadow-lg py-2 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}>
+                  <div className={`mt-4 space-y-4 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}>
                     <Link 
                       href="/resume-builder" 
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      className="block text-gray-600 text-lg"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Resume Builder
                     </Link>
                     <Link 
                       href="/jobs" 
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      className="block text-gray-600 text-lg"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Job Search
                     </Link>
                     <Link 
                       href="/applications" 
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors"
+                      className="block text-gray-600 text-lg"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Application Tracker
@@ -261,20 +273,19 @@ export default function Header() {
                 </div>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
+                  className="text-gray-900 text-xl font-semibold"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Pricing
                 </Link>
                 <Link 
                   href="/copilot" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors font-bold px-2"
+                  className="text-gray-900 text-xl font-semibold"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Copilot
                 </Link>
 
-                
                 {/* Mobile Search */}
                 <div className="px-2">
                   <div className="relative">
@@ -307,30 +318,30 @@ export default function Header() {
 
                 {/* Mobile Auth Buttons */}
                 {session ? (
-                  <div className="px-2">
-                    <p className="text-gray-700 mb-2">Hello, {session.user?.name}</p>
+                  <div className="mt-6">
+                    <p className="text-gray-600 mb-4">Hello, {session.user?.name}</p>
                     <button
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         signOut({ callbackUrl: '/' });
                       }}
-                      className="w-full bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px] text-center"
+                      className="w-full bg-black text-white px-4 py-2 rounded-lg text-base font-medium"
                     >
                       Sign Out
                     </button>
                   </div>
                 ) : (
-                  <div className="flex flex-col space-y-2 px-2">
+                  <div className="flex flex-col space-y-2 mt-6">
                     <Link 
-                      href="/signup"
-                      className="w-full bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px] text-center"
+                      href="/signin"
+                      className="w-full bg-black text-white px-4 py-2 rounded-lg text-base font-medium text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup"
-                      className="w-full bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px] text-center"
+                      className="w-full bg-black text-white px-4 py-2 rounded-lg text-base font-medium text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign up
