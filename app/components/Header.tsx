@@ -143,7 +143,7 @@ export default function Header() {
               {session ? (
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className="p-1.5 bg-[#4292FF] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#237DFF] transition-colors"
+                  className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
                   aria-label="Sign out"
                 >
                   <svg
