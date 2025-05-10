@@ -20,17 +20,19 @@ const companies = [
 
 export default function CompanyCarousel() {
   return (
-    <div className="bg-gray-50 pt-4 pb-6 overflow-hidden">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 pt-4 pb-6">
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
         <div className="text-center mb-4">
           <h2 className="text-2xl font-semibold text-[#1A1A1A]">Top companies hiring</h2>
         </div>
-        <div className="overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-lg p-6 transform-gpu hover:shadow-xl transition-shadow duration-300">
+          <div className="max-w-[1100px] mx-auto">
           <Swiper
             modules={[Autoplay]}
             spaceBetween={20}
             slidesPerView={2}
             loop={true}
+            centeredSlides={true}
             autoplay={{
               delay: 3000,
               disableOnInteraction: false,
@@ -55,7 +57,7 @@ export default function CompanyCarousel() {
             {companies.map((company) => (
               <SwiperSlide key={company.name}>
                 <div className="flex items-center justify-center px-2">
-                  <div className="w-[120px] aspect-[4/3] bg-white rounded-xl shadow-md flex items-center justify-center p-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ease-in-out transform-gpu">
+                  <div className="w-[120px] aspect-[4/3] bg-white/50 backdrop-blur-sm rounded-xl shadow-md flex items-center justify-center p-4 hover:shadow-xl hover:-translate-y-1 hover:bg-white transition-all duration-300 ease-in-out transform-gpu">
                     <img
                       src={company.logo}
                       alt={`${company.name} logo`}
@@ -66,6 +68,7 @@ export default function CompanyCarousel() {
               </SwiperSlide>
             ))}
           </Swiper>
+          </div>
         </div>
       </div>
     </div>
