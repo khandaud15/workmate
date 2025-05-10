@@ -149,7 +149,7 @@ export default function Header() {
                   aria-label="Sign out"
                 >
                   <svg
-                    className="w-6 h-6 stroke-current"
+                    className="w-6 h-6 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"

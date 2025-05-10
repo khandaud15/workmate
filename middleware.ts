@@ -7,21 +7,23 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
 
   // Public paths that don't require authentication
-  const publicPaths = ['/', '/signup', '/pricing', '/copilot', '/cover-letter']
+  const publicPaths = ['/', '/signup', '/signin', '/pricing', '/copilot', '/cover-letter']
 
   // Root path and public paths should always be accessible
   if (path === '/' || publicPaths.includes(path)) {
     return NextResponse.next()
   }
 
-  // If the user is authenticated and trying to access auth pages, redirect to dashboard
-  if (token && path === '/signup') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // If the user is not authenticated and trying to access protected pages, redirect to signup
+  if (!token && !publicPaths.includes(path)) {
+    const signupUrl = new URL('/signup', request.url)
+    return NextResponse.redirect(signupUrl)
   }
 
-  // If the user is not authenticated and trying to access protected pages, redirect to login
-  if (!token && !publicPaths.includes(path)) {
-    return NextResponse.redirect(new URL('/signup', request.url))
+  // If the user is authenticated and trying to access auth pages, redirect to dashboard
+  if (token && (path === '/signup' || path === '/signin')) {
+    const dashboardUrl = new URL('/dashboard', request.url)
+    return NextResponse.redirect(dashboardUrl)
   }
 
   return NextResponse.next()
