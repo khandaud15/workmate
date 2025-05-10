@@ -20,7 +20,7 @@ export default function SignUp() {
       <div className="w-full max-w-[400px] space-y-6">
         {/* Logo */}
         <div className="flex flex-col items-center space-y-6">
-          <Link href="/" className="bg-[#4292FF] text-white text-[15px] font-medium px-6 py-2 rounded-[8px] hover:bg-[#237DFF] transition-colors cursor-pointer">
+          <Link href="/" className="bg-black text-white text-[15px] font-medium px-6 py-2 rounded-[8px] hover:bg-gray-800 transition-colors cursor-pointer outline outline-2 outline-[#39FF14]">
             WorkMate
           </Link>
           <h1 className="text-[40px] font-bold text-white leading-none">

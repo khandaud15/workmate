@@ -14,14 +14,13 @@ export default function Header() {
   const searchId = useId();
 
   return (
-    <header className="fixed w-full top-0 z-[9999] bg-white shadow-md py-4 px-2">
+    <header className="fixed w-full top-0 z-[9999] bg-transparent py-4 px-2">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-full pl-4 pr-1 sm:px-8 py-4">
+        <div className="bg-white shadow-sm rounded-full pl-4 pr-1 sm:px-8 py-4">
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
-              <img src="https://raw.githubusercontent.com/khandaud15/files/main/workmate2.png" alt="WorkMate Logo" className="w-11 h-11 object-contain -mt-1" />
-              <span className="px-4 py-[6px] bg-[#4292FF] text-white rounded-[8px] font-medium text-[13px] hover:bg-[#237DFF] transition-colors">
+            <Link href="/" className="flex-shrink-0">
+              <span className="px-4 py-[6px] bg-black text-white rounded-[8px] font-medium text-[13px] hover:bg-gray-800 transition-colors">
                 WorkMate
               </span>
             </Link>
@@ -114,7 +113,7 @@ export default function Header() {
                     <span className="text-gray-700">Hello, {session.user?.name}</span>
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
-                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
+                      className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
                     >
                       Sign Out
                     </button>
@@ -123,13 +122,13 @@ export default function Header() {
                   <div className="flex items-center space-x-4">
                     <Link 
                       href="/signup" 
-                      className="bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
+                      className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup" 
-                      className="hidden md:block bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px]"
+                      className="hidden md:block bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
                     >
                       Sign Up
                     </Link>
@@ -166,7 +165,7 @@ export default function Header() {
                 <>
                   <button
                     onClick={() => router.push('/signup')}
-                    className="p-1.5 bg-[#4292FF] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#237DFF] transition-colors"
+                    className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
                     aria-label="Sign in"
                   >
                     <svg
@@ -191,7 +190,7 @@ export default function Header() {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-[#4292FF] hover:text-[#237DFF] focus:outline-none transition-colors"
+                className="md:hidden p-2 text-black hover:text-gray-800 focus:outline-none transition-colors"
               >
                 <svg
                   className="h-8 w-8"
@@ -315,7 +314,7 @@ export default function Header() {
                         setIsMobileMenuOpen(false);
                         signOut({ callbackUrl: '/' });
                       }}
-                      className="w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
+                      className="w-full bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px] text-center"
                     >
                       Sign Out
                     </button>
@@ -324,14 +323,14 @@ export default function Header() {
                   <div className="flex flex-col space-y-2 px-2">
                     <Link 
                       href="/signup"
-                      className="w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
+                      className="w-full bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px] text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup"
-                      className="w-full bg-[#4292FF] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#237DFF] transition-colors font-medium text-[13px] text-center"
+                      className="w-full bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px] text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign up

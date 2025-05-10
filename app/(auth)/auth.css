@@ -1,0 +1,9 @@
+.auth-layout {
+  min-height: 100vh;
+  background-color: black;
+}
+
+.auth-layout header,
+.auth-layout footer {
+  display: none !important;
+}

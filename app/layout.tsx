@@ -32,7 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased min-h-screen flex flex-col`} suppressHydrationWarning>
+      <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-white`} suppressHydrationWarning>
         <Providers>
           <Header />
           <div className="flex-grow pt-24">

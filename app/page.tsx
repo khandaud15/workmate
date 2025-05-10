@@ -21,7 +21,7 @@ export default function Home() {
                 <div className="mt-8">
                   <Link
                     href="/signup"
-                    className="inline-flex items-center px-5 py-2.5 text-[15px] font-medium rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
+                    className="inline-flex items-center px-5 py-2.5 text-[15px] font-medium rounded-[8px] text-white bg-black hover:bg-gray-800 transition-colors"
                   >
                     Get Started →
                   </Link>
@@ -94,7 +94,7 @@ export default function Home() {
               </h2>
               <Link
                 href="/signup"
-                className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 text-[15px] sm:text-[16px] font-medium rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
+                className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 text-[15px] sm:text-[16px] font-medium rounded-[8px] text-white bg-black hover:bg-gray-800 transition-colors outline outline-2 outline-[#39FF14]"
               >
                 Find jobs →
               </Link>
