@@ -20,8 +20,8 @@ export default function Onboarding() {
       <div className="flex-grow px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Step 1 */}
-          <div className="relative">
-            <div className="absolute -top-2 -left-2 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
+          <div className="relative pl-2">
+            <div className="absolute top-0 -left-10 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
               1
             </div>
             <div className="mb-3">
@@ -51,8 +51,8 @@ export default function Onboarding() {
           </div>
 
           {/* Step 2 */}
-          <div className="relative">
-            <div className="absolute -top-2 -left-2 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
+          <div className="relative pl-2">
+            <div className="absolute top-0 -left-10 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
               2
             </div>
             <div className="mb-3">
@@ -93,8 +93,8 @@ export default function Onboarding() {
           </div>
 
           {/* Step 3 */}
-          <div className="relative">
-            <div className="absolute -top-2 -left-2 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
+          <div className="relative pl-2">
+            <div className="absolute top-0 -left-10 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
               3
             </div>
             <div className="mb-3">
