@@ -7,7 +7,7 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="text-center pt-16 pb-12">
+      <div className="text-center pt-16 pb-12 max-w-2xl mx-auto">
         <h1 className="text-[32px] font-bold text-[#111827] mb-2">
           Let&apos;s set you up for success!
         </h1>
@@ -20,16 +20,13 @@ export default function Onboarding() {
       <div className="flex-grow px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Step 1 */}
-          <div className="relative pl-2">
-            <div className="absolute top-0 -left-10 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
-              1
-            </div>
-            <div className="mb-3">
+          <div className="relative">
+            <div className="mb-3 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">Upload your resume.</h3>
               <p className="text-[#6B7280] text-sm">Help us understand your experience.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-6 aspect-[4/3]">
-              <div className="bg-white rounded-lg p-4 h-full">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[3/2] md:aspect-[4/3]">
+              <div className="bg-white rounded-lg p-2 md:p-4 h-full">
                 <div className="flex items-center mb-2">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
                     <span className="text-white text-xs">R</span>
@@ -51,16 +48,13 @@ export default function Onboarding() {
           </div>
 
           {/* Step 2 */}
-          <div className="relative pl-2">
-            <div className="absolute top-0 -left-10 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
-              2
-            </div>
-            <div className="mb-3">
+          <div className="relative">
+            <div className="mb-3 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">Complete a quick profile.</h3>
               <p className="text-[#6B7280] text-sm">Share your preferences and career goals.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-6 aspect-[4/3]">
-              <div className="bg-white rounded-lg p-4 h-full space-y-4">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[3/2] md:aspect-[4/3]">
+              <div className="bg-white rounded-lg p-2 md:p-4 h-full space-y-4">
                 <div className="space-y-1">
                   <p className="text-sm text-gray-600">Desired job?</p>
                   <div className="flex items-center justify-between">
@@ -93,16 +87,13 @@ export default function Onboarding() {
           </div>
 
           {/* Step 3 */}
-          <div className="relative pl-2">
-            <div className="absolute top-0 -left-10 bg-[#EEF2FF] rounded-lg w-8 h-8 flex items-center justify-center text-[#4F46E5] font-medium">
-              3
-            </div>
-            <div className="mb-3">
+          <div className="relative">
+            <div className="mb-3 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">We find jobs and fill out applications.</h3>
-              <p className="text-[#6B7280] text-sm">All you have to do is hit submit.</p>
+              <p className="text-[#6B7280] text-sm">Sit back while we do the heavy lifting.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-6 aspect-[4/3]">
-              <div className="bg-white rounded-lg p-4 h-full">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[3/2] md:aspect-[4/3]">
+              <div className="bg-white rounded-lg p-2 md:p-4 h-full">
                 <div className="flex items-center mb-4">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
                     <span className="text-white text-xs">R</span>
