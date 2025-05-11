@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  CheckCircleIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CheckIcon
-} from '@heroicons/react/24/solid';
+  ArrowLeftIcon,
+  InformationCircleIcon,
+  CalendarIcon,
+  CheckCircleIcon
+} from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 import {
   MagnifyingGlassIcon,
   BellAlertIcon,
@@ -98,37 +99,9 @@ const features: Feature[] = [
   }
 ];
 
-const companies = [
-  'Yeti',
-  'The UPS Store',
-  'HubSpot',
-  'Deloitte',
-  'Starbucks',
-  'Lyft'
-];
-
 export default function PricingPage() {
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [currentCompanyIndex, setCurrentCompanyIndex] = useState(0);
-
-  const nextCompanies = () => {
-    setCurrentCompanyIndex((prev) =>
-      prev + 3 >= companies.length ? 0 : prev + 3
-    );
-  };
-
-  const prevCompanies = () => {
-    setCurrentCompanyIndex((prev) =>
-      prev - 3 < 0 ? companies.length - 3 : prev - 3
-    );
-  };
-
-  const visibleCompanies = [
-    companies[currentCompanyIndex],
-    companies[(currentCompanyIndex + 1) % companies.length],
-    companies[(currentCompanyIndex + 2) % companies.length]
-  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -238,34 +211,6 @@ export default function PricingPage() {
                 Got questions? Contact our 24/7 customer support
               </p>
             </div>
-          </div>
-        </div>
-
-        {/* Company Logos Carousel */}
-        <div className="mt-16 border-t border-gray-200 py-12">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={prevCompanies}
-              className="rounded-full p-1 hover:bg-gray-100"
-            >
-              <ChevronLeftIcon className="h-6 w-6 text-gray-400" />
-            </button>
-            <div className="flex items-center justify-center space-x-12">
-              {visibleCompanies.map((company) => (
-                <div
-                  key={company}
-                  className="text-lg font-medium text-gray-400"
-                >
-                  {company}
-                </div>
-              ))}
-            </div>
-            <button
-              onClick={nextCompanies}
-              className="rounded-full p-1 hover:bg-gray-100"
-            >
-              <ChevronRightIcon className="h-6 w-6 text-gray-400" />
-            </button>
           </div>
         </div>
       </div>
