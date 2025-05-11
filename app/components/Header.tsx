@@ -348,7 +348,7 @@ export default function Header() {
                 ) : (
                   <div className="flex flex-col space-y-2 mt-6">
                     <Link 
-                      href="/signin"
+                      href="/signup"
                       className="w-full bg-black text-white px-4 py-2 rounded-lg text-base font-medium text-center"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
