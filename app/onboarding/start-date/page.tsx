@@ -1,0 +1,142 @@
+'use client';
+
+import React, { useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import {
+  ArrowLeftIcon,
+  InformationCircleIcon,
+  CalendarIcon
+} from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/navigation';
+
+type StartOption = 'asap' | 'two_weeks' | 'custom';
+
+const addTwoWeeks = (date: Date) => {
+  const newDate = new Date(date);
+  newDate.setDate(date.getDate() + 14);
+  return newDate;
+};
+
+const today = new Date();
+const twoWeeksFromNow = addTwoWeeks(today);
+
+export default function StartDateSelection() {
+  const router = useRouter();
+  const [selectedOption, setSelectedOption] = useState<StartOption | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  const options = [
+    {
+      id: 'asap',
+      title: 'As soon as possible',
+      description: 'Ready to start immediately'
+    },
+    {
+      id: 'two_weeks',
+      title: '2 weeks notice',
+      description: 'Standard notice period'
+    },
+    {
+      id: 'custom',
+      title: 'Choose a preferred start date',
+      description: 'Select a specific date',
+      icon: CalendarIcon
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-white p-6 md:p-8">
+      {/* Main Content */}
+      <div className="mx-auto max-w-2xl">
+        {/* Headers */}
+        <div className="mb-10 text-center">
+          <div className="mb-3 flex items-center justify-center">
+            <h1 className="text-4xl font-bold text-gray-900">
+              When are you looking to start your new job?
+            </h1>
+            <button
+              type="button"
+              className="ml-2 text-gray-400 hover:text-gray-600"
+              title="Choose when you'd like to start your new position"
+            >
+              <InformationCircleIcon className="h-6 w-6" />
+            </button>
+          </div>
+        </div>
+
+        {/* Options */}
+        <div className="mb-16 space-y-4">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => {
+                setSelectedOption(option.id as StartOption);
+                if (option.id === 'custom') {
+                  setShowCalendar(true);
+                } else {
+                  setShowCalendar(false);
+                  setSelectedDate(option.id === 'two_weeks' ? twoWeeksFromNow : today);
+                }
+              }}
+              className={`relative flex w-full items-center justify-between rounded-lg border-2 p-4 text-left transition-all hover:border-black hover:bg-gray-50 ${
+                selectedOption === option.id
+                  ? 'border-black bg-gray-50'
+                  : 'border-gray-200'
+              }`}
+            >
+              <div className="flex items-center">
+                {option.icon && (
+                  <option.icon className="mr-3 h-5 w-5 text-gray-400" />
+                )}
+                <div>
+                  <h3 className="font-medium text-gray-900">{option.title}</h3>
+                  <p className="text-sm text-gray-500">{option.description}</p>
+                </div>
+              </div>
+              {selectedOption === option.id && (
+                <CheckCircleIcon className="h-5 w-5 text-black" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Calendar Popup */}
+        {showCalendar && (
+          <div className="mb-8 rounded-lg border-2 border-gray-200 bg-white p-4">
+            <h4 className="mb-4 font-medium text-gray-900">
+              Select your preferred start date
+            </h4>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date: Date | null) => date && setSelectedDate(date)}
+              minDate={today}
+              inline
+              calendarClassName="!font-sans"
+            />
+          </div>
+        )}
+
+        {/* Navigation Buttons */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+          >
+            <ArrowLeftIcon className="mr-2 h-5 w-5" />
+            Back
+          </button>
+          <button
+            onClick={() => router.push('/onboarding/pricing')}
+            disabled={!selectedOption || (selectedOption === 'custom' && !selectedDate)}
+            className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

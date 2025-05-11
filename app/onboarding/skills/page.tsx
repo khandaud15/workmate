@@ -134,7 +134,7 @@ export default function SkillsSelection() {
             Back
           </button>
           <button
-            onClick={() => router.push('/onboarding/next-step')}
+            onClick={() => router.push('/onboarding/location')}
             disabled={selectedSkills.length < 3}
             className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300"
           >
