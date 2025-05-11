@@ -160,7 +160,7 @@ export default function JobTitles() {
             Back
           </button>
           <button
-            onClick={() => router.push('/onboarding/next-step')}
+            onClick={() => router.push('/onboarding/salary')}
             className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
             disabled={selectedTitles.length === 0}
           >
