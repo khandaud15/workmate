@@ -144,22 +144,22 @@ export default function Header() {
               {/* Profile/Auth Icon */}
               {session ? (
                 <button
-                  onClick={() => signOut({ callbackUrl: '/' })}
+                  onClick={() => router.push('/signup')}
                   className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
-                  aria-label="Sign out"
+                  aria-label="Sign in"
                 >
                   <svg
-                    className="w-6 h-6 text-white"
+                    className="w-6 h-6 md:w-5 md:h-5"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    stroke="currentColor"
+                    stroke="white"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
                 </button>

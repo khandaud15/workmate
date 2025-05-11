@@ -59,7 +59,7 @@ export default function SignUp() {
           </button>
 
           <button
-            onClick={() => signIn('github', { callbackUrl: '/dashboard', redirect: true })}
+            onClick={() => signIn('github', { callbackUrl: '/onboarding', redirect: true })}
             className="flex w-full items-center justify-center gap-3 rounded-[8px] border border-[#333] bg-transparent px-4 py-3 text-[15px] font-medium text-white hover:bg-white/5"
           >
             <svg className="h-5 w-5" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
