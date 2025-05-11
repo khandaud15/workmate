@@ -140,7 +140,7 @@ export default function Onboarding() {
         <div className="flex flex-col items-end space-y-2 md:space-y-4 mb-8">
           <Link
             href="/onboarding/resume"
-            className="bg-[#4F46E5] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#4338CA] transition-colors"
+            className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors inline-block"
           >
             Next
           </Link>

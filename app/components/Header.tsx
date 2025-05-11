@@ -123,7 +123,7 @@ export default function Header() {
                 ) : (
                   <div className="flex items-center space-x-4">
                     <Link 
-                      href="/signin" 
+                      href="/signup" 
                       className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[20px] md:text-[13px]"
                     >
                       Log in
