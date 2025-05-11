@@ -25,7 +25,7 @@ export default function Onboarding() {
               <h3 className="text-[#111827] font-semibold mb-1">Upload your resume.</h3>
               <p className="text-[#6B7280] text-sm">Help us understand your experience.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[16/9] md:aspect-[4/3] max-h-[200px] md:max-h-none">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3]">
               <div className="bg-white rounded-lg p-2 md:p-4 h-full">
                 <div className="flex items-center mb-1 md:mb-2">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
@@ -53,7 +53,7 @@ export default function Onboarding() {
               <h3 className="text-[#111827] font-semibold mb-1">Complete a quick profile.</h3>
               <p className="text-[#6B7280] text-sm">Share your preferences and career goals.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[16/9] md:aspect-[4/3] max-h-[200px] md:max-h-none">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3]">
               <div className="bg-white rounded-lg p-2 md:p-4 h-full space-y-2 md:space-y-4">
                 <div className="space-y-1">
                   <p className="text-sm text-gray-600">Desired job?</p>
@@ -92,7 +92,7 @@ export default function Onboarding() {
               <h3 className="text-[#111827] font-semibold mb-1">We find jobs and fill out applications.</h3>
               <p className="text-[#6B7280] text-sm">Sit back while we do the heavy lifting.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[16/9] md:aspect-[4/3] max-h-[200px] md:max-h-none">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3]">
               <div className="bg-white rounded-lg p-2 md:p-4 h-full">
                 <div className="flex items-center mb-2 md:mb-4">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
