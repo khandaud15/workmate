@@ -8,7 +8,7 @@ export default function Onboarding() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
       <div className="text-center pt-16 pb-12 max-w-2xl mx-auto">
-        <h1 className="text-[32px] font-bold text-[#111827] mb-2">
+        <h1 className="text-[32px] font-bold text-[#111827] mb-1 md:mb-2">
           Let&apos;s set you up for success!
         </h1>
         <p className="text-[#4B5563] text-lg">
@@ -25,9 +25,9 @@ export default function Onboarding() {
               <h3 className="text-[#111827] font-semibold mb-1">Upload your resume.</h3>
               <p className="text-[#6B7280] text-sm">Help us understand your experience.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[3/2] md:aspect-[4/3]">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[16/9] md:aspect-[4/3] max-h-[200px] md:max-h-none">
               <div className="bg-white rounded-lg p-2 md:p-4 h-full">
-                <div className="flex items-center mb-2">
+                <div className="flex items-center mb-1 md:mb-2">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
                     <span className="text-white text-xs">R</span>
                   </div>
@@ -53,8 +53,8 @@ export default function Onboarding() {
               <h3 className="text-[#111827] font-semibold mb-1">Complete a quick profile.</h3>
               <p className="text-[#6B7280] text-sm">Share your preferences and career goals.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[3/2] md:aspect-[4/3]">
-              <div className="bg-white rounded-lg p-2 md:p-4 h-full space-y-4">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[16/9] md:aspect-[4/3] max-h-[200px] md:max-h-none">
+              <div className="bg-white rounded-lg p-2 md:p-4 h-full space-y-2 md:space-y-4">
                 <div className="space-y-1">
                   <p className="text-sm text-gray-600">Desired job?</p>
                   <div className="flex items-center justify-between">
@@ -92,15 +92,15 @@ export default function Onboarding() {
               <h3 className="text-[#111827] font-semibold mb-1">We find jobs and fill out applications.</h3>
               <p className="text-[#6B7280] text-sm">Sit back while we do the heavy lifting.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[3/2] md:aspect-[4/3]">
+            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 aspect-[16/9] md:aspect-[4/3] max-h-[200px] md:max-h-none">
               <div className="bg-white rounded-lg p-2 md:p-4 h-full">
-                <div className="flex items-center mb-4">
+                <div className="flex items-center mb-2 md:mb-4">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
                     <span className="text-white text-xs">R</span>
                   </div>
                   <span className="text-sm text-gray-600">Resume.pdf</span>
                 </div>
-                <div className="text-sm text-blue-600 font-medium mb-4">15 job matches</div>
+                <div className="text-sm text-blue-600 font-medium mb-2 md:mb-4">15 job matches</div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
@@ -137,7 +137,7 @@ export default function Onboarding() {
         </div>
 
         {/* Next button and terms */}
-        <div className="flex flex-col items-end space-y-4 mb-8">
+        <div className="flex flex-col items-end space-y-2 md:space-y-4 mb-8">
           <Link
             href="/onboarding/resume"
             className="bg-[#4F46E5] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#4338CA] transition-colors"
