@@ -18,7 +18,7 @@ export default function Onboarding() {
 
       {/* Main content */}
       <div className="flex-grow px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6 mb-8">
           {/* Step 1 */}
           <div className="relative">
             <div className="mb-3 text-center">
