@@ -1,18 +1,24 @@
 'use client';
 
+import React from 'react';
 import { ArrowLeftIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function ResumeUpload() {
   const router = useRouter();
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = React.useState<'idle' | 'uploading' | 'success'>('idle');
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Handle file upload logic here
     const file = e.target.files?.[0];
     if (file) {
-      // TODO: Implement file upload logic
-      console.log('File selected:', file.name);
+      setSelectedFile(file);
+      setUploadStatus('uploading');
+      // Simulate upload process
+      setTimeout(() => {
+        setUploadStatus('success');
+      }, 1000);
     }
   };
 
@@ -35,15 +41,43 @@ export default function ResumeUpload() {
         <div className="mb-12">
           <label
             htmlFor="resume-upload"
-            className="flex cursor-pointer flex-col items-center rounded-xl border-2 border-gray-200 bg-white p-8 transition-colors hover:border-black"
+            className={`flex cursor-pointer flex-col items-center rounded-xl border-2 ${
+              uploadStatus === 'success'
+                ? 'border-green-500 bg-green-50'
+                : uploadStatus === 'uploading'
+                ? 'border-gray-300 bg-gray-50'
+                : 'border-gray-200 bg-white hover:border-black'
+            } p-8 transition-all`}
           >
-            <div className="mb-4 rounded-full bg-green-100 p-4">
-              <ArrowUpTrayIcon className="h-8 w-8 text-green-600" />
+            <div className={`mb-4 rounded-full p-4 ${
+              uploadStatus === 'success'
+                ? 'bg-green-100'
+                : uploadStatus === 'uploading'
+                ? 'bg-gray-100'
+                : 'bg-green-100'
+            }`}>
+              {uploadStatus === 'success' ? (
+                <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : uploadStatus === 'uploading' ? (
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-gray-600" />
+              ) : (
+                <ArrowUpTrayIcon className="h-8 w-8 text-green-600" />
+              )}
             </div>
             <h3 className="mb-2 text-xl font-bold text-gray-900">
-              Upload your resume
+              {uploadStatus === 'success'
+                ? 'Resume uploaded!'
+                : uploadStatus === 'uploading'
+                ? 'Uploading...'
+                : 'Upload your resume'}
             </h3>
-            <p className="text-gray-600">We'll auto-fill your answers.</p>
+            {selectedFile ? (
+              <p className="text-gray-600">{selectedFile.name}</p>
+            ) : (
+              <p className="text-gray-600">We'll auto-fill your answers.</p>
+            )}
             <input
               type="file"
               id="resume-upload"
@@ -64,7 +98,8 @@ export default function ResumeUpload() {
             Back
           </button>
           <button
-            onClick={() => router.push('/onboarding/next-step')}
+            onClick={() => router.push('/onboarding/job-titles')}
+            disabled={uploadStatus !== 'success'}
             className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
           >
             Next
