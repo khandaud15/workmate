@@ -117,19 +117,19 @@ export default function PricingPage() {
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid gap-8 lg:grid-cols-2">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-[400px_1fr]">
           {/* Left Panel - Plan Selection */}
           <div className="space-y-4">
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative w-full overflow-hidden rounded-lg border-2 transition-all ${selectedPlan === plan.id ? 'border-black' : 'border-gray-200'}`}
+                className={`relative w-full overflow-hidden rounded-2xl border-2 transition-all ${selectedPlan === plan.id ? 'border-black' : 'border-gray-200'}`}
               >
                 {/* Header with checkbox */}
                 <button
                   onClick={() => setSelectedPlan(plan.id === selectedPlan ? null : plan.id)}
-                  className={`flex w-full items-center justify-between p-4 hover:bg-gray-50 ${selectedPlan === plan.id ? 'bg-gray-50' : ''}`}
+                  className={`flex w-full items-center justify-between p-4 hover:bg-gray-50 rounded-t-2xl ${selectedPlan === plan.id ? 'bg-gray-50' : ''}`}
                 >
                   <div className="flex items-center">
                     <div
@@ -182,17 +182,22 @@ export default function PricingPage() {
           </div>
 
           {/* Right Panel - Features */}
-          <div className="rounded-lg bg-gray-50 p-8">
+          <div className="transform rounded-2xl bg-white p-8 shadow-2xl ring-1 ring-black/5 transition-all hover:scale-[1.01] hover:shadow-2xl">
             <h2 className="mb-6 text-xl font-semibold text-gray-900">
               All subscription features
             </h2>
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="relative grid gap-6 sm:grid-cols-3">
               {features.map((feature) => (
-                <div key={feature.title} className="flex items-start">
-                  <feature.icon className="mr-3 h-6 w-6 text-blue-500" />
+                <div
+                  key={feature.title}
+                  className="group flex items-start rounded-xl p-3 transition-colors hover:bg-gray-50"
+                >
+                  <div className="shrink-0">
+                    <feature.icon className="mr-3 h-6 w-6 text-black transition-transform group-hover:scale-110" />
+                  </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{feature.title}</h3>
-                    <p className="text-sm text-gray-500">{feature.description}</p>
+                    <h3 className="font-medium text-gray-900 group-hover:text-black">{feature.title}</h3>
+                    <p className="text-sm text-gray-500 group-hover:text-gray-600">{feature.description}</p>
                   </div>
                 </div>
               ))}
