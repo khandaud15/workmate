@@ -3,17 +3,20 @@
 // Updated mobile menu icons - May 10, 2025
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState, useId } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const searchId = useId();
+
+  const isOnboarding = pathname?.startsWith('/onboarding');
 
   return (
     <header className="fixed w-full top-0 z-[9999] bg-white">
@@ -29,7 +32,7 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
-              <div className="flex items-center space-x-8">
+              {!isOnboarding && <div className="flex items-center space-x-8">
                 <div className="relative group">
                   <button 
                     type="button"
@@ -76,10 +79,10 @@ export default function Header() {
                 >
                   Copilot
                 </Link>
-              </div>
+              </div>}
 
               {/* Search Bar */}
-              <div className="relative mx-4 w-64">
+              {!isOnboarding && <div className="relative mx-4 w-64">
                 <div className="relative">
                   <label htmlFor={searchId} className="sr-only">Search jobs</label>
                   <svg
@@ -106,10 +109,10 @@ export default function Header() {
                     suppressHydrationWarning
                   />
                 </div>
-              </div>
+              </div>}
 
               {/* Auth Buttons */}
-              <div className="hidden md:flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-4 ml-auto">
                 {session ? (
                   <div className="flex items-center space-x-4">
                     <span className="text-gray-700">Hello, {session.user?.name}</span>
@@ -120,7 +123,7 @@ export default function Header() {
                       Sign Out
                     </button>
                   </div>
-                ) : (
+                ) : !isOnboarding && (
                   <div className="flex items-center space-x-4">
                     <Link 
                       href="/signup" 
@@ -141,91 +144,97 @@ export default function Header() {
 
             {/* Mobile icons */}
             <div className="md:hidden flex items-center -mr-2">
-              {/* Profile/Auth Icon */}
-              {session ? (
-                <button
-                  onClick={() => router.push('/signup')}
-                  className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
-                  aria-label="Sign in"
-                >
-                  <svg
-                    className="w-6 h-6 md:w-5 md:h-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="white"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </button>
-              ) : (
+              {!isOnboarding && (
                 <>
+                  {session ? (
+                    <button
+                      onClick={() => router.push('/signup')}
+                      className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
+                      aria-label="Profile"
+                    >
+                      <svg
+                        className="w-6 h-6 md:w-5 md:h-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="white"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => router.push('/signup')}
+                      className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
+                      aria-label="Sign in"
+                    >
+                      <svg
+                        className="w-6 h-6 md:w-5 md:h-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="white"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                    </button>
+                  )}
                   <button
-                    onClick={() => router.push('/signup')}
-                    className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
-                    aria-label="Sign in"
+                    type="button"
+                    className="md:hidden p-2 text-gray-700"
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    aria-expanded={isMobileMenuOpen}
+                    aria-label="Toggle mobile menu"
                   >
                     <svg
-                      className="w-6 h-6 md:w-5 md:h-5"
-                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
                       fill="none"
                       viewBox="0 0 24 24"
-                      stroke="white"
+                      stroke="currentColor"
+                      aria-hidden="true"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
+                      {isMobileMenuOpen ? (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      ) : (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 6h16M4 12h16M4 18h16"
+                        />
+                      )}
                     </svg>
                   </button>
-
                 </>
               )}
-
-              {/* Mobile Menu */}
-              <button
-                type="button"
-                className="md:hidden p-2 text-gray-700"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                aria-expanded={isMobileMenuOpen}
-                aria-label="Toggle mobile menu"
-              >
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
+              {session && isOnboarding && (
+                <button
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
                 >
-                  {isMobileMenuOpen ? (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  ) : (
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  )}
-                </svg>
-              </button>
+                  Sign Out
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Mobile Navigation */}
-          {isMobileMenuOpen && (
+            {/* Mobile Navigation */}
+          {isMobileMenuOpen && !isOnboarding && (
             <div className="md:hidden bg-white fixed inset-0 z-50 px-6">
               {/* Top Bar */}
               <div className="flex justify-between items-center py-8 border-b border-gray-100">
