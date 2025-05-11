@@ -31,7 +31,10 @@ export default function SignUp() {
         <div className="space-y-6">
           {/* Social Sign Up Buttons */}
           <button
-            onClick={() => signIn('google', { callbackUrl: '/dashboard', redirect: true })}
+            onClick={() => signIn('google', { 
+              callbackUrl: '/onboarding',
+              redirect: true
+            })}
             className="flex w-full items-center justify-center gap-3 rounded-[8px] border border-[#333] bg-transparent px-4 py-3 text-[15px] font-medium text-white hover:bg-white/5"
           >
             <svg className="h-5 w-5" aria-hidden="true" viewBox="0 0 24 24">

@@ -45,18 +45,21 @@ const handler = NextAuth({
   pages: {
     signIn: '/signup',
     signOut: '/',
-    newUser: '/signup'
+    error: '/error'
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Always redirect to dashboard after successful sign in
-      // Always redirect to dashboard after sign in
-      if (url.includes('/signup')) {
-        return `${baseUrl}/dashboard`
+      // Redirect to onboarding after successful authentication
+      if (url.startsWith(baseUrl + '/api/auth/callback')) {
+        return '/onboarding'
+      }
+      // Handle direct onboarding redirect
+      if (url === '/onboarding') {
+        return '/onboarding'
       }
       // Allow relative URLs
       if (url.startsWith("/")) {
-        return `${baseUrl}${url}`
+        return url
       }
       // Allow same-origin URLs
       if (new URL(url).origin === baseUrl) {
