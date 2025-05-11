@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 // Function to get the actual running port, regardless of NEXTAUTH_URL setting
 const getCurrentPort = () => {
@@ -41,6 +42,36 @@ const handler = NextAuth({
       clientId: process.env.GITHUB_CLIENT_ID || "",
       clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
     }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        try {
+          // Here you would typically:
+          // 1. Check if user exists
+          // 2. Verify password
+          // 3. Return user data or null
+          
+          // For now, we'll create a simple user object
+          // In a real app, you'd want to check against your database
+          return {
+            id: credentials.email,
+            email: credentials.email,
+            name: credentials.email.split('@')[0]
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          return null;
+        }
+      }
+    })
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {

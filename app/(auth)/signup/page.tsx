@@ -10,9 +10,29 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
 
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
+    setError('');
+
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false
+      });
+
+      if (result?.error) {
+        setError('Invalid email or password');
+        return;
+      }
+
+      // Redirect to onboarding
+      window.location.href = '/onboarding';
+    } catch (error) {
+      setError('Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -138,11 +158,17 @@ export default function SignUp() {
               </label>
             </div>
 
+            {error && (
+              <div className="text-red-500 text-[13px] mt-2">
+                {error}
+              </div>
+            )}
+
             <div>
               <button
                 type="submit"
                 disabled={!agreed}
-                className="mt-2 w-full rounded-[8px] bg-[#FFFFFF] text-black px-4 py-3 text-[15px] font-medium hover:opacity-90"
+                className="mt-2 w-full rounded-[8px] bg-[#FFFFFF] text-black px-4 py-3 text-[15px] font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Sign up
               </button>
