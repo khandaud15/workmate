@@ -21,7 +21,7 @@ export default function Onboarding() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6 mb-8">
           {/* Step 1 */}
           <div className="relative">
-            <div className="mb-3 text-center">
+            <div className="mb-6 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">Upload your resume.</h3>
               <p className="text-[#6B7280] text-sm">Help us understand your experience.</p>
             </div>
@@ -49,7 +49,7 @@ export default function Onboarding() {
 
           {/* Step 2 */}
           <div className="relative">
-            <div className="mb-3 text-center">
+            <div className="mb-6 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">Complete a quick profile.</h3>
               <p className="text-[#6B7280] text-sm">Share your preferences and career goals.</p>
             </div>
@@ -88,7 +88,7 @@ export default function Onboarding() {
 
           {/* Step 3 */}
           <div className="relative">
-            <div className="mb-3 text-center">
+            <div className="mb-6 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">We find jobs and fill out applications.</h3>
               <p className="text-[#6B7280] text-sm">Sit back while we do the heavy lifting.</p>
             </div>
