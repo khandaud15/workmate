@@ -84,7 +84,7 @@ export default function SalaryPreference() {
             Skip for now
           </Link>
           <button
-            onClick={() => router.push('/onboarding/next-step')}
+            onClick={() => router.push('/onboarding/skills')}
             className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
           >
             Next
