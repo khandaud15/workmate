@@ -57,6 +57,21 @@ const plans = [
     ],
     summary: '$65.70 up front and save 63%',
     recommended: false
+  },
+  {
+    id: 'free',
+    title: 'Skip Payment',
+    price: 'Free',
+    period: '',
+    features: [
+      'Up to 3 job applications per day',
+      'Single resume profile',
+      'Basic job matching',
+      'Community support',
+      'Limited access to features'
+    ],
+    summary: 'Basic access with core features',
+    recommended: false
   }
 ];
 

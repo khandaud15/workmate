@@ -60,6 +60,20 @@ const plans = [
       'Analytics dashboard'
     ],
     summary: 'For professionals seeking the ultimate job search tool.'
+  },
+  {
+    id: 'free',
+    title: 'Skip Payment',
+    price: 'Free',
+    period: '',
+    features: [
+      'Up to 3 job applications per day',
+      'Single resume profile',
+      'Basic job matching',
+      'Community support',
+      'Limited access to features'
+    ],
+    summary: 'Basic access with core features.'
   }
 ];
 
@@ -107,6 +121,17 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="mx-auto max-w-7xl px-6 py-8 text-center lg:px-8">
+        <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+          Land Jobs Faster. Stay Organized Effortlessly.
+        </h1>
+        <p className="mx-auto max-w-2xl text-lg text-gray-600">
+          From auto-applying to interviews to syncing your calendar, Workmate keeps every part of your job journey on track.
+        </p>
+      </div>
+
+      {/* Main Content */}
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[400px_1fr]">
           {/* Left Panel - Plan Selection */}
