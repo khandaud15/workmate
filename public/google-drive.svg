@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <polygon fill="#4285F4" points="8 3 16 3 24 16 16 16"/>
+        <polygon fill="#34A853" points="8 3 0 16 4 23 12 10"/>
+        <polygon fill="#FBBC05" points="16 16 24 16 20 23 12 23"/>
+    </g>
+</svg>

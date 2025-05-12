@@ -6,7 +6,8 @@ import {
   ArrowLeftIcon,
   InformationCircleIcon,
   CalendarIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ChevronRightIcon
 } from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import {
@@ -218,13 +219,23 @@ export default function PricingPage() {
               ))}
             </div>
 
-            <button
-              onClick={() => router.push('/onboarding/next-step')}
-              disabled={!selectedPlan}
-              className="mt-8 w-full rounded-lg bg-black px-8 py-3 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300"
-            >
-              Next
-            </button>
+            {/* Next Button */}
+            <div className="mt-8 flex justify-end">
+              <button
+                onClick={() => {
+                  if (selectedPlan) {
+                    // Save the selected plan (you might want to use a state management solution)
+                    localStorage.setItem('selectedPlan', selectedPlan);
+                    router.push('/onboarding/key-questions');
+                  }
+                }}
+                disabled={!selectedPlan}
+                className="mt-8 w-full rounded-lg bg-black px-8 py-3 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300"
+              >
+                Next
+                <ChevronRightIcon className="ml-2 h-4 w-4 inline-block" />
+              </button>
+            </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
