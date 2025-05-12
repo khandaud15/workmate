@@ -21,11 +21,11 @@ html, body {
 /* Safari-specific auth page fixes */
 @supports (-webkit-touch-callout: none) {
   html.auth-page {
-    background: #000000 !important;
+    background: linear-gradient(135deg, #111827, #000000) !important;
   }
 
   html.auth-page body {
-    background: #000000 !important;
+    background: transparent !important;
   }
 
   html.auth-page::before {
@@ -46,7 +46,16 @@ html, body {
     left: -200%;
     right: -200%;
     bottom: -200%;
-    background: linear-gradient(to bottom right, #111827, #000000);
+    background: linear-gradient(135deg, #111827, #000000);
     z-index: -2;
   }
+}
+
+/* Fix autofill flash on Safari */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  box-shadow: 0 0 0 1000px #0C0F17 inset !important;
+  -webkit-text-fill-color: white !important;
+  caret-color: white !important;
 }
