@@ -18,46 +18,35 @@ html, body {
   color: black;
 }
 
-/* Auth pages dark theme */
-.auth-layout {
-  background: #000000;
-  color: white;
-  min-height: 100vh;
-  position: relative;
-  isolation: isolate;
-}
-
-/* Safari overscroll fix */
+/* Safari-specific auth page fixes */
 @supports (-webkit-touch-callout: none) {
-  .auth-page {
+  html.auth-page {
     background: #000000 !important;
   }
 
-  .auth-page body {
+  html.auth-page body {
     background: #000000 !important;
   }
 
-  .auth-layout {
-    min-height: -webkit-fill-available;
-  }
-
-  .auth-layout::before {
+  html.auth-page::before {
     content: '';
     position: fixed;
-    inset: -100vh -100vw;
-    width: 300vw;
-    height: 300vh;
+    top: -200%;
+    left: -200%;
+    right: -200%;
+    bottom: -200%;
     background: #000000;
-    z-index: -2;
+    z-index: -3;
   }
 
-  .auth-layout::after {
+  html.auth-page::after {
     content: '';
     position: fixed;
-    inset: -100vh -100vw;
-    width: 300vw;
-    height: 300vh;
+    top: -200%;
+    left: -200%;
+    right: -200%;
+    bottom: -200%;
     background: linear-gradient(to bottom right, #111827, #000000);
-    z-index: -1;
+    z-index: -2;
   }
 }
