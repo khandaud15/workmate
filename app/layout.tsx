@@ -25,22 +25,27 @@ export const metadata: Metadata = {
   },
 };
 
+import { headers } from 'next/headers';
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // No need to detect auth pages here since we're using a separate auth layout
+  // Get pathname from headers
+  const headersList = headers();
+  const pathname = headersList.get('x-invoke-path') || '';
+  const isAuth = pathname.includes('/signup') || pathname.includes('/signin');
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-white`} suppressHydrationWarning>
         <Providers>
-          <Header />
-          <div className="flex-grow pt-24">
+          {!isAuth && <Header />}
+          <div className={`flex-grow ${!isAuth ? 'pt-24' : ''}`}>
             {children}
           </div>
-          <Footer />
+          {!isAuth && <Footer />}
         </Providers>
       </body>
     </html>

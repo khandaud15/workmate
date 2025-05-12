@@ -68,7 +68,7 @@ const footerLinks: FooterLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1a1a1a] mt-16" aria-labelledby="footer-heading">
+    <footer className="bg-gradient-to-br from-gray-900 to-black mt-16" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
@@ -133,7 +133,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24">
+        <div className="mt-16 border-t border-gray-800 pt-8 sm:mt-20 lg:mt-24">
           <p className="text-xs leading-5 text-gray-400">
             &copy; {new Date().getFullYear()} Talexus. All rights reserved.
           </p>

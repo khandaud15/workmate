@@ -20,6 +20,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(signupUrl)
   }
 
+  const response = NextResponse.next()
+  response.headers.set('x-invoke-path', path)
+  return response
+
   // If the user is authenticated and trying to access auth pages, redirect to dashboard
   if (token && (path === '/signup' || path === '/signin')) {
     const dashboardUrl = new URL('/dashboard', request.url)
