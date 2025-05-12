@@ -177,7 +177,7 @@ export default function SignUp() {
 
           <p className="text-center text-[13px] text-gray-400">
             Already have an account?{' '}
-            <Link href="/signin" className="text-white hover:text-[#4292FF]">
+            <Link href="/signin" className="text-[#4292FF] hover:text-[#237DFF] transition-colors">
               Sign In
             </Link>
           </p>
