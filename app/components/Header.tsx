@@ -82,7 +82,7 @@ export default function Header() {
               </div>}
 
               {/* Search Bar */}
-              {!isRestrictedPath && <div className="relative mx-4 w-64">
+              {!isRestrictedPath && <div className="relative ml-auto mr-8 w-64">
                 <div className="relative">
                   <label htmlFor={searchId} className="sr-only">Search jobs</label>
                   <svg
