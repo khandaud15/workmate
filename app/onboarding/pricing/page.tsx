@@ -226,7 +226,7 @@ export default function PricingPage() {
                   if (selectedPlan) {
                     // Save the selected plan (you might want to use a state management solution)
                     localStorage.setItem('selectedPlan', selectedPlan);
-                    router.push('/onboarding/key-questions');
+                    router.push('/profile/questions');
                   }
                 }}
                 disabled={!selectedPlan}

@@ -16,7 +16,7 @@ export default function Header() {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const searchId = useId();
 
-  const isOnboarding = pathname?.startsWith('/onboarding');
+  const isRestrictedPath = pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
 
   return (
     <header className="fixed w-full top-0 z-[9999] bg-white">
@@ -32,7 +32,7 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
-              {!isOnboarding && <div className="flex items-center space-x-8">
+              {!isRestrictedPath && <div className="flex items-center space-x-8">
                 <div className="relative group">
                   <button 
                     type="button"
@@ -82,7 +82,7 @@ export default function Header() {
               </div>}
 
               {/* Search Bar */}
-              {!isOnboarding && <div className="relative mx-4 w-64">
+              {!isRestrictedPath && <div className="relative mx-4 w-64">
                 <div className="relative">
                   <label htmlFor={searchId} className="sr-only">Search jobs</label>
                   <svg
@@ -123,7 +123,7 @@ export default function Header() {
                       Sign Out
                     </button>
                   </div>
-                ) : !isOnboarding && (
+                ) : !isRestrictedPath && (
                   <div className="flex items-center space-x-4">
                     <Link 
                       href="/signup" 
@@ -144,7 +144,7 @@ export default function Header() {
 
             {/* Mobile icons */}
             <div className="md:hidden flex items-center -mr-2">
-              {!isOnboarding && (
+              {!isRestrictedPath && (
                 <>
                   {session ? (
                     <button
@@ -222,7 +222,7 @@ export default function Header() {
                   </button>
                 </>
               )}
-              {session && isOnboarding && (
+              {session && isRestrictedPath && (
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
                   className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
@@ -233,8 +233,8 @@ export default function Header() {
             </div>
           </div>
 
-            {/* Mobile Navigation */}
-          {isMobileMenuOpen && !isOnboarding && (
+          {/* Mobile Navigation */}
+          {isMobileMenuOpen && !isRestrictedPath && (
             <div className="md:hidden bg-white fixed inset-0 z-50 px-6">
               {/* Top Bar */}
               <div className="flex justify-between items-center py-8 border-b border-gray-100">

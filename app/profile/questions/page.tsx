@@ -142,7 +142,7 @@ export default function KeyQuestionsPage() {
     if (isRequiredQuestionsAnswered()) {
       // Save answers and move to next step
       localStorage.setItem('keyQuestions', JSON.stringify(answers));
-      router.push('/onboarding/resume');
+      router.push('/profile/resume-upload');
     }
   };
 

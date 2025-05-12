@@ -37,13 +37,55 @@ export default function ResumeUpload() {
     }
   };
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
     setSelectedFile(file);
     setUploadStatus('uploading');
-    // Simulate upload process
-    setTimeout(() => {
+
+    try {
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Upload to our API
+      const response = await fetch('/api/resume/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const data = await response.json();
+      console.log('Upload response:', data);
+      
+      if (!data.identifier) {
+        throw new Error('No identifier received from upload');
+      }
+      
       setUploadStatus('success');
-    }, 1500);
+
+      // Store the Affinda identifier
+      console.log('Storing identifier:', data.identifier);
+      localStorage.setItem('resumeIdentifier', data.identifier);
+
+      // Redirect to scan page after a brief delay
+      setTimeout(() => {
+        router.push('/profile/scan');
+      }, 1000);
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      setUploadStatus('idle');
+      
+      // Get the error message
+      let errorMessage = 'Failed to upload resume.';
+      if (error instanceof Error) {
+        errorMessage += ' ' + error.message;
+      }
+      
+      alert(errorMessage);
+    }
   };
 
   return (
@@ -105,7 +147,7 @@ export default function ResumeUpload() {
                 {selectedFile ? (
                   <p className="text-gray-600">{selectedFile.name}</p>
                 ) : (
-                  <button className="mt-4 px-6 py-2 bg-[#7C3AED] text-white font-medium rounded-lg hover:bg-[#6D28D9] focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:ring-offset-2 transition-colors">
+                  <button className="mt-4 px-6 py-2 bg-[#4292FF] text-white font-medium rounded-lg hover:bg-[#237DFF] focus:outline-none focus:ring-2 focus:ring-[#4292FF] focus:ring-offset-2 transition-colors">
                     Browse
                   </button>
                 )}
@@ -137,15 +179,15 @@ export default function ResumeUpload() {
           <div className="flex justify-between items-center">
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 px-6 py-2.5 text-[#1E40AF] font-medium border-2 border-[#1E40AF] rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-6 py-2.5 text-black font-medium border-2 border-black rounded-lg hover:bg-gray-50 transition-colors"
             >
               <ArrowLeftIcon className="h-5 w-5" />
               Back
             </button>
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/profile/scan')}
               disabled={uploadStatus !== 'success'}
-              className="px-8 py-2.5 bg-[#1E40AF] text-white font-medium rounded-lg hover:bg-[#1E3A8A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-8 py-2.5 bg-black text-white font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>
