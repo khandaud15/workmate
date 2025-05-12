@@ -18,8 +18,7 @@ export default function AuthLayout({
   }, []);
 
   return (
-    <div className="auth-layout fixed inset-0 min-h-screen w-full bg-black overflow-y-auto">
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-900 to-black" />
+    <div className="auth-layout fixed inset-0 min-h-screen w-full overflow-y-auto bg-gradient-to-br from-[#0C111F] to-black">
       <div className="relative min-h-screen w-full">
         <div className="w-full max-w-[800px] mx-auto px-6 pt-[env(safe-area-inset-top)] pb-8">
           {children}

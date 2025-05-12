@@ -20,35 +20,22 @@ html, body {
 
 /* Safari-specific auth page fixes */
 @supports (-webkit-touch-callout: none) {
-  html.auth-page {
-    background: linear-gradient(135deg, #111827, #000000) !important;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-  }
-
-  html.auth-page body {
-    background: transparent !important;
-  }
-
+  html.auth-page,
+  html.auth-page body,
   .auth-layout {
     background: transparent !important;
   }
 
-  .auth-layout > div:first-child {
-    background: linear-gradient(135deg, #111827, #000000) !important;
-  }
-
-  /* Extend background beyond viewport for overscroll */
   @media (max-width: 768px) {
-    html.auth-page::before {
+    .auth-layout::before {
       content: '';
       position: fixed;
       top: -100vh;
       left: -100vw;
       right: -100vw;
       bottom: -100vh;
-      background: linear-gradient(135deg, #111827, #000000);
-      z-index: -2;
+      background: linear-gradient(to bottom right, #0C111F, #000000);
+      z-index: -1;
     }
   }
 }
