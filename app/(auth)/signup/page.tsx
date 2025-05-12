@@ -167,8 +167,8 @@ export default function SignUp() {
             <div>
               <button
                 type="submit"
-                disabled={!agreed}
                 className="mt-2 w-full rounded-[8px] bg-[#FFFFFF] text-black px-4 py-3 text-[15px] font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!agreed}
               >
                 Sign up
               </button>
