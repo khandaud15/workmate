@@ -1,100 +1,94 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
 
 type Question = {
   id: string;
-  question: string;
-  required: boolean;
+  text: string;
   options: string[];
+  required?: boolean;
 };
 
 const questions: Question[] = [
   {
     id: 'workAuth',
-    question: 'Are you authorized to work in the United States?',
+    text: 'Are you authorized to work in the United States?',
+    options: ['Yes', 'No'],
     required: true,
-    options: ['Yes', 'No']
   },
   {
     id: 'sponsorship',
-    question: 'Will you now or in the future require sponsorship to work in the United States?',
+    text: 'Will you now or in the future require sponsorship to work in the United States?',
+    options: ['Yes', 'No'],
     required: true,
-    options: ['Yes', 'No']
   },
   {
     id: 'felony',
-    question: 'Have you ever been convicted of a felony?',
+    text: 'Have you ever been convicted of a felony?',
+    options: ['Yes', 'No'],
     required: true,
-    options: ['Yes', 'No']
   },
   {
     id: 'startDate',
-    question: 'When can you start a new job?',
+    text: 'When can you start a new job?',
+    options: ['Immediately', '2 weeks', '1 month', 'More than 1 month'],
     required: true,
-    options: ['Immediately', '2 weeks', '1 month', 'More than 1 month']
   },
   {
     id: 'screening',
-    question: 'Are you willing to conduct any sort of pre-employment screening that is required?',
-    required: false,
-    options: ['Yes', 'No', 'Prefer not to say']
+    text: 'Are you willing to conduct any sort of pre-employment screening that is required?',
+    options: ['Yes', 'No', 'Prefer not to say'],
   },
   {
     id: 'relocation',
-    question: 'Are you willing to relocate for a job?',
-    required: false,
-    options: ['Yes', 'No', 'Maybe']
+    text: 'Are you willing to relocate for a job?',
+    options: ['Yes', 'No', 'Maybe'],
   },
   {
     id: 'travel',
-    question: 'Are you willing to travel for work?',
-    required: false,
-    options: ['Yes', 'No', 'Maybe']
+    text: 'Are you willing to travel for work?',
+    options: ['Yes', 'No', 'Maybe'],
   },
   {
     id: 'workType',
-    question: 'What type of work are you looking for?',
+    text: 'What type of work are you looking for?',
+    options: ['Full-time', 'Part-time', 'Contract', 'Internship'],
     required: true,
-    options: ['Full-time', 'Part-time', 'Contract', 'Internship']
   },
   {
     id: 'workLocation',
-    question: 'What is your preferred work location?',
+    text: 'What is your preferred work location?',
+    options: ['On-site', 'Hybrid', 'Remote'],
     required: true,
-    options: ['On-site', 'Hybrid', 'Remote']
   },
   {
     id: 'salary',
-    question: 'What is your expected salary range?',
+    text: 'What is your expected salary range?',
+    options: ['$0-50k', '$50-75k', '$75-100k', '$100k+'],
     required: true,
-    options: ['$0-50k', '$50-75k', '$75-100k', '$100k+']
   },
   {
     id: 'experience',
-    question: 'How many years of relevant experience do you have?',
+    text: 'How many years of relevant experience do you have?',
+    options: ['0-1 years', '1-3 years', '3-5 years', '5+ years'],
     required: true,
-    options: ['0-1 years', '1-3 years', '3-5 years', '5+ years']
   },
   {
     id: 'gender',
-    question: 'What gender do you identify as?',
-    required: false,
-    options: ['Male', 'Female', 'Non-binary', 'Prefer not to say']
+    text: 'What gender do you identify as?',
+    options: ['Male', 'Female', 'Non-binary', 'Prefer not to say'],
   },
   {
     id: 'pronouns',
-    question: 'What are your desired pronouns?',
-    required: false,
-    options: ['He/Him', 'She/Her', 'They/Them', 'Prefer not to say']
+    text: 'What are your desired pronouns?',
+    options: ['He/Him', 'She/Her', 'They/Them', 'Prefer not to say'],
   },
   {
     id: 'ethnicity',
-    question: 'Which race or ethnicity best describes you?',
-    required: false,
+    text: 'Which race or ethnicity best describes you?',
     options: [
       'Asian',
       'Black or African American',
@@ -103,21 +97,19 @@ const questions: Question[] = [
       'Pacific Islander',
       'White',
       'Two or more races',
-      'Prefer not to say'
-    ]
+      'Prefer not to say',
+    ],
   },
   {
     id: 'disability',
-    question: 'Do you have a disability?',
-    required: false,
-    options: ['Yes', 'No', 'Prefer not to say']
+    text: 'Do you have a disability?',
+    options: ['Yes', 'No', 'Prefer not to say'],
   },
   {
     id: 'veteran',
-    question: 'Are you a veteran?',
-    required: false,
-    options: ['Yes', 'No', 'Prefer not to say']
-  }
+    text: 'Are you a veteran?',
+    options: ['Yes', 'No', 'Prefer not to say'],
+  },
 ];
 
 export default function KeyQuestionsPage() {
@@ -125,15 +117,23 @@ export default function KeyQuestionsPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, boolean>>({});
 
+  useEffect(() => {
+    // Load saved answers from localStorage on component mount
+    const savedAnswers = localStorage.getItem('onboardingAnswers');
+    if (savedAnswers) {
+      setAnswers(JSON.parse(savedAnswers));
+    }
+  }, []);
+
   const isRequiredQuestionsAnswered = () => {
     return questions
-      .filter(q => q.required)
-      .every(q => answers[q.id] && answers[q.id].length > 0);
+      .filter((q) => q.required)
+      .every((q) => answers[q.id] && answers[q.id].length > 0);
   };
 
   const handleSubmit = () => {
     const newErrors: Record<string, boolean> = {};
-    questions.forEach(question => {
+    questions.forEach((question) => {
       if (question.required && !answers[question.id]) {
         newErrors[question.id] = true;
       }
@@ -216,7 +216,7 @@ export default function KeyQuestionsPage() {
                 htmlFor={question.id}
                 className="block text-sm font-medium text-[#1a2b4b]"
               >
-                {question.question}
+                {question.text}
                 {question.required && (
                   <span className="ml-1 text-red-500">*</span>
                 )}
@@ -226,10 +226,13 @@ export default function KeyQuestionsPage() {
                   id={question.id}
                   value={answers[question.id] || ''}
                   onChange={(e) => {
-                    setAnswers((prev) => ({
-                      ...prev,
-                      [question.id]: e.target.value,
-                    }));
+                    const value = e.target.value;
+                    const newAnswers = {
+                      ...answers,
+                      [question.id]: value,
+                    };
+                    setAnswers(newAnswers);
+                    localStorage.setItem('onboardingAnswers', JSON.stringify(newAnswers));
                     if (errors[question.id]) {
                       setErrors((prev) => ({
                         ...prev,
