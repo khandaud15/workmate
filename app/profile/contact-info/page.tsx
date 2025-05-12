@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckIcon } from '@heroicons/react/24/solid';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 type ContactInfo = {
   firstName: string;
@@ -53,6 +55,20 @@ export default function ContactInfoForm() {
     linkedIn: '',
     phone: '',
     email: '',
+    smsOptIn: false,
+  });
+
+  const [touched, setTouched] = useState<Record<keyof ContactInfo, boolean>>({
+    firstName: false,
+    lastName: false,
+    dateOfBirth: false,
+    address: false,
+    city: false,
+    postalCode: false,
+    state: false,
+    linkedIn: false,
+    phone: false,
+    email: false,
     smsOptIn: false,
   });
 
@@ -141,18 +157,16 @@ export default function ContactInfoForm() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    const inputValue = type === 'checkbox' ? checked : value;
-    
-    setFormData(prev => ({
-      ...prev,
-      [name]: inputValue
-    }));
+    const { name, value } = e.target;
+    if (e.target.type === 'checkbox') {
+      setFormData({ ...formData, [name]: e.target.checked });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
 
-    setValidation(prev => ({
-      ...prev,
-      [name]: validateField(name as keyof ContactInfo, inputValue)
-    }));
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Do nothing for now to ensure smooth typing
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -182,6 +196,48 @@ export default function ContactInfoForm() {
     router.push('/profile/next-step');
   };
 
+  const DateField = ({ 
+    label,
+    name,
+    required = true
+  }: {
+    label: string;
+    name: keyof ContactInfo;
+    required?: boolean;
+  }) => {
+    const [date, setDate] = useState<Date | null>(
+      formData[name] ? new Date(formData[name] as string) : null
+    );
+
+    return (
+      <div className="relative mb-2">
+        <label className="block text-sm font-semibold text-gray-700 mb-0.5">
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+        <div className="relative">
+          <DatePicker
+            selected={date}
+            onChange={(date: Date | null) => {
+              setDate(date);
+              setFormData(prev => ({ ...prev, [name]: date ? date.toISOString().split('T')[0] : '' }));
+            }}
+            dateFormat="MMMM d, yyyy"
+            showMonthDropdown
+            showYearDropdown
+            dropdownMode="select"
+            className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
+            placeholderText="Select date"
+            maxDate={new Date()}
+            yearDropdownItemNumber={100}
+            scrollableYearDropdown
+            calendarClassName="shadow-lg border border-gray-200 rounded-lg p-2"
+          />
+        </div>
+      </div>
+    );
+  };
+
   const InputField = ({ 
     label, 
     name, 
@@ -195,40 +251,34 @@ export default function ContactInfoForm() {
     type?: string;
     required?: boolean;
     placeholder?: string;
-  }) => (
-    <div className="relative mb-2">
-      <label className="block text-sm font-semibold text-gray-700 mb-0.5">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      <div className="relative">
-        <input
-          type={type}
-          name={name}
-          value={formData[name] as string}
-          onChange={handleInputChange}
-          className={`
-            w-full px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-1
-            transform transition-all duration-200
-            hover:shadow-md hover:-translate-y-0.5
-            ${validation[name] ? 'border-green-500 focus:ring-green-200 shadow-green-100' : 'border-gray-400 focus:ring-blue-200'}
-          `}
-          {...props}
-        />
-        {validation[name] && (
-          <CheckIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
-        )}
-      </div>
-    </div>
-  );
+  }) => {
+    const inputRef = useRef<HTMLInputElement>(null);
 
-  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-blue-200 rounded-full animate-spin border-t-blue-500"></div>
+      <div className="relative mb-2">
+        <label className="block text-sm font-semibold text-gray-700 mb-0.5">
+          {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+        <div className="relative">
+          <input
+            ref={inputRef}
+            type={type}
+            name={name}
+            defaultValue={formData[name] as string}
+            onBlur={(e) => {
+              if (inputRef.current) {
+                setFormData(prev => ({ ...prev, [name]: inputRef.current?.value || '' }));
+              }
+            }}
+            className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
+            placeholder={placeholder}
+            {...props}
+          />
+        </div>
       </div>
     );
-  }
+  };
 
   return (
     <>
@@ -273,10 +323,9 @@ export default function ContactInfoForm() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <InputField 
+            <DateField 
               label="Date of Birth" 
               name="dateOfBirth" 
-              type="date"
             />
             <InputField 
               label="Address" 
