@@ -30,7 +30,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-white`} suppressHydrationWarning>
+      <body className={`${inter.className} antialiased min-h-screen flex flex-col`} suppressHydrationWarning>
         <Providers>
           {!isAuth && <Header />}
           <div className={`flex-grow ${!isAuth ? 'pt-24' : ''}`}>
