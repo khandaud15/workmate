@@ -1,5 +1,8 @@
+'use client';
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { usePathname } from 'next/navigation';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./globals.css";
@@ -13,29 +16,17 @@ const inter = Inter({
   preload: true,
 });
 
-export const metadata: Metadata = {
-  title: "Talexus - Streamline Your Job Search",
-  description: "Automate your job applications with Talexus. Upload once, apply everywhere.",
-  icons: {
-    icon: [{ url: 'https://raw.githubusercontent.com/khandaud15/files/main/Fevicon.png', type: 'image/png' }],
-    shortcut: ['https://raw.githubusercontent.com/khandaud15/files/main/Fevicon.png'],
-    apple: [
-      { url: 'https://raw.githubusercontent.com/khandaud15/files/main/Fevicon.png', type: 'image/png' },
-    ],
-  },
-};
+// Metadata moved to metadata.ts
 
-import { headers } from 'next/headers';
+
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Get pathname from headers
-  const headersList = headers();
-  const pathname = headersList.get('x-invoke-path') || '';
-  const isAuth = pathname.includes('/signup') || pathname.includes('/signin');
+  const pathname = usePathname();
+  const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
 
   return (
     <html lang="en" suppressHydrationWarning>
