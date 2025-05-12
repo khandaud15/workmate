@@ -123,10 +123,9 @@ export default function ResumeScan() {
           setResumeData(data);
           clearInterval(pollInterval);
           
-          // Redirect to contact info form after a short delay
-          setTimeout(() => {
-            router.push('/profile/contact-info');
-          }, 1500);
+          // Save resume data and redirect immediately
+          localStorage.setItem('resumeData', JSON.stringify(data.data));
+          router.push('/profile/contact-info');
         } else {
           console.log('Resume still processing...');
           retryCount++;
@@ -163,8 +162,8 @@ export default function ResumeScan() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <main className="mx-auto max-w-3xl px-4 py-12">
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <main className="w-full max-w-md px-4 py-12">
         <div className="text-center">
           {error ? (
             <>
@@ -180,112 +179,33 @@ export default function ResumeScan() {
               </button>
             </>
           ) : (
-            <h1 className="mb-8 text-3xl font-bold text-gray-900">
-              {isReady ? 'All done!' : 'Processing your resume...'}
-            </h1>
-          )}
-
-          {/* Scanning Steps */}
-          {!error && (
-            <div className="mb-12">
-              {steps.map((step) => (
-                <div
-                  key={step.id}
-                  className="mb-4 flex items-center justify-center space-x-3"
-                >
-                  <StepIcon status={step.status} />
-                  <span
-                    className={`${
-                      step.status === 'complete'
-                        ? 'text-[#3BA17C]'
-                        : step.status === 'scanning'
-                        ? 'text-gray-900'
-                        : 'text-gray-500'
-                    }`}
+            <>
+              <h1 className="mb-8 text-3xl font-bold text-gray-900">
+                Processing your resume...
+              </h1>
+              {/* Scanning Steps */}
+              <div className="mb-12">
+                {steps.map((step) => (
+                  <div
+                    key={step.id}
+                    className="mb-4 flex items-center justify-center space-x-3"
                   >
-                    {step.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Parsed Data Display */}
-          {resumeData?.data && isReady && !error && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6 text-left shadow-sm">
-              {/* Personal Info */}
-              <div className="mb-6">
-                <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                  Personal Information
-                </h2>
-                <div className="space-y-2 text-gray-600">
-                  <p>Name: {typeof resumeData.data.name === 'object' 
-                    ? `${resumeData.data.name.first || ''} ${resumeData.data.name.last || ''}`.trim()
-                    : resumeData.data.name || 'N/A'}</p>
-                  <p>Email: {resumeData.data.email || 'N/A'}</p>
-                  <p>Phone: {resumeData.data.phone || 'N/A'}</p>
-                </div>
-              </div>
-
-              {/* Education */}
-              <div className="mb-6">
-                <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                  Education
-                </h2>
-                <div className="space-y-4">
-                  {resumeData.data.education?.map((edu, index) => (
-                    <div key={index} className="text-gray-600">
-                      <p className="font-medium">{edu.organization}</p>
-                      <p>{edu.accreditation?.education}</p>
-                      <p className="text-sm text-gray-500">
-                        {edu.dates?.completionDate}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Experience */}
-              <div className="mb-6">
-                <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                  Work Experience
-                </h2>
-                <div className="space-y-4">
-                  {resumeData.data.workExperience?.map((exp, index) => (
-                    <div key={index} className="text-gray-600">
-                      <p className="font-medium">{exp.jobTitle}</p>
-                      <p>{exp.organization}</p>
-                      <p className="text-sm text-gray-500">
-                        {exp.dates?.startDate} - {exp.dates?.endDate || 'Present'}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div>
-                <h2 className="mb-4 text-xl font-semibold text-gray-900">
-                  Skills
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {resumeData.data.skills?.map((skill, index) => (
+                    <StepIcon status={step.status} />
                     <span
-                      key={index}
-                      className="rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-600"
+                      className={`${
+                        step.status === 'complete'
+                          ? 'text-[#3BA17C]'
+                          : step.status === 'scanning'
+                          ? 'text-gray-900'
+                          : 'text-gray-500'
+                      } text-sm font-medium`}
                     >
-                      {skill.name}
+                      {step.label}
                     </span>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-4 rounded-lg bg-red-50 p-4 text-red-600">
-              {error}
-            </div>
+            </>
           )}
         </div>
       </main>

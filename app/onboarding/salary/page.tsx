@@ -78,7 +78,7 @@ export default function SalaryPreference() {
             Back
           </button>
           <Link
-            href="/onboarding/next-step"
+            href="/onboarding/skills"
             className="text-gray-500 hover:text-gray-700"
           >
             Skip for now

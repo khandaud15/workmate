@@ -24,6 +24,24 @@ type ValidationState = {
 
 export default function ContactInfoForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load resume data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('resumeData');
+    if (savedData) {
+      const resumeData = JSON.parse(savedData);
+      setFormData(prevData => ({
+        ...prevData,
+        firstName: resumeData.name?.first || '',
+        lastName: resumeData.name?.last || '',
+        email: resumeData.email || '',
+        phone: resumeData.phone || '',
+      }));
+    }
+    setIsLoading(false);
+  }, []);
+
   const [formData, setFormData] = useState<ContactInfo>({
     firstName: '',
     lastName: '',
@@ -204,6 +222,14 @@ export default function ContactInfoForm() {
     </div>
   );
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-blue-200 rounded-full animate-spin border-t-blue-500"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Mobile fixed buttons */}
@@ -230,7 +256,8 @@ export default function ContactInfoForm() {
         <div className="relative transform hover:-translate-y-0.5 transition-transform">
           <h1 className="text-3xl font-bold text-gray-900 mb-2 drop-shadow-sm">Contact Information</h1>
           <p className="text-gray-600 mb-6 text-base drop-shadow-sm">Ensure your contact details are up to date — employers may reach out anytime.</p>
-        
+        </div>
+      
         <form id="contact-form" onSubmit={handleSubmit} className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <InputField 
@@ -336,7 +363,6 @@ export default function ContactInfoForm() {
             </button>
           </div>
         </form>
-        </div>
       </div>
     </>
   );
