@@ -178,8 +178,8 @@ export default function ContactInfoForm() {
     required?: boolean;
     placeholder?: string;
   }) => (
-    <div className="relative mb-4">
-      <label className="block text-sm font-semibold text-gray-700 mb-1">
+    <div className="relative mb-2">
+      <label className="block text-sm font-semibold text-gray-700 mb-0.5">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -190,8 +190,10 @@ export default function ContactInfoForm() {
           value={formData[name] as string}
           onChange={handleInputChange}
           className={`
-            w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2
-            ${validation[name] ? 'border-green-500 focus:ring-green-200' : 'border-gray-300 focus:ring-blue-200'}
+            w-full px-3 py-1.5 border rounded-lg focus:outline-none focus:ring-1
+            transform transition-all duration-200
+            hover:shadow-md hover:-translate-y-0.5
+            ${validation[name] ? 'border-green-500 focus:ring-green-200 shadow-green-100' : 'border-gray-400 focus:ring-blue-200'}
           `}
           {...props}
         />
@@ -203,12 +205,34 @@ export default function ContactInfoForm() {
   );
 
   return (
-    <div className="w-full bg-gray-50 py-12">
-      <div className="w-[800px] mx-auto bg-white p-8 rounded-xl shadow-sm">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Contact Information</h1>
+    <>
+      {/* Mobile fixed buttons */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 shadow-lg">
+        <div className="flex justify-between max-w-[800px] mx-auto">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
+          >
+            Back
+          </button>
+          <button
+            type="submit"
+            form="contact-form"
+            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 shadow-lg"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      <div className="w-full max-w-[800px] mx-auto px-4 py-6 pb-24 md:pb-6">
+        <div className="relative transform hover:-translate-y-0.5 transition-transform">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 drop-shadow-sm">Contact Information</h1>
+          <p className="text-gray-600 mb-6 text-base drop-shadow-sm">Ensure your contact details are up to date — employers may reach out anytime.</p>
         
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
+        <form id="contact-form" onSubmit={handleSubmit} className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <InputField 
               label="First Name" 
               name="firstName" 
@@ -221,19 +245,20 @@ export default function ContactInfoForm() {
             />
           </div>
 
-          <InputField 
-            label="Date of Birth" 
-            name="dateOfBirth" 
-            type="date"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <InputField 
+              label="Date of Birth" 
+              name="dateOfBirth" 
+              type="date"
+            />
+            <InputField 
+              label="Address" 
+              name="address" 
+              placeholder="123 Main St"
+            />
+          </div>
 
-          <InputField 
-            label="Address" 
-            name="address" 
-            placeholder="123 Main St"
-          />
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <InputField 
               label="City" 
               name="city" 
@@ -244,13 +269,12 @@ export default function ContactInfoForm() {
               name="state" 
               placeholder="CA"
             />
+            <InputField 
+              label="Postal Code" 
+              name="postalCode" 
+              placeholder="94105"
+            />
           </div>
-
-          <InputField 
-            label="Postal Code" 
-            name="postalCode" 
-            placeholder="94105"
-          />
 
           <InputField 
             label="LinkedIn Profile" 
@@ -259,51 +283,61 @@ export default function ContactInfoForm() {
             required={false}
           />
 
-          <InputField 
-            label="Phone Number" 
-            name="phone" 
-            type="tel" 
-            placeholder="(555) 555-5555"
-          />
-
-          <InputField 
-            label="Email Address" 
-            name="email" 
-            type="email" 
-            placeholder="john@example.com"
-          />
-
-          <div className="flex items-center space-x-3 mt-6">
-            <input
-              type="checkbox"
-              name="smsOptIn"
-              id="smsOptIn"
-              checked={formData.smsOptIn}
-              onChange={handleInputChange}
-              className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <InputField 
+              label="Phone Number" 
+              name="phone" 
+              type="tel" 
+              placeholder="(555) 555-5555"
             />
-            <label htmlFor="smsOptIn" className="text-sm text-gray-700">
-              I agree to receive SMS alerts about my application status
-            </label>
+            <InputField 
+              label="Email Address" 
+              name="email" 
+              type="email" 
+              placeholder="john@example.com"
+            />
           </div>
 
-          <div className="flex justify-between pt-6">
+          <div className="mt-6 border-t border-gray-200 pt-6">
+            <div className="flex items-start">
+              <input
+                type="checkbox"
+                name="smsOptIn"
+                id="smsOptIn"
+                checked={formData.smsOptIn}
+                onChange={handleInputChange}
+                className="mt-1 h-5 w-5 border-[1.5px] border-gray-300 text-blue-600 focus:ring-1 focus:ring-blue-500"
+              />
+              <div className="ml-3 flex-1">
+                <p className="text-sm leading-relaxed text-gray-700">
+                  By providing your phone number and selecting the checkbox, you consent to receive new job alerts and account information via SMS text messages. Message frequency may vary based on your interactions with us. Message & data rates may apply. You can opt-out at any time by replying "STOP" to unsubscribe or contacting Customer Service. For more information, please refer to our{' '}
+                  <a href="/privacy" className="text-blue-600 underline hover:text-blue-800">Privacy Policy</a>{' '}
+                  and{' '}
+                  <a href="/terms" className="text-blue-600 underline hover:text-blue-800">Terms of Service</a>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop-only buttons */}
+          <div className="hidden md:flex justify-between pt-4">
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
             >
               Back
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+              className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 shadow-lg"
             >
-              Continue
+              Next
             </button>
           </div>
         </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
