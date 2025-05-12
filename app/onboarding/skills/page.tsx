@@ -32,7 +32,12 @@ export default function SkillsSelection() {
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter(s => s !== skill));
     } else {
-      setSelectedSkills([...selectedSkills, skill]);
+      const newSkills = [...selectedSkills, skill];
+      setSelectedSkills(newSkills);
+      // Close dropdown when 3 skills are selected
+      if (newSkills.length >= 3) {
+        setIsDropdownOpen(false);
+      }
     }
   };
 
@@ -133,13 +138,14 @@ export default function SkillsSelection() {
             <ArrowLeftIcon className="mr-2 h-5 w-5" />
             Back
           </button>
-          <button
-            onClick={() => router.push('/onboarding/location')}
-            disabled={selectedSkills.length < 3}
-            className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300"
-          >
-            Next
-          </button>
+          {selectedSkills.length >= 3 && (
+            <button
+              onClick={() => router.push('/onboarding/location')}
+              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 shadow-lg transform hover:-translate-y-0.5 transition-transform duration-200"
+            >
+              Next
+            </button>
+          )}
         </div>
       </div>
     </div>
