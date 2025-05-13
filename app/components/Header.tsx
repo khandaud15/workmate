@@ -456,20 +456,24 @@ export default function Header() {
                   </div>
                 ) : (
                   <div className="flex flex-col space-y-2 mt-6">
-                    <Link 
-                      href="/signup"
+                    <button 
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        router.push('/signup');
+                      }}
                       className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log in
-                    </Link>
-                    <Link 
-                      href="/signup"
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        router.push('/signup');
+                      }}
                       className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign up
-                    </Link>
+                    </button>
                   </div>
                 )}
               </nav>
