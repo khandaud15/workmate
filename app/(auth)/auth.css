@@ -3,7 +3,4 @@
   background-color: black;
 }
 
-.auth-layout header,
-.auth-layout footer {
-  display: none !important;
-}
+/* Removed header and footer hiding */
