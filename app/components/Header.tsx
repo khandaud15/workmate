@@ -38,7 +38,7 @@ export default function Header() {
                     role="button"
                     aria-haspopup="true"
                     aria-expanded="false"
-                    className="text-gray-700 hover:text-[#4292FF] transition-colors text-[15px] font-medium flex items-center gap-1"
+                    className="text-[#0e3a68] hover:text-[#0c3156] transition-colors text-[15px] font-medium flex items-center gap-1"
                   >
                     Core Features
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -48,13 +48,13 @@ export default function Header() {
                   <div className="absolute left-0 mt-2 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50 min-w-[300px]">
                     <Link 
                       href="/resume-builder" 
-                      className="block px-10 py-2 text-[15px] font-medium text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
+                      className="block px-10 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Resume Builder
                     </Link>
                     <Link 
                       href="/applications" 
-                      className="block px-10 py-2 text-[15px] font-medium text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
+                      className="block px-10 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Application Tracker
                     </Link>
@@ -62,13 +62,13 @@ export default function Header() {
                 </div>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[15px] font-medium"
+                  className="text-[#0e3a68] hover:text-[#0c3156] transition-colors text-[15px] font-medium"
                 >
                   Pricing
                 </Link>
                 <Link 
                   href="/copilot" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[15px] font-medium"
+                  className="text-[#0e3a68] hover:text-[#0c3156] transition-colors text-[15px] font-medium"
                 >
                   Copilot
                 </Link>
@@ -108,7 +108,7 @@ export default function Header() {
               <div className="hidden md:flex items-center space-x-4 ml-auto">
                 {session ? (
                   <div className="flex items-center space-x-4">
-                    <span className="text-gray-700">Hello, {session.user?.name}</span>
+                    <span className="text-[#0e3a68]">Hello, {session.user?.name}</span>
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
                       className="bg-[#0e3a68] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#0c3156] transition-colors font-medium text-[13px]"
@@ -251,12 +251,12 @@ export default function Header() {
                 <div>
                   <button
                     onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                    className="flex items-center justify-between w-full text-left text-gray-900 text-base font-medium"
+                    className="flex items-center justify-between w-full text-left text-[#0e3a68] text-base font-medium"
                   >
                     Core Features
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className={`h-5 w-5 transform transition-transform ${isMobileDropdownOpen ? 'rotate-180' : ''}`}
+                      className={`h-5 w-5 transform transition-transform text-[#0e3a68] ${isMobileDropdownOpen ? 'rotate-180' : ''}`}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -267,14 +267,14 @@ export default function Header() {
                   <div className={`mt-4 space-y-4 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}>
                     <Link 
                       href="/resume-builder" 
-                      className="block text-gray-900 text-base font-medium"
+                      className="block text-[#0e3a68] text-base font-medium"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Resume Builder
                     </Link>
                     <Link 
                       href="/applications" 
-                      className="block text-gray-900 text-base font-medium"
+                      className="block text-[#0e3a68] text-base font-medium"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Application Tracker
@@ -283,14 +283,14 @@ export default function Header() {
                 </div>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-900 text-base font-medium"
+                  className="text-[#0e3a68] text-base font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Pricing
                 </Link>
                 <Link 
                   href="/copilot" 
-                  className="text-gray-900 text-base font-medium"
+                  className="text-[#0e3a68] text-base font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Copilot
@@ -329,7 +329,7 @@ export default function Header() {
                 {/* Mobile Auth Buttons */}
                 {session ? (
                   <div className="mt-6">
-                    <p className="text-gray-600 mb-4">Hello, {session.user?.name}</p>
+                    <p className="text-[#0e3a68] mb-4">Hello, {session.user?.name}</p>
                     <button
                       onClick={() => {
                         setIsMobileMenuOpen(false);
