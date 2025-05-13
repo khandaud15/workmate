@@ -156,7 +156,7 @@ export default function Header() {
                       </>
                     ) : (
                       <>
-                        <span className="mr-1">{selectedCountry.flag}</span>
+                        <span className="mr-1 text-lg">{selectedCountry.flag}</span>
                         {selectedCountry.name}
                       </>
                     )}
@@ -296,7 +296,7 @@ export default function Header() {
                             onClick={() => handleCountrySelect(country)}
                             className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
                           >
-                            <span className="mr-2">{country.flag}</span>
+                            <span className="mr-2 text-base">{country.flag}</span>
                             {country.name}
                           </button>
                         ))}
