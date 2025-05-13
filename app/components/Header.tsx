@@ -6,6 +6,30 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
 import { useState, useId } from 'react';
+
+interface Country {
+  code: string;
+  name: string;
+  flag: string;
+}
+
+const countries: Country[] = [
+  { code: 'NONE', name: 'Select Country', flag: '🌐' },
+  { code: 'US', name: 'United States', flag: '🇺🇸' },
+  { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+  { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+  { code: 'FR', name: 'France', flag: '🇫🇷' },
+  { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+  { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+  { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
+  { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
+  { code: 'NO', name: 'Norway', flag: '🇳🇴' },
+  { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
+  { code: 'IE', name: 'Ireland', flag: '🇮🇪' },
+  { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+  { code: 'IN', name: 'India', flag: '🇮🇳' },
+];
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 export default function Header() {
@@ -15,6 +39,10 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState({ code: 'NONE', name: 'Select Country', flag: '🌐' });
+  
+
   const searchId = useId();
 
   const isRestrictedPath = pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
@@ -72,6 +100,70 @@ export default function Header() {
                 >
                   Copilot
                 </Link>
+                <div className="relative">
+                  <div 
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsCountryDropdownOpen(false)}
+                    style={{ display: isCountryDropdownOpen ? 'block' : 'none' }}
+                  />
+
+                  <button 
+                    type="button"
+                    role="button"
+                    aria-haspopup="true"
+                    aria-expanded={isCountryDropdownOpen}
+                    className="text-[#0e3a68] hover:text-[#0c3156] transition-colors text-[15px] font-medium flex items-center gap-1"
+                    onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                  >
+                    {!selectedCountry || selectedCountry.code === 'NONE' ? (
+                      <>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 mr-1"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                          />
+                        </svg>
+                        Select Country
+                      </>
+                    ) : (
+                      <>
+                        <span className="mr-1">{selectedCountry.flag}</span>
+                        {selectedCountry.name}
+                      </>
+                    )}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isCountryDropdownOpen && (
+                    <div 
+                      className="absolute left-0 mt-2 bg-white rounded-lg shadow-lg py-2 z-50 min-w-[200px]"
+                      onMouseLeave={() => setIsCountryDropdownOpen(false)}
+                    >
+                      {countries.map((country) => (
+                        <button
+                          key={country.code}
+                          onClick={() => {
+                            setSelectedCountry(country);
+                            setIsCountryDropdownOpen(false);
+                          }}
+                          className="flex items-center w-full px-10 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
+                        >
+                          <span className="mr-2">{country.flag}</span>
+                          {country.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>}
 
               {/* Search Bar */}
@@ -137,51 +229,66 @@ export default function Header() {
 
             {/* Mobile icons */}
             <div className="md:hidden flex items-center -mr-2">
+              {isMobileDropdownOpen && (
+                <div 
+                  className="fixed inset-0 z-40"
+                  onClick={() => {
+                    setIsMobileDropdownOpen(false);
+                    setIsCountryDropdownOpen(false);
+                  }}
+                />
+              )}
               {!isRestrictedPath && (
                 <>
-                  {session ? (
+                  <div className="relative inline-block">
                     <button
-                      onClick={() => router.push('/signup')}
-                      className="p-1.5 bg-[#0e3a68] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#0c3156] transition-colors"
-                      aria-label="Profile"
+                      type="button"
+                      className="p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors flex items-center justify-center"
+                      aria-label="Select country"
+                      aria-expanded={isMobileDropdownOpen}
+                      onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
                     >
-                      <svg
-                        className="w-6 h-6 md:w-5 md:h-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="white"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
+                      {!selectedCountry || selectedCountry.code === 'NONE' ? (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                          />
+                        </svg>
+                      ) : (
+                        <span className="text-lg">{selectedCountry.flag}</span>
+                      )}
                     </button>
-                  ) : (
-                    <button
-                      onClick={() => router.push('/signup')}
-                      className="p-1.5 bg-[#0e3a68] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#0c3156] transition-colors"
-                      aria-label="Sign in"
-                    >
-                      <svg
-                        className="w-6 h-6 md:w-5 md:h-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="white"
+                    {isMobileDropdownOpen && (
+                      <div 
+                        className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg py-2 z-50 w-48"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                      </svg>
-                    </button>
-                  )}
+                        {countries.map((country) => (
+                          <button
+                            type="button"
+                            key={country.code}
+                            onClick={() => {
+                              setSelectedCountry(country);
+                              setIsCountryDropdownOpen(false);
+                              setIsMobileDropdownOpen(false);
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
+                          >
+                            <span className="mr-2">{country.flag}</span>
+                            {country.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <button
                     type="button"
                     className="md:hidden p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors"
