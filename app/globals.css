@@ -30,10 +30,10 @@ html, body {
     .auth-layout::before {
       content: '';
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: -100vh;
+      left: -100vw;
+      right: -100vw;
+      bottom: -100vh;
       background: linear-gradient(to bottom right, #0C111F, #000000);
       z-index: -1;
     }

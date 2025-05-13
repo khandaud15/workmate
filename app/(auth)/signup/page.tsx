@@ -30,18 +30,12 @@ export default function SignUp() {
     
     // Check for any potential rendering blockers
     const bodyStyles = window.getComputedStyle(document.body);
-    const containerStyles = window.getComputedStyle(document.querySelector('.auth-layout'));
-    
     console.log('Body Background:', bodyStyles.background);
     console.log('Body Overflow:', bodyStyles.overflow);
-    console.log('Container Position:', containerStyles.position);
-    console.log('Container Visibility:', containerStyles.visibility);
-    console.log('Container Display:', containerStyles.display);
-    console.log('Container Opacity:', containerStyles.opacity);
-    
-    // Force reflow to diagnose rendering issues
-    document.body.style.display = 'block';
-    document.body.offsetHeight; // Force reflow
+    console.log('Window Width:', window.innerWidth);
+    console.log('Window Height:', window.innerHeight);
+    console.log('Screen Width:', screen.width);
+    console.log('Screen Height:', screen.height);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
