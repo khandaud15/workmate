@@ -455,25 +455,19 @@ export default function Header() {
                     </button>
                   </div>
                 ) : (
-                  <div className="flex flex-col space-y-2 mt-6">
-                    <button 
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        window.location.href = '/signup';
-                      }}
-                      className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
+                  <div className="flex flex-col space-y-2 px-2">
+                    <Link 
+                      href="/login"
+                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
                     >
                       Log in
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        window.location.href = '/signup';
-                      }}
-                      className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
+                    </Link>
+                    <Link 
+                      href="/signup"
+                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
                     >
                       Sign up
-                    </button>
+                    </Link>
                   </div>
                 )}
               </nav>
