@@ -246,16 +246,7 @@ export default function Header() {
             </nav>
 
             {/* Mobile icons */}
-            <div className="md:hidden flex items-center -mr-2">
-              {isMobileDropdownOpen && (
-                <div 
-                  className="fixed inset-0 z-40"
-                  onClick={() => {
-                    setIsMobileDropdownOpen(false);
-                    setIsCountryDropdownOpen(false);
-                  }}
-                />
-              )}
+            <div className="md:hidden flex items-center space-x-2">
               {!isRestrictedPath && (
                 <>
                   <div className="relative inline-block">
@@ -355,12 +346,12 @@ export default function Header() {
               {/* Top Bar */}
               <div className="flex justify-between items-center py-8 border-b border-gray-100">
                 {/* Logo */}
-                <Link href="/" className="flex-shrink-0">
+                <Link href="/" className="flex-shrink-0" onClick={() => setIsMobileMenuOpen(false)}>
                   <Logo />
                 </Link>
                 {/* Close Button */}
                 <button 
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                  onClick={() => setIsMobileMenuOpen(false)} 
                   className="md:hidden p-1 text-[#0e3a68] hover:text-[#0c3156] transition-colors"
                   aria-label="Close menu"
                 >
@@ -468,14 +459,20 @@ export default function Header() {
                     <Link 
                       href="/signup"
                       className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = '/signup';
+                      }}
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup"
                       className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        window.location.href = '/signup';
+                      }}
                     >
                       Sign up
                     </Link>
