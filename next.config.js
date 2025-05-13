@@ -6,6 +6,14 @@ const nextConfig = {
   images: {
     domains: ['raw.githubusercontent.com'],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
