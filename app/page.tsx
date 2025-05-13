@@ -1,5 +1,6 @@
 import Hero3DImage from './components/Hero3DImage';
 import CompanyCarousel from './components/CompanyCarousel';
+import ApplicationProcess from './components/ApplicationProcess';
 import Link from 'next/link';
 
 export default function Home() {
@@ -38,10 +39,13 @@ export default function Home() {
         {/* Company Carousel */}
         <CompanyCarousel />
 
+        {/* Application Process Section */}
+        <ApplicationProcess />
+
         {/* Feature Cards Section */}
-        <div className="bg-white py-10 sm:py-16">
+        <div className="bg-white py-4 sm:py-8 -mt-8 sm:-mt-12">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <h2 className="text-center text-[32px] font-bold text-black mb-12">
+            <h2 className="text-center text-[32px] font-bold text-black mb-6 sm:mb-8">
               We don't stop until you're hired
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
