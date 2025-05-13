@@ -258,7 +258,7 @@ export default function Header() {
                 <div>
                   <button
                     onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                    className="flex items-center justify-between w-full text-left text-gray-900 text-xl font-semibold"
+                    className="flex items-center justify-between w-full text-left text-gray-900 text-base font-medium"
                   >
                     Core Features
                     <svg
@@ -274,21 +274,21 @@ export default function Header() {
                   <div className={`mt-4 space-y-4 ${isMobileDropdownOpen ? 'block' : 'hidden'}`}>
                     <Link 
                       href="/resume-builder" 
-                      className="block text-gray-600 text-lg"
+                      className="block text-gray-900 text-base font-medium"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Resume Builder
                     </Link>
                     <Link 
                       href="/jobs" 
-                      className="block text-gray-600 text-lg"
+                      className="block text-gray-900 text-base font-medium"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Job Search
                     </Link>
                     <Link 
                       href="/applications" 
-                      className="block text-gray-600 text-lg"
+                      className="block text-gray-900 text-base font-medium"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Application Tracker
@@ -297,14 +297,14 @@ export default function Header() {
                 </div>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-900 text-xl font-semibold"
+                  className="text-gray-900 text-base font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Pricing
                 </Link>
                 <Link 
                   href="/copilot" 
-                  className="text-gray-900 text-xl font-semibold"
+                  className="text-gray-900 text-base font-medium"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Copilot
