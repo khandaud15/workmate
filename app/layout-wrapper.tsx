@@ -39,7 +39,7 @@ export default function LayoutWrapper({
   return (
     <Providers>
       <div className="overflow-x-hidden">
-        <Header />
+        {!isAuth && <Header />}
         <main className={`flex-grow pt-24 overflow-x-hidden`}>{children}</main>
         {!hideFooter && <Footer />}
       </div>
