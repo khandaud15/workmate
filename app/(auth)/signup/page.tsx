@@ -51,8 +51,8 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start pt-24">
-      <div className="w-full max-w-[400px] space-y-6">
+    <div className="flex min-h-screen flex-col items-center justify-start pt-24 auth-layout">
+      <div className="w-full max-w-[400px] space-y-6 relative z-10">
         {/* Logo */}
         <div className="flex flex-col items-center space-y-6">
           <Link href="/" className="flex-shrink-0 transform scale-125 flex items-center justify-center">
