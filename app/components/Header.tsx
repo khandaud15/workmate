@@ -456,20 +456,38 @@ export default function Header() {
                   </div>
                 ) : (
                   <div className="flex flex-col space-y-2 px-2">
-                    <Link 
-                      href="/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    <button 
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        console.log('Mobile Device:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+                        console.log('Current URL:', window.location.href);
+                        try {
+                          router.push('/login');
+                        } catch (error) {
+                          console.error('Router push error:', error);
+                          window.location.href = '/login';
+                        }
+                      }}
                       className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
                     >
                       Log in
-                    </Link>
-                    <Link 
-                      href="/signup"
-                      onClick={() => setIsMobileMenuOpen(false)}
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        console.log('Mobile Device:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+                        console.log('Current URL:', window.location.href);
+                        try {
+                          router.push('/signup');
+                        } catch (error) {
+                          console.error('Router push error:', error);
+                          window.location.href = '/signup';
+                        }
+                      }}
                       className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
                     >
                       Sign up
-                    </Link>
+                    </button>
                   </div>
                 )}
               </nav>
