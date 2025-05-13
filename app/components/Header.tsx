@@ -468,7 +468,7 @@ export default function Header() {
                           window.location.href = '/login';
                         }
                       }}
-                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
+                      className="bg-[#0e3a68] text-white px-6 py-2 rounded-full hover:bg-[#0c3156] transition-colors font-bold text-center"
                     >
                       Log in
                     </button>
@@ -484,7 +484,7 @@ export default function Header() {
                           window.location.href = '/signup';
                         }
                       }}
-                      className="bg-gray-900 text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-colors font-bold text-center"
+                      className="bg-[#0e3a68] text-white px-6 py-2 rounded-full hover:bg-[#0c3156] transition-colors font-bold text-center"
                     >
                       Sign up
                     </button>
