@@ -19,6 +19,19 @@ export default function SignUp() {
     console.log('SignUp Page Loaded');
     console.log('User Agent:', navigator.userAgent);
     console.log('Platform:', navigator.platform);
+    
+    // Diagnostic checks
+    console.log('Window Object:', typeof window);
+    console.log('Document Object:', typeof document);
+    console.log('Window Width:', window.innerWidth);
+    console.log('Window Height:', window.innerHeight);
+    console.log('Screen Width:', screen.width);
+    console.log('Screen Height:', screen.height);
+    
+    // Check for any potential rendering blockers
+    const bodyStyles = window.getComputedStyle(document.body);
+    console.log('Body Background:', bodyStyles.background);
+    console.log('Body Overflow:', bodyStyles.overflow);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,8 +64,8 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-start pt-24 auth-layout">
-      <div className="w-full max-w-[400px] space-y-6 relative z-10">
+    <div className="flex min-h-screen flex-col items-center justify-start pt-24">
+      <div className="w-full max-w-[400px] space-y-6">
         {/* Logo */}
         <div className="flex flex-col items-center space-y-6">
           <Link href="/" className="flex-shrink-0 transform scale-125 flex items-center justify-center">
