@@ -6,11 +6,14 @@ const nextConfig = {
   images: {
     domains: ['raw.githubusercontent.com'],
   },
-  async rewrites() {
+  async headers() {
     return [
       {
         source: '/:path*',
-        destination: '/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
+        ],
       },
     ];
   },
