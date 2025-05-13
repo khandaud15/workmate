@@ -218,7 +218,7 @@ export default function Header() {
               {session && isRestrictedPath && (
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[13px]"
+                  className="bg-[#0e3a68] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#0c3156] transition-colors font-medium text-[13px]"
                 >
                   Sign Out
                 </button>
