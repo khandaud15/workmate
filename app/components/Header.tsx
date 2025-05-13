@@ -459,20 +459,14 @@ export default function Header() {
                     <Link 
                       href="/signup"
                       className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        window.location.href = '/signup';
-                      }}
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup"
                       className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        window.location.href = '/signup';
-                      }}
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign up
                     </Link>
