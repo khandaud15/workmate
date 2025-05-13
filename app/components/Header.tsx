@@ -5,7 +5,7 @@
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
-import { useState, useId } from 'react';
+import { useState, useId, useEffect } from 'react';
 
 interface Country {
   code: string;
@@ -41,6 +41,27 @@ export default function Header() {
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState({ code: 'NONE', name: 'Select Country', flag: '🌐' });
+
+  useEffect(() => {
+    const saved = localStorage.getItem('selectedCountry');
+    if (saved) {
+      try {
+        const parsedCountry = JSON.parse(saved);
+        setSelectedCountry(parsedCountry);
+      } catch (e) {
+        console.error('Error parsing saved country:', e);
+      }
+    }
+  }, []);
+
+  const handleCountrySelect = (country: any) => {
+    setSelectedCountry(country);
+    setIsCountryDropdownOpen(false);
+    setIsMobileDropdownOpen(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('selectedCountry', JSON.stringify(country));
+    }
+  };
   
 
   const searchId = useId();
@@ -151,10 +172,7 @@ export default function Header() {
                       {countries.map((country) => (
                         <button
                           key={country.code}
-                          onClick={() => {
-                            setSelectedCountry(country);
-                            setIsCountryDropdownOpen(false);
-                          }}
+                          onClick={() => handleCountrySelect(country)}
                           className="flex items-center w-full px-10 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
                         >
                           <span className="mr-2">{country.flag}</span>
@@ -275,11 +293,7 @@ export default function Header() {
                           <button
                             type="button"
                             key={country.code}
-                            onClick={() => {
-                              setSelectedCountry(country);
-                              setIsCountryDropdownOpen(false);
-                              setIsMobileDropdownOpen(false);
-                            }}
+                            onClick={() => handleCountrySelect(country)}
                             className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
                           >
                             <span className="mr-2">{country.flag}</span>
