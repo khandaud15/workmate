@@ -100,6 +100,11 @@ export default function LocationSelection() {
                       ? 'Search for a city or state...'
                       : 'Add another location...'
                   }
+                  autoComplete="off"
+                  role="combobox"
+                  aria-expanded={showDropdown && searchInput.length > 0}
+                  aria-controls="location-suggestions"
+                  aria-autocomplete="list"
                   className="flex-1 border-none bg-transparent p-1 text-base placeholder-gray-400 focus:outline-none focus:ring-0"
                 />
               </div>
@@ -107,23 +112,35 @@ export default function LocationSelection() {
 
             {/* Dropdown */}
             {showDropdown && searchInput && (
-              <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+              <ul
+                id="location-suggestions"
+                role="listbox"
+                className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+              >
                 {filteredLocations.length > 0 ? (
                   filteredLocations.map((location) => (
-                    <button
+                    <li
                       key={location}
-                      onClick={() => handleLocationSelect(location)}
-                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
+                      role="option"
+                      aria-selected={selectedLocations.includes(location)}
+                      className="block"
                     >
-                      {location}
-                    </button>
+                      <button
+                        onClick={() => handleLocationSelect(location)}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
+                      >
+                        {location}
+                      </button>
+                    </li>
                   ))
                 ) : (
-                  <div className="px-4 py-2 text-sm text-gray-500">
-                    No locations found
-                  </div>
+                  <li className="block" role="option" aria-selected="false">
+                    <div className="px-4 py-2 text-sm text-gray-500">
+                      No matching locations found
+                    </div>
+                  </li>
                 )}
-              </div>
+              </ul>
             )}
           </div>
         </div>
