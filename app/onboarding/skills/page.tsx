@@ -32,7 +32,12 @@ export default function SkillsSelection() {
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter(s => s !== skill));
     } else {
-      setSelectedSkills([...selectedSkills, skill]);
+      const newSelectedSkills = [...selectedSkills, skill];
+      setSelectedSkills(newSelectedSkills);
+      // Close dropdown when 3 skills are selected
+      if (newSelectedSkills.length >= 3) {
+        setIsDropdownOpen(false);
+      }
     }
   };
 
