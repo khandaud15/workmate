@@ -1,13 +1,21 @@
-'use client';
-
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import type { Metadata } from "next";
 import "./globals.css";
-import { Providers } from "./providers";
+import LayoutWrapper from "./layout-wrapper";
+
+export const metadata: Metadata = {
+  title: "Talexus - Streamline Your Job Search",
+  description: "Automate your job applications with Talexus. Upload once, apply everywhere.",
+  icons: {
+    icon: [{ url: '/favicon.svg?v=1', type: 'image/svg+xml' }],
+    shortcut: ['/favicon.svg?v=1'],
+    apple: [{ url: '/favicon.svg?v=1', type: 'image/svg+xml' }],
+    other: {
+      rel: 'apple-touch-icon',
+      url: '/favicon.svg?v=1',
+    },
+  },
+};
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,29 +25,11 @@ const inter = Inter({
   preload: true,
 });
 
-// Metadata moved to metadata.ts
-
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname();
-  const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
-
-  useEffect(() => {
-    if (isAuth) {
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#05070A');
-      document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'black');
-    } else {
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
-      document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
-    }
-  }, [isAuth]);
-  const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -47,15 +37,12 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+        <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+        <link rel="apple-touch-icon" type="image/svg+xml" href="/favicon.svg?v=2" />
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col`} suppressHydrationWarning>
-        <Providers>
-          {!isAuth && <Header />}
-          <div className={`flex-grow ${!isAuth ? 'pt-24' : ''}`}>
-            {children}
-          </div>
-          {!hideFooter && <Footer />}
-        </Providers>
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

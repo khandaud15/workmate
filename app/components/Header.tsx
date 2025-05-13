@@ -287,19 +287,21 @@ export default function Header() {
                     </button>
                     {isMobileDropdownOpen && (
                       <div 
-                        className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg py-2 z-50 w-48"
+                        className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg py-2 z-50 w-48 overflow-hidden"
                       >
-                        {countries.map((country) => (
-                          <button
-                            type="button"
-                            key={country.code}
-                            onClick={() => handleCountrySelect(country)}
-                            className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
-                          >
-                            <span className="mr-2 text-base">{country.flag}</span>
-                            {country.name}
-                          </button>
-                        ))}
+                        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto">
+                          {countries.map((country) => (
+                            <button
+                              type="button"
+                              key={country.code}
+                              onClick={() => handleCountrySelect(country)}
+                              className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
+                            >
+                              <span className="mr-2 text-base">{country.flag}</span>
+                              {country.name}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -349,7 +351,7 @@ export default function Header() {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && !isRestrictedPath && (
-            <div className="md:hidden bg-white fixed inset-0 z-50 px-6">
+            <div className="md:hidden bg-white fixed inset-0 z-50 px-6 overflow-y-auto">
               {/* Top Bar */}
               <div className="flex justify-between items-center py-8 border-b border-gray-100">
                 {/* Logo */}
