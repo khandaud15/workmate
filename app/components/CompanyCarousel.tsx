@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 const logos = [
   'https://raw.githubusercontent.com/khandaud15/files/main/Images2/16A6B598-9209-487A-9ED7-73AFA431B82F_1_105_c.png',
@@ -37,12 +38,12 @@ export default function CompanyCarousel() {
 
   return (
     <div className="py-8">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-[20px] text-center -mt-4 mb-4 text-[#0A0F1C] tracking-wide" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
           Top companies hiring
         </h2>
 
-        <div className="bg-[#fefcf9] rounded-[24px] p-4 sm:p-6 relative transform hover:scale-[1.01] transition-all duration-500 ease-out shadow-2xl border border-gray-100 mt-8">
+        <div className="bg-[#fefcf9] rounded-[16px] sm:rounded-[20px] p-4 sm:p-6 md:p-8 relative transform hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-2xl mt-8">
           <div className="relative overflow-hidden">
             <style jsx>{`
               @keyframes slide {
@@ -62,11 +63,13 @@ export default function CompanyCarousel() {
                 {logos.map((src, i) => (
                   <div
                     key={i}
-                    className="flex-none w-[120px] h-[120px] bg-[#fefcf9] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
+                    className="flex-none w-[120px] h-[120px] bg-[#fefcf9] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border-none"
                   >
-                    <img
+                    <Image
                       src={src}
                       alt={`Company logo ${i + 1}`}
+                      width={96}
+                      height={96}
                       className="w-full h-full object-contain"
                     />
                   </div>
@@ -77,11 +80,13 @@ export default function CompanyCarousel() {
                 {logos.map((src, i) => (
                   <div
                     key={`dup-${i}`}
-                    className="flex-none w-[120px] h-[120px] bg-[#fefcf9] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
+                    className="flex-none w-[120px] h-[120px] bg-[#fefcf9] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border-none"
                   >
-                    <img
+                    <Image
                       src={src}
                       alt={`Company logo ${i + 1}`}
+                      width={96}
+                      height={96}
                       className="w-full h-full object-contain"
                     />
                   </div>

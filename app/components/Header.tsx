@@ -94,7 +94,7 @@ export default function Header() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
-                  <div className="absolute left-0 mt-2 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50 min-w-[300px]">
+                  <div className="absolute left-0 mt-2 bg-[#fefcf9] rounded-lg shadow-lg py-2 hidden group-hover:block z-50 min-w-[300px]">
                     <Link 
                       href="/resume-builder" 
                       className="block px-10 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
@@ -166,7 +166,7 @@ export default function Header() {
                   </button>
                   {isCountryDropdownOpen && (
                     <div 
-                      className="absolute left-0 mt-2 bg-white rounded-lg shadow-lg py-2 z-50 min-w-[200px]"
+                      className="absolute left-0 mt-2 bg-[#fefcf9] rounded-lg shadow-lg py-2 z-50 min-w-[200px]"
                       onMouseLeave={() => setIsCountryDropdownOpen(false)}
                     >
                       {countries.map((country) => (
@@ -287,7 +287,7 @@ export default function Header() {
                     </button>
                     {isMobileDropdownOpen && (
                       <div 
-                        className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg py-2 z-50 w-48"
+                        className="absolute top-full right-0 mt-1 bg-[#fefcf9] rounded-lg shadow-lg py-2 z-50 w-48"
                       >
                         {countries.map((country) => (
                           <button
@@ -349,21 +349,33 @@ export default function Header() {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && !isRestrictedPath && (
-            <div className="md:hidden bg-white fixed inset-0 z-50 px-6">
+            <div className="md:hidden bg-[#fefcf9] fixed inset-0 z-50 px-6">
               {/* Top Bar */}
-              <div className="flex justify-between items-center py-8 border-b border-gray-100">
+              <div className="flex justify-between items-center py-8 border-b border-gray-100 bg-white">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
                   <Logo />
                 </Link>
+
                 {/* Close Button */}
-                <button 
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-                  className="md:hidden p-1 text-[#0e3a68] hover:text-[#0c3156] transition-colors"
-                  aria-label="Close menu"
+                <button
+                  type="button"
+                  className="text-[#0e3a68] hover:text-[#0c3156] transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>

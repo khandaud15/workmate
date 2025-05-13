@@ -100,13 +100,13 @@ export default function Home() {
             </div>
 
             {/* CTA Section */}
-            <div className="mt-16 bg-[#0A0F1C] rounded-[24px] p-6 sm:p-8 md:p-12 text-center">
-              <h2 className="text-[24px] sm:text-[28px] md:text-[32px] font-bold text-white mb-4 sm:mb-6 md:mb-8">
+            <div className="mt-16 bg-[#0A0F1C] rounded-[24px] p-6 sm:p-8 md:p-12 text-center flex flex-col justify-center">
+              <h2 className="text-[25px] sm:text-[28px] md:text-[32px] font-bold text-white mb-5 sm:mb-6 md:mb-8">
                 Ready to automate your job search?
               </h2>
               <Link
                 href="/signup"
-                className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 text-[15px] sm:text-[16px] font-medium rounded-[8px] text-white bg-black hover:bg-gray-800 transition-colors outline outline-2 outline-[#39FF14]"
+                className="inline-flex items-center px-5 py-2.5 sm:px-6 sm:py-3 text-[15px] sm:text-[16px] font-medium rounded-[8px] text-white bg-black hover:bg-gray-800 transition-colors outline outline-2 outline-[#39FF14] self-center"
               >
                 Find jobs →
               </Link>
