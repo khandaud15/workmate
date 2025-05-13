@@ -389,139 +389,124 @@ export default function ContactInfoForm() {
     );
   };
 
-  return (
-    <>
-      {/* Mobile fixed buttons */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50 shadow-lg">
-        <div className="flex justify-between max-w-[800px] mx-auto">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
-          >
-            Back
-          </button>
-          <button
-            type="submit"
-            form="contact-form"
-            className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 shadow-lg"
-          >
-            Next
-          </button>
-        </div>
-      </div>
 
-      <div className="w-full max-w-[800px] mx-auto px-4 py-6 pb-24 md:pb-6">
-        <div className="relative transform hover:-translate-y-0.5 transition-transform">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 drop-shadow-sm">Contact Information</h1>
-          <p className="text-gray-600 mb-6 text-base drop-shadow-sm">Ensure your contact details are up to date — employers may reach out anytime.</p>
-        </div>
-      
-        <form id="contact-form" onSubmit={handleSubmit} className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <InputField 
-              label="First Name" 
-              name="firstName" 
-              placeholder="John"
-            />
-            <InputField 
-              label="Last Name" 
-              name="lastName" 
-              placeholder="Doe"
-            />
+  const ContactForm = () => {
+    return (
+      <div className="min-h-screen bg-white pb-28">
+        {/* Main Content */}
+        <div className="w-full max-w-[800px] mx-auto px-4 py-6">
+          <div className="relative transform hover:-translate-y-0.5 transition-transform">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2 drop-shadow-sm">Contact Information</h1>
+            <p className="text-gray-600 mb-6 text-base drop-shadow-sm">Ensure your contact details are up to date — employers may reach out anytime.</p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <DateField 
-              label="Date of Birth" 
-              name="dateOfBirth" 
-            />
-            <InputField 
-              label="Address" 
-              name="address" 
-              placeholder="123 Main St"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <InputField 
-              label="City" 
-              name="city" 
-              placeholder="San Francisco"
-            />
-            <InputField 
-              label="State" 
-              name="state" 
-              placeholder="CA"
-            />
-            <InputField 
-              label="Postal Code" 
-              name="postalCode" 
-              placeholder="94105"
-            />
-          </div>
-
-          <InputField 
-            label="LinkedIn Profile" 
-            name="linkedIn" 
-            placeholder="https://linkedin.com/in/johndoe"
-            required={false}
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <InputField 
-              label="Phone Number" 
-              name="phone" 
-              type="tel" 
-              placeholder="(555) 555-5555"
-            />
-            <InputField 
-              label="Email Address" 
-              name="email" 
-              type="email" 
-              placeholder="john@example.com"
-            />
-          </div>
-
-          <div className="mt-6 border-t border-gray-200 pt-6">
-            <div className="flex items-start">
-              <input
-                type="checkbox"
-                name="smsOptIn"
-                id="smsOptIn"
-                checked={formData.smsOptIn}
-                onChange={handleInputChange}
-                className="mt-1 h-5 w-5 border-[1.5px] border-gray-300 text-blue-600 focus:ring-1 focus:ring-blue-500"
+        
+          <form id="contact-form" onSubmit={handleSubmit} className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <InputField 
+                label="First Name" 
+                name="firstName" 
+                placeholder="John"
               />
-              <div className="ml-3 flex-1">
-                <p className="text-sm leading-relaxed text-gray-700">
-                  By providing your phone number and selecting the checkbox, you consent to receive new job alerts and account information via SMS text messages. Message frequency may vary based on your interactions with us. Message & data rates may apply. You can opt-out at any time by replying "STOP" to unsubscribe or contacting Customer Service. For more information, please refer to our{' '}
-                  <a href="/privacy" className="text-blue-600 underline hover:text-blue-800">Privacy Policy</a>{' '}
-                  and{' '}
-                  <a href="/terms" className="text-blue-600 underline hover:text-blue-800">Terms of Service</a>.
-                </p>
+              <InputField 
+                label="Last Name" 
+                name="lastName" 
+                placeholder="Doe"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <DateField 
+                label="Date of Birth" 
+                name="dateOfBirth" 
+              />
+              <InputField 
+                label="Address" 
+                name="address" 
+                placeholder="123 Main St"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <InputField 
+                label="City" 
+                name="city" 
+                placeholder="San Francisco"
+              />
+              <InputField 
+                label="State" 
+                name="state" 
+                placeholder="CA"
+              />
+              <InputField 
+                label="Postal Code" 
+                name="postalCode" 
+                placeholder="94105"
+              />
+            </div>
+
+            <InputField 
+              label="LinkedIn Profile" 
+              name="linkedIn" 
+              placeholder="https://linkedin.com/in/johndoe"
+              required={false}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <InputField 
+                label="Phone Number" 
+                name="phone" 
+                type="tel" 
+                placeholder="(555) 555-5555"
+              />
+              <InputField 
+                label="Email Address" 
+                name="email" 
+                type="email" 
+                placeholder="john@example.com"
+              />
+            </div>
+
+            <div className="mt-6 border-t border-gray-200 pt-6">
+              <div className="flex items-start">
+                <input
+                  type="checkbox"
+                  name="smsOptIn"
+                  id="smsOptIn"
+                  checked={formData.smsOptIn}
+                  onChange={handleInputChange}
+                  className="mt-1 h-5 w-5 border-[1.5px] border-gray-300 text-blue-600 focus:ring-1 focus:ring-blue-500"
+                />
+                <div className="ml-3 flex-1">
+                  <p className="text-sm leading-relaxed text-gray-700">
+                    By providing your phone number and selecting the checkbox, you consent to receive new job alerts and account information via SMS text messages. Message frequency may vary based on your interactions with us. Message & data rates may apply. You can opt-out at any time by replying "STOP" to unsubscribe or contacting Customer Service. For more information, please refer to our{' '}
+                    <a href="/privacy" className="text-blue-600 underline hover:text-blue-800">Privacy Policy</a>{' '}
+                    and{' '}
+                    <a href="/terms" className="text-blue-600 underline hover:text-blue-800">Terms of Service</a>.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          </form>
+        </div>
 
-          {/* Desktop-only buttons */}
-          <div className="hidden md:flex justify-between pt-4">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
-            >
-              Back
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-all hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 shadow-lg"
-            >
-              Next
-            </button>
+        {/* Sticky Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+          <div className="container mx-auto px-4 py-4 max-w-2xl">
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                form="contact-form"
+                className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+              >
+                Next
+              </button>
+            </div>
           </div>
-        </form>
+        </div>
       </div>
-    </>
-  );
+    );
+  };
+
+  return <ContactForm />;
+
 }

@@ -147,7 +147,7 @@ export default function KeyQuestionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-28">
       {/* Progress Bar */}
       <div className="mx-auto max-w-3xl px-4 pt-8 sm:px-6 lg:px-8">
         <div className="relative">
@@ -264,14 +264,19 @@ export default function KeyQuestionsPage() {
           ))}
         </form>
 
-        <div className="mt-8 flex justify-end">
-          <button
-            onClick={handleSubmit}
-            className="inline-flex items-center rounded-lg bg-black px-6 py-3 text-base font-medium text-white transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
-          >
-            Next
-            <ChevronRightIcon className="ml-2 h-5 w-5" />
-          </button>
+      </div>
+
+      {/* Sticky Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="container mx-auto px-4 py-4 max-w-2xl">
+          <div className="flex justify-end">
+            <button
+              onClick={handleSubmit}
+              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

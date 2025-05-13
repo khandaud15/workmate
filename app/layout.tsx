@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
-  const hideFooter = isAuth || pathname?.startsWith('/onboarding');
+  const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
 
   return (
     <html lang="en" suppressHydrationWarning>
