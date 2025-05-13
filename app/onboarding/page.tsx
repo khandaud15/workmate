@@ -17,16 +17,17 @@ export default function Onboarding() {
       </div>
 
       {/* Main content */}
-      <div className="flex-grow px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+      <div className="flex-grow px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full pb-24">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6 mb-8">
           {/* Step 1 */}
           <div className="relative">
-            <div className="mb-6 text-center">
+            <div className="mb-10 md:mb-12 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">Upload your resume.</h3>
               <p className="text-[#6B7280] text-sm">Help us understand your experience.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3]">
-              <div className="bg-white rounded-lg p-2 md:p-4 h-full">
+            <div className="bg-gradient-to-br from-pink-200 via-fuchsia-100 to-cyan-300 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3] shadow-lg transform hover:scale-[1.02] transition-all duration-300 hover:shadow-xl relative overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/30 before:to-transparent">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/20 pointer-events-none"></div>
+              <div className="bg-white rounded-lg p-2 md:p-4 h-full relative z-10">
                 <div className="flex items-center mb-1 md:mb-2">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
                     <span className="text-white text-xs">R</span>
@@ -49,12 +50,13 @@ export default function Onboarding() {
 
           {/* Step 2 */}
           <div className="relative">
-            <div className="mb-6 text-center">
+            <div className="mb-10 md:mb-12 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">Complete a quick profile.</h3>
               <p className="text-[#6B7280] text-sm">Share your preferences and career goals.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3]">
-              <div className="bg-white rounded-lg p-2 md:p-4 h-full space-y-2 md:space-y-4">
+            <div className="bg-gradient-to-br from-pink-200 via-fuchsia-100 to-cyan-300 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3] shadow-lg transform hover:scale-[1.02] transition-all duration-300 hover:shadow-xl relative overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/30 before:to-transparent">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/20 pointer-events-none"></div>
+              <div className="bg-white rounded-lg p-2 md:p-4 h-full relative z-10 space-y-2 md:space-y-4">
                 <div className="space-y-1">
                   <p className="text-sm text-gray-600">Desired job?</p>
                   <div className="flex items-center justify-between">
@@ -88,12 +90,13 @@ export default function Onboarding() {
 
           {/* Step 3 */}
           <div className="relative">
-            <div className="mb-6 text-center">
+            <div className="mb-10 md:mb-12 text-center">
               <h3 className="text-[#111827] font-semibold mb-1">We find jobs and fill out applications.</h3>
               <p className="text-[#6B7280] text-sm">Sit back while we do the heavy lifting.</p>
             </div>
-            <div className="bg-gradient-to-br from-pink-50 to-cyan-50 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3]">
-              <div className="bg-white rounded-lg p-2 md:p-4 h-full">
+            <div className="bg-gradient-to-br from-pink-200 via-fuchsia-100 to-cyan-300 rounded-2xl p-3 md:p-6 h-[190px] md:h-auto md:aspect-[4/3] shadow-lg transform hover:scale-[1.02] transition-all duration-300 hover:shadow-xl relative overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/30 before:to-transparent">
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-white/20 pointer-events-none"></div>
+              <div className="bg-white rounded-lg p-2 md:p-4 h-full relative z-10">
                 <div className="flex items-center mb-2 md:mb-4">
                   <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center mr-2">
                     <span className="text-white text-xs">R</span>
@@ -136,20 +139,25 @@ export default function Onboarding() {
           </div>
         </div>
 
-        {/* Next button and terms */}
-        <div className="flex flex-col items-end space-y-2 md:space-y-4 mb-8">
-          <Link
-            href="/onboarding/resume"
-            className="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors inline-block"
-          >
-            Next
-          </Link>
-          <p className="text-xs text-gray-500">
-            By clicking "Next", you agree to our{' '}
-            <Link href="/terms" className="text-[#4F46E5] hover:underline">Terms of Use</Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="text-[#4F46E5] hover:underline">Privacy Policy</Link>.
-          </p>
+      </div>
+
+      {/* Fixed Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="container mx-auto px-4 py-4 max-w-5xl">
+          <div className="flex justify-between items-center">
+            <div className="text-xs text-gray-500">
+              By clicking "Next", you agree to our{' '}
+              <Link href="/terms" className="text-[#4F46E5] hover:underline">Terms of Use</Link>{' '}
+              and{' '}
+              <Link href="/privacy" className="text-[#4F46E5] hover:underline">Privacy Policy</Link>.
+            </div>
+            <Link
+              href="/onboarding/resume"
+              className="px-8 py-2.5 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              Next
+            </Link>
+          </div>
         </div>
       </div>
     </div>

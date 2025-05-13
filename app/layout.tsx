@@ -27,6 +27,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
+  const hideFooter = isAuth || pathname?.startsWith('/onboarding');
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -42,7 +43,7 @@ export default function RootLayout({
           <div className={`flex-grow ${!isAuth ? 'pt-24' : ''}`}>
             {children}
           </div>
-          {!isAuth && <Footer />}
+          {!hideFooter && <Footer />}
         </Providers>
       </body>
     </html>

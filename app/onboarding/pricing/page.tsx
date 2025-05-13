@@ -120,7 +120,7 @@ export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-white">
+    <main className="relative min-h-screen bg-white">
       {/* Header */}
       <div className="mx-auto max-w-7xl px-6 py-12 text-center lg:px-8">
         <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
@@ -157,11 +157,11 @@ export default function PricingPage() {
                       <h3 className="text-lg font-medium text-gray-900">
                         {plan.title}
                       </h3>
-                      <div className="mt-1">
-                        <span className="text-2xl font-bold text-gray-900">
+                      <div className="mt-1 flex items-baseline">
+                        <span className="text-lg font-semibold text-gray-900">
                           {plan.price}
                         </span>
-                        <span className="text-gray-500">{plan.period}</span>
+                        <span className="text-lg font-semibold text-gray-900">{plan.period}</span>
                       </div>
                     </div>
                   </div>
@@ -219,23 +219,7 @@ export default function PricingPage() {
               ))}
             </div>
 
-            {/* Next Button */}
-            <div className="mt-8 flex justify-end">
-              <button
-                onClick={() => {
-                  if (selectedPlan) {
-                    // Save the selected plan (you might want to use a state management solution)
-                    localStorage.setItem('selectedPlan', selectedPlan);
-                    router.push('/profile/questions');
-                  }
-                }}
-                disabled={!selectedPlan}
-                className="mt-8 w-full rounded-lg bg-black px-8 py-3 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300"
-              >
-                Next
-                <ChevronRightIcon className="ml-2 h-4 w-4 inline-block" />
-              </button>
-            </div>
+
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
@@ -245,6 +229,34 @@ export default function PricingPage() {
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Sticky Navigation - Only shows when plan is selected */}
+      {selectedPlan && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 transform transition-transform duration-300 ease-in-out">
+          <div className="container mx-auto px-4 py-4 max-w-2xl">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => router.back()}
+                className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+              >
+                <ArrowLeftIcon className="mr-2 h-5 w-5" />
+                Back
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedPlan) {
+                    localStorage.setItem('selectedPlan', selectedPlan);
+                    router.push('/profile/questions');
+                  }
+                }}
+                className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }

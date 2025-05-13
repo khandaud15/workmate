@@ -48,7 +48,7 @@ export default function StartDateSelection() {
   ];
 
   return (
-    <div className="min-h-screen bg-white p-6 md:p-8">
+    <div className="min-h-screen bg-white p-6 md:p-8 pb-28">
       {/* Main Content */}
       <div className="mx-auto max-w-2xl">
         {/* Headers */}
@@ -119,22 +119,27 @@ export default function StartDateSelection() {
           </div>
         )}
 
-        {/* Navigation Buttons */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
-          >
-            <ArrowLeftIcon className="mr-2 h-5 w-5" />
-            Back
-          </button>
-          <button
-            onClick={() => router.push('/onboarding/pricing')}
-            disabled={!selectedOption || (selectedOption === 'custom' && !selectedDate)}
-            className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300"
-          >
-            Next
-          </button>
+      </div>
+
+      {/* Sticky Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="container mx-auto px-4 py-4 max-w-2xl">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+            >
+              <ArrowLeftIcon className="mr-2 h-5 w-5" />
+              Back
+            </button>
+            <button
+              onClick={() => router.push('/onboarding/pricing')}
+              disabled={!selectedOption || (selectedOption === 'custom' && !selectedDate)}
+              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

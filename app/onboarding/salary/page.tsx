@@ -17,7 +17,7 @@ export default function SalaryPreference() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6 md:p-8">
+    <div className="min-h-screen bg-white p-6 md:p-8 pb-28">
       {/* Main Content */}
       <div className="mx-auto max-w-2xl">
         {/* Headers */}
@@ -68,27 +68,26 @@ export default function SalaryPreference() {
           </div>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
-          >
-            <ArrowLeftIcon className="mr-2 h-5 w-5" />
-            Back
-          </button>
-          <Link
-            href="/onboarding/skills"
-            className="text-gray-500 hover:text-gray-700"
-          >
-            Skip for now
-          </Link>
-          <button
-            onClick={() => router.push('/onboarding/skills')}
-            className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
-          >
-            Next
-          </button>
+      </div>
+
+      {/* Sticky Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div className="container mx-auto px-4 py-4 max-w-2xl">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => router.back()}
+              className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+            >
+              <ArrowLeftIcon className="mr-2 h-5 w-5" />
+              Back
+            </button>
+            <button
+              onClick={() => router.push('/onboarding/skills')}
+              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -114,21 +114,117 @@ export default function ContactInfoForm() {
           }
 
           // Get location data
-          const location = data.data.location || (data.data.addresses && data.data.addresses[0]);
+          let location = null;
+          if (data.data.location) {
+            location = data.data.location;
+          } else if (data.data.addresses && data.data.addresses.length > 0) {
+            location = data.data.addresses[0];
+          } else if (data.data.address) {
+            location = data.data.address;
+          }
+
+          // Extract phone number - try multiple possible fields
+          let phone = '';
+          if (data.data.phone) {
+            phone = data.data.phone;
+          } else if (data.data.phoneNumbers && data.data.phoneNumbers.length > 0) {
+            phone = data.data.phoneNumbers[0];
+          } else if (data.data.phones && data.data.phones.length > 0) {
+            phone = typeof data.data.phones[0] === 'string' ? 
+              data.data.phones[0] : 
+              data.data.phones[0].number || data.data.phones[0].phone || '';
+          } else if (data.data.contactPoints) {
+            const phonePoint = data.data.contactPoints.find((point: any) => 
+              point.type === 'phone' || point.type === 'mobile'
+            );
+            if (phonePoint) {
+              phone = phonePoint.value;
+            }
+          }
+
+          // Clean up phone number - remove any non-digit characters except + at start
+          phone = phone.replace(/[^\d+]/g, '');
+          if (phone && !phone.startsWith('+')) {
+            phone = '+1' + phone; // Add US country code if missing
+          }
+
+          // Extract email - try multiple possible fields
+          const email = data.data.email || 
+                       data.data.emailAddress || 
+                       data.data.email_address || 
+                       (data.data.emails && data.data.emails[0]) || 
+                       '';
+
+          // Extract LinkedIn URL
+          let linkedIn = '';
+          // First try direct LinkedIn URL fields
+          if (data.data.linkedin_url) {
+            linkedIn = data.data.linkedin_url;
+          } else if (data.data.linkedInUrl) {
+            linkedIn = data.data.linkedInUrl;
+          } else {
+            // Look in websites array
+            if (data.data.websites) {
+              const linkedInSite = data.data.websites.find((site: any) => 
+                (typeof site === 'string' && site.toLowerCase().includes('linkedin.com')) ||
+                (site.url && site.url.toLowerCase().includes('linkedin.com'))
+              );
+              if (linkedInSite) {
+                linkedIn = typeof linkedInSite === 'string' ? linkedInSite : linkedInSite.url;
+              }
+            }
+            
+            // Look in social_links array
+            if (!linkedIn && data.data.social_links) {
+              const linkedInProfile = data.data.social_links.find((link: any) => 
+                (typeof link === 'string' && link.toLowerCase().includes('linkedin.com')) ||
+                (link.url && link.url.toLowerCase().includes('linkedin.com')) ||
+                (link.type && link.type.toLowerCase() === 'linkedin')
+              );
+              if (linkedInProfile) {
+                linkedIn = typeof linkedInProfile === 'string' ? linkedInProfile : linkedInProfile.url;
+              }
+            }
+            
+            // Look in profiles array
+            if (!linkedIn && data.data.profiles) {
+              const linkedInProfile = data.data.profiles.find((profile: any) => 
+                profile.network?.toLowerCase() === 'linkedin' || 
+                profile.url?.toLowerCase().includes('linkedin.com')
+              );
+              if (linkedInProfile) {
+                linkedIn = linkedInProfile.url;
+              }
+            }
+            
+            // Look in raw URLs array
+            if (!linkedIn && data.data.urls) {
+              const linkedInUrl = data.data.urls.find((url: string) => 
+                url.toLowerCase().includes('linkedin.com')
+              );
+              if (linkedInUrl) {
+                linkedIn = linkedInUrl;
+              }
+            }
+          }
           
+          // Ensure LinkedIn URL starts with https://
+          if (linkedIn && !linkedIn.startsWith('http')) {
+            linkedIn = 'https://' + linkedIn;
+          }
+
           setFormData(prev => ({
             ...prev,
             firstName,
             lastName,
-            email: data.data.email || '',
-            phone: data.data.phone || '',
-            address: location?.street_address || '',
-            city: location?.city || '',
-            state: location?.state || '',
-            postalCode: location?.postal_code || '',
-            linkedIn: data.data.linkedin_url || 
-                     (data.data.social_links?.find((link: string) => link.toLowerCase().includes('linkedin'))?.url) || '',
-            dateOfBirth: data.data.date_of_birth || '',
+            email,
+            phone,
+            address: location?.street_address || location?.streetAddress || location?.street || '',
+            city: location?.city || location?.municipality || '',
+            state: location?.state || location?.region || location?.stateCode || '',
+            postalCode: location?.postal_code || location?.postalCode || location?.zip || '',
+            linkedIn,
+            dateOfBirth: data.data.date_of_birth || data.data.dateOfBirth || data.data.birthDate || '',
           }));
         }
       } catch (error) {
