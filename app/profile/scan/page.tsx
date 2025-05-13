@@ -162,8 +162,8 @@ export default function ResumeScan() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <main className="w-full max-w-md px-4 py-12">
+    <div className="min-h-screen bg-white">
+      <main className="w-full max-w-md mx-auto px-4 pt-24 pb-12">
         <div className="text-center">
           {error ? (
             <>
