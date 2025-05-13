@@ -109,23 +109,38 @@ export default function JobTitles() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Start typing to see suggestions..."
+              autoComplete="off"
               className="w-full rounded-lg border-2 border-gray-200 p-4 text-lg transition-colors focus:border-black focus:outline-none"
+              role="combobox"
+              aria-expanded={suggestions.length > 0}
+              aria-controls="job-suggestions"
+              aria-autocomplete="list"
             />
             
             {/* Suggestions Dropdown */}
             {suggestions.length > 0 && (
-              <div className="absolute z-10 mt-1 w-full rounded-lg border border-gray-100 bg-white py-2 shadow-lg">
-                {suggestions.map((title) => (
-                  <button
+              <ul
+                id="job-suggestions"
+                role="listbox"
+                className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded-lg border border-gray-100 bg-white py-2 shadow-lg"
+              >
+                {suggestions.map((title, index) => (
+                  <li
                     key={title}
-                    onClick={() => handleSelectTitle(title)}
-                    className="w-full px-4 py-3 text-left text-gray-800 transition-colors hover:bg-gray-50 disabled:opacity-50"
-                    disabled={selectedTitles.length >= 5}
+                    role="option"
+                    aria-selected={selectedTitles.includes(title)}
+                    className="block"
                   >
-                    {title}
-                  </button>
+                    <button
+                      onClick={() => handleSelectTitle(title)}
+                      className="w-full px-4 py-3 text-left text-gray-800 transition-colors hover:bg-gray-50 focus:bg-gray-50 focus:outline-none disabled:opacity-50"
+                      disabled={selectedTitles.length >= 5}
+                    >
+                      {title}
+                    </button>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
         </div>
