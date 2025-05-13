@@ -32,14 +32,14 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
-              {!isRestrictedPath && <div className="flex items-center space-x-8">
+              {!isRestrictedPath && <div className="flex items-center justify-center space-x-16 ml-16">
                 <div className="relative group">
                   <button 
                     type="button"
                     role="button"
                     aria-haspopup="true"
                     aria-expanded="false"
-                    className="text-gray-700 hover:text-[#4292FF] transition-colors text-[22px] md:text-base font-bold flex items-center gap-1"
+                    className="text-gray-700 hover:text-[#4292FF] transition-colors text-[15px] font-medium flex items-center gap-1"
                   >
                     Core Features
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,19 +49,19 @@ export default function Header() {
                   <div className="absolute left-0 mt-2 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block z-50 min-w-[300px]">
                     <Link 
                       href="/resume-builder" 
-                      className="block px-10 py-2 text-[15px] text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
+                      className="block px-10 py-2 text-[15px] font-medium text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Resume Builder
                     </Link>
                     <Link 
                       href="/jobs" 
-                      className="block px-10 py-2 text-[15px] text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
+                      className="block px-10 py-2 text-[15px] font-medium text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Job Search
                     </Link>
                     <Link 
                       href="/applications" 
-                      className="block px-10 py-2 text-[15px] text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
+                      className="block px-10 py-2 text-[15px] font-medium text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Application Tracker
                     </Link>
@@ -69,13 +69,13 @@ export default function Header() {
                 </div>
                 <Link 
                   href="/pricing" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[22px] md:text-base font-bold"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[15px] font-medium"
                 >
                   Pricing
                 </Link>
                 <Link 
                   href="/copilot" 
-                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[22px] md:text-base font-bold"
+                  className="text-gray-700 hover:text-[#4292FF] transition-colors text-[15px] font-medium"
                 >
                   Copilot
                 </Link>
