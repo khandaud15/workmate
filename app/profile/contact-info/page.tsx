@@ -232,6 +232,11 @@ export default function ContactInfoForm() {
             yearDropdownItemNumber={100}
             scrollableYearDropdown
             calendarClassName="shadow-lg border border-gray-200 rounded-lg p-2"
+            autoComplete="off"
+            aria-label={label}
+            aria-required={required}
+            aria-invalid={touched[name] && !validation[name]}
+            wrapperClassName="w-full"
           />
         </div>
       </div>
@@ -264,13 +269,21 @@ export default function ContactInfoForm() {
           <input
             ref={inputRef}
             type={type}
-            name={name}
+            name={`${name}_${Math.random().toString(36).substring(7)}`}
             defaultValue={formData[name] as string}
             onBlur={(e) => {
               if (inputRef.current) {
                 setFormData(prev => ({ ...prev, [name]: inputRef.current?.value || '' }));
               }
             }}
+            autoComplete="new-password"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
+            data-form-type="other"
+            aria-label={label}
+            aria-required={required}
+            aria-invalid={touched[name] && !validation[name]}
             className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
             placeholder={placeholder}
             {...props}
