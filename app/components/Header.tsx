@@ -80,7 +80,7 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
-              {!isRestrictedPath && <div className="flex items-center justify-center space-x-16 ml-16">
+              {!isRestrictedPath && <div className="flex items-center justify-center space-x-12 ml-12">
                 <div className="relative group">
                   <button 
                     type="button"
