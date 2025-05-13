@@ -3,4 +3,7 @@
   background-color: black;
 }
 
-/* Removed header and footer hiding */
+.auth-layout header,
+.auth-layout footer {
+  display: none !important;
+}
