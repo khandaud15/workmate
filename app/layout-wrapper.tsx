@@ -22,7 +22,7 @@ export default function LayoutWrapper({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/login');
+  const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
 
   useEffect(() => {
     if (isAuth) {
@@ -40,7 +40,7 @@ export default function LayoutWrapper({
     <Providers>
       <div className="overflow-x-hidden">
         <Header />
-        <main className={`flex-grow ${isAuth ? 'pt-24' : 'pt-24'} overflow-x-hidden`}>{children}</main>
+        <main className={`flex-grow pt-24 overflow-x-hidden`}>{children}</main>
         {!hideFooter && <Footer />}
       </div>
     </Providers>
