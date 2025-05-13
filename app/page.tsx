@@ -13,12 +13,12 @@ export default function Home() {
             <div className="flex flex-col items-center md:items-center md:grid md:grid-cols-2 gap-16 lg:gap-20">
               {/* Hero Text */}
               <div className="text-center md:text-left max-w-2xl md:max-w-xl order-1 md:order-2 md:self-center">
-                <h1 className="text-[40px] md:text-[52px] leading-[1.15] tracking-tight font-extrabold text-[#1A1A1A]">
+                <h1 className="text-[32px] md:text-[40px] leading-[1.15] tracking-tight text-[#1A1A1A]" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
                   <span className="block md:inline">Land Jobs Faster.</span>{' '}
                   <span className="block md:inline">Stay Organized Effortlessly.</span>
                 </h1>
                 <p className="mt-6 text-xl leading-normal text-[#1A1A1A] max-w-xl mx-auto md:mx-0">
-                  From auto-applying to interviews to syncing your calendar, Talexus keeps every part of your job journey on track.
+                  From <span style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700, color: '#0A0F1C' }}>AI-powered applications</span> to interview scheduling and calendar syncing, Talexus streamlines every step of your job journey.
                 </p>
                 <div className="mt-8">
                   <Link
@@ -45,7 +45,7 @@ export default function Home() {
         {/* Feature Cards Section */}
         <div className="bg-white py-4 sm:py-8 -mt-8 sm:-mt-12">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <h2 className="text-center text-[32px] font-bold text-black mb-6 sm:mb-8">
+            <h2 className="text-center text-[24px] sm:text-[32px] text-[#1A1A1A] mb-6 sm:mb-8" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
               We don't stop until you're hired
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">

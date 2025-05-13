@@ -11,7 +11,7 @@ export default function ApplicationProcess() {
     <div className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Headline */}
-        <h2 className="text-center text-[32px] sm:text-[40px] font-bold text-[#1A1A1A] mb-12">
+        <h2 className="text-center text-[24px] sm:text-[32px] text-[#1A1A1A] mb-12" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
           Save time — skip the job application process
         </h2>
 

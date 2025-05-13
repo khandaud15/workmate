@@ -1,73 +1,93 @@
 'use client';
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css';
+import { useRef, useEffect } from 'react';
 
-const companies = [
-  { name: 'Airbnb', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Airbnb_logo_PNG3.png' },
-  { name: 'Google', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/google_PNG.png' },
-  { name: 'Walmart', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Walmart_logo_PNG1.png' },
-  { name: 'Tesla', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Tesla_logo_PNG2.png' },
-  { name: 'PayPal', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Paypal_logo_PNG3.png' },
-  { name: 'OpenAI', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/OpenAI-Logo-PNG_004.png' },
-  { name: 'Meta', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Meta_Logo_PNG7.png' },
-  { name: 'Dell', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Dell_logo_PNG1.png' },
-  { name: 'Cisco', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Cisco_logo_PNG2.png' },
-  { name: 'Amazon', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Amazon-Logo.png' },
-  { name: 'Apple', logo: 'https://raw.githubusercontent.com/khandaud15/files/main/Apple_logo_PNG1.png' },
+const logos = [
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/16A6B598-9209-487A-9ED7-73AFA431B82F_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/3A945AD2-1E1D-4E56-8E36-CD0F59C09E79_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/5383E4A8-E962-4983-83C7-8A26F158B8FB_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/5A689FDD-4E01-4FF8-9E43-9C4B126D25D3_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/74B4D6E1-04CF-4C85-9221-A4C8D9AB45DF_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/812111C1-843D-480C-8652-FDC4D516AF9D_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/923F8DFD-56B0-43D5-8654-8512729B466C_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/984F7334-CA80-4308-B02A-D5ECA38536B4_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/A1E4B751-D8AC-4F41-B790-AB1EC4727DA7_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/AC42F654-DCBD-4E08-9EBB-379C8B84661A_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/D6099720-B4EC-458D-95F6-6A426B0525FD_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/DD669E9C-4437-4FD1-B3B8-DF259BA738A9_1_105_c.png',
+  'https://raw.githubusercontent.com/khandaud15/files/main/Images2/F1209C17-117A-4420-90EB-2444A70E8122_1_105_c.png',
 ];
 
+const arrowStyle = {
+  position: 'absolute',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  background: '#fff',
+  border: 'none',
+  padding: '8px 12px',
+  fontSize: '20px',
+  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+  borderRadius: '50%',
+  zIndex: 10,
+  cursor: 'pointer',
+};
+
 export default function CompanyCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="bg-gray-50 pt-4 pb-6">
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-8">
-        <div className="text-center mb-4">
-          <h2 className="text-2xl font-semibold text-[#1A1A1A]">Top companies hiring</h2>
-        </div>
-        <div className="bg-white rounded-2xl shadow-lg p-6 transform-gpu hover:shadow-xl transition-shadow duration-300">
-          <div className="max-w-[1100px] mx-auto">
-          <Swiper
-            modules={[Autoplay]}
-            spaceBetween={16}
-            slidesPerView={2}
-            loop={true}
-            centeredSlides={false}
-            autoplay={{
-              delay: 2000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true
-            }}
-            breakpoints={{
-              640: {
-                slidesPerView: 3,
-                spaceBetween: 24,
-              },
-              768: {
-                slidesPerView: 4,
-                spaceBetween: 24,
-              },
-              1024: {
-                slidesPerView: 5,
-                spaceBetween: 24,
-              },
-            }}
-            className="company-carousel"
-          >
-            {companies.map((company) => (
-              <SwiperSlide key={company.name}>
-                <div className="flex items-center justify-center px-2">
-                  <div className="w-[140px] aspect-[4/3] bg-white/50 backdrop-blur-sm rounded-xl shadow-md flex items-center justify-center p-4 hover:shadow-xl hover:-translate-y-1 hover:bg-white transition-all duration-300 ease-in-out transform-gpu">
+    <div className="py-8">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <h2 className="text-[20px] text-center -mt-4 mb-4 text-[#0A0F1C] tracking-wide" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
+          Top companies hiring
+        </h2>
+
+        <div className="bg-white rounded-[24px] p-4 sm:p-6 relative transform hover:scale-[1.01] transition-all duration-500 ease-out shadow-2xl border border-gray-100 mt-8">
+          <div className="relative overflow-hidden">
+            <style jsx>{`
+              @keyframes slide {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-200px * ${logos.length})); }
+              }
+              .animate-slide {
+                animation: slide 30s linear infinite;
+              }
+              .animate-slide:hover {
+                animation-play-state: paused;
+              }
+            `}</style>
+            <div className="flex gap-[80px] px-4 py-3 animate-slide">
+              {/* First set of logos */}
+              <div className="flex gap-[80px]">
+                {logos.map((src, i) => (
+                  <div
+                    key={i}
+                    className="flex-none w-[120px] h-[120px] bg-[#0A0F1C] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
+                  >
                     <img
-                      src={company.logo}
-                      alt={`${company.name} logo`}
-                      className="max-w-full max-h-full object-contain"
+                      src={src}
+                      alt={`Company logo ${i + 1}`}
+                      className="w-full h-full object-contain"
                     />
                   </div>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                ))}
+              </div>
+              {/* Duplicate set for seamless loop */}
+              <div className="flex gap-[80px]">
+                {logos.map((src, i) => (
+                  <div
+                    key={`dup-${i}`}
+                    className="flex-none w-[120px] h-[120px] bg-[#0A0F1C] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
+                  >
+                    <img
+                      src={src}
+                      alt={`Company logo ${i + 1}`}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
