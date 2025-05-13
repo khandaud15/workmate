@@ -32,7 +32,7 @@ const countries: Country[] = [
 ];
 import { useSession, signIn, signOut } from 'next-auth/react';
 
-export default function Header() {
+export default function Header({ className = '' }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -69,7 +69,7 @@ export default function Header() {
   const isRestrictedPath = pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
 
   return (
-    <header className="fixed w-full top-0 z-[9999] bg-white border-b border-[#0e3a68]/10">
+    <header className={`sticky top-0 z-50 bg-white shadow-sm border-b border-[#0e3a68]/10 ${className}`}>
       <div className="max-w-7xl mx-auto">
         <div className="px-4 py-4 md:px-8">
           <div className="flex items-center justify-between space-x-6">
