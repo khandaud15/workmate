@@ -42,7 +42,7 @@ export default function CompanyCarousel() {
           Top companies hiring
         </h2>
 
-        <div className="bg-white rounded-[24px] p-4 sm:p-6 relative transform hover:scale-[1.01] transition-all duration-500 ease-out shadow-2xl border border-gray-100 mt-8">
+        <div className="bg-[#fefcf9] rounded-[24px] p-4 sm:p-6 relative transform hover:scale-[1.01] transition-all duration-500 ease-out shadow-2xl border border-gray-100 mt-8">
           <div className="relative overflow-hidden">
             <style jsx>{`
               @keyframes slide {
@@ -62,7 +62,7 @@ export default function CompanyCarousel() {
                 {logos.map((src, i) => (
                   <div
                     key={i}
-                    className="flex-none w-[120px] h-[120px] bg-[#0A0F1C] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
+                    className="flex-none w-[120px] h-[120px] bg-[#fefcf9] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
                   >
                     <img
                       src={src}
@@ -77,7 +77,7 @@ export default function CompanyCarousel() {
                 {logos.map((src, i) => (
                   <div
                     key={`dup-${i}`}
-                    className="flex-none w-[120px] h-[120px] bg-[#0A0F1C] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
+                    className="flex-none w-[120px] h-[120px] bg-[#fefcf9] rounded-2xl p-4 shadow-lg hover:scale-105 transition-all duration-300 hover:shadow-[0_0_30px_rgba(66,146,255,0.3)] border border-white/10"
                   >
                     <img
                       src={src}

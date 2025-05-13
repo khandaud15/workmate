@@ -48,10 +48,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={`${inter.className} antialiased min-h-screen flex flex-col`} suppressHydrationWarning>
+      <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`} suppressHydrationWarning>
         <Providers>
           {!isAuth && <Header />}
-          <div className={`flex-grow ${!isAuth ? 'pt-24' : ''}`}>
+          <div className={`flex-grow ${!isAuth ? 'pt-24 bg-[#fefcf9]' : ''}`}>
             {children}
           </div>
           {!hideFooter && <Footer />}

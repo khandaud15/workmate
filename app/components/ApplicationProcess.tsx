@@ -8,7 +8,7 @@ const ArrowIcon = () => <span className="text-lg">→</span>;
 
 export default function ApplicationProcess() {
   return (
-    <div className="py-16 bg-white">
+    <div className="py-16 bg-[#fefcf9]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Headline */}
         <h2 className="text-center text-[24px] sm:text-[32px] text-[#1A1A1A] mb-12" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
@@ -23,7 +23,7 @@ export default function ApplicationProcess() {
             
             {/* Info Cards */}
             <div className="space-y-4">
-              <div className="bg-white rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm">
+              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm text-gray-500">Your desired salary</p>
@@ -35,7 +35,7 @@ export default function ApplicationProcess() {
                 </div>
               </div>
               
-              <div className="bg-white rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm">
+              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm">
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="text-sm text-gray-500">Where do you want to work?</p>
@@ -54,7 +54,7 @@ export default function ApplicationProcess() {
             <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">We find jobs for you</h3>
             
             {/* Search Input */}
-            <div className="bg-white rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm flex items-center mb-3 sm:mb-4">
+            <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm flex items-center mb-3 sm:mb-4">
               <div className="flex-1 text-gray-800">Project Manager</div>
               <div role="button" tabIndex={0} onClick={() => {}} onKeyDown={(e) => e.key === 'Enter' && {}} className="p-2 text-[#4292FF] hover:bg-blue-50 rounded-full transition-colors cursor-pointer">
                 <ArrowIcon />
@@ -62,7 +62,7 @@ export default function ApplicationProcess() {
             </div>
 
             {/* Job Card */}
-            <div className="bg-white rounded-[12px] p-4 shadow-sm">
+            <div className="bg-[#fefcf9] rounded-[12px] p-4 shadow-sm">
               <h4 className="font-semibold mb-2">Project Manager</h4>
               <p className="text-sm text-gray-600 line-clamp-3">
                 The Project Manager is responsible for planning, delivery, and marketing across the lifecycle...
@@ -75,7 +75,7 @@ export default function ApplicationProcess() {
             <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">We apply for you</h3>
             
             {/* Resume Card */}
-            <div className="bg-white rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm mb-3 sm:mb-4">
+            <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm mb-3 sm:mb-4">
               <p className="font-medium text-sm sm:text-base">Resume.pdf</p>
             </div>
 
@@ -86,7 +86,7 @@ export default function ApplicationProcess() {
 
             {/* Applied Jobs List */}
             <div className="space-y-3">
-              <div className="bg-white rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm">
+              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm">
                 <div className="flex justify-between items-center">
                   <p className="font-medium text-sm sm:text-base">Project Manager</p>
                   <span className="text-green-600 flex items-center gap-1 text-sm sm:text-base">
@@ -94,7 +94,7 @@ export default function ApplicationProcess() {
                   </span>
                 </div>
               </div>
-              <div className="bg-white rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm">
+              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm">
                 <div className="flex justify-between items-center">
                   <p className="font-medium text-sm sm:text-base">Data Engineer</p>
                   <span className="text-green-600 flex items-center gap-1 text-sm sm:text-base">

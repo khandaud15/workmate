@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div>
+    <div style={{ backgroundColor: '#fefcf9' }}>
       <main>
         {/* Hero Section */}
         <div className="py-8 sm:py-12">
@@ -37,13 +37,17 @@ export default function Home() {
         </div>
 
         {/* Company Carousel */}
-        <CompanyCarousel />
+        <div style={{ backgroundColor: '#fefcf9', paddingBottom: '2rem' }}>
+          <CompanyCarousel />
+        </div>
 
         {/* Application Process Section */}
-        <ApplicationProcess />
+        <div style={{ backgroundColor: '#fefcf9' }}>
+          <ApplicationProcess />
+        </div>
 
         {/* Feature Cards Section */}
-        <div className="bg-white py-4 sm:py-8 -mt-8 sm:-mt-12">
+        <div className="py-4 sm:py-8 -mt-8 sm:-mt-12" style={{ backgroundColor: '#fefcf9' }}>
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <h2 className="text-center text-[24px] sm:text-[32px] text-[#1A1A1A] mb-6 sm:mb-8" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
               We don't stop until you're hired
@@ -109,6 +113,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <div style={{ backgroundColor: '#fefcf9' }} className="h-16"></div>
       </main>
     </div>
   );

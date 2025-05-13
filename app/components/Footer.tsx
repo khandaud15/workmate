@@ -68,7 +68,7 @@ const footerLinks: FooterLinks = {
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-gray-900 to-black mt-16" aria-labelledby="footer-heading">
+    <footer className="bg-[#0A0F1C] mt-16" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">
         Footer
       </h2>
