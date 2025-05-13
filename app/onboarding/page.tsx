@@ -153,7 +153,7 @@ export default function Onboarding() {
             </div>
             <Link
               href="/onboarding/resume"
-              className="px-8 py-2.5 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
+              className="px-8 py-2.5 bg-[#0e3a68] text-white font-medium rounded-lg hover:bg-[#0c3156] transition-colors"
             >
               Next
             </Link>

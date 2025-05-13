@@ -81,9 +81,9 @@ export default function StartDateSelection() {
                   setSelectedDate(option.id === 'two_weeks' ? twoWeeksFromNow : today);
                 }
               }}
-              className={`relative flex w-full items-center justify-between rounded-lg border-2 p-4 text-left transition-all hover:border-black hover:bg-gray-50 ${
+              className={`relative flex w-full items-center justify-between rounded-lg border-2 p-4 text-left transition-all hover:border-[#0e3a68] hover:bg-gray-50 ${
                 selectedOption === option.id
-                  ? 'border-black bg-gray-50'
+                  ? 'border-[#0e3a68] bg-gray-50'
                   : 'border-gray-200'
               }`}
             >
@@ -97,7 +97,7 @@ export default function StartDateSelection() {
                 </div>
               </div>
               {selectedOption === option.id && (
-                <CheckCircleIcon className="h-5 w-5 text-black" />
+                <CheckCircleIcon className="h-5 w-5 text-[#0e3a68]" />
               )}
             </button>
           ))}
@@ -127,7 +127,7 @@ export default function StartDateSelection() {
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.back()}
-              className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+              className="flex items-center rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
             >
               <ArrowLeftIcon className="mr-2 h-5 w-5" />
               Back
@@ -135,7 +135,7 @@ export default function StartDateSelection() {
             <button
               onClick={() => router.push('/onboarding/pricing')}
               disabled={!selectedOption || (selectedOption === 'custom' && !selectedDate)}
-              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156] disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Next
             </button>

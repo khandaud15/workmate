@@ -140,7 +140,7 @@ export default function PricingPage() {
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative w-full overflow-hidden rounded-2xl border-2 transition-all ${selectedPlan === plan.id ? 'border-black' : 'border-gray-200'}`}
+                className={`relative w-full overflow-hidden rounded-2xl border-2 transition-all ${selectedPlan === plan.id ? 'border-[#0e3a68]' : 'border-gray-200'}`}
               >
                 {/* Header with checkbox */}
                 <button
@@ -149,7 +149,7 @@ export default function PricingPage() {
                 >
                   <div className="flex items-center">
                     <div
-                      className={`mr-3 flex h-5 w-5 items-center justify-center rounded border transition-colors ${selectedPlan === plan.id ? 'border-black bg-black text-white' : 'border-gray-300'}`}
+                      className={`mr-3 flex h-5 w-5 items-center justify-center rounded border transition-colors ${selectedPlan === plan.id ? 'border-[#0e3a68] bg-[#0e3a68] text-white' : 'border-gray-300'}`}
                     >
                       {selectedPlan === plan.id && <CheckIcon className="h-3 w-3" />}
                     </div>
@@ -209,7 +209,7 @@ export default function PricingPage() {
                   className="group flex items-start rounded-xl p-3 transition-colors hover:bg-gray-50"
                 >
                   <div className="shrink-0">
-                    <feature.icon className="mr-3 h-6 w-6 text-black transition-transform group-hover:scale-110" />
+                    <feature.icon className="mr-3 h-6 w-6 text-[#0e3a68] transition-transform group-hover:scale-110" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900 group-hover:text-black">{feature.title}</h3>
@@ -237,7 +237,7 @@ export default function PricingPage() {
             <div className="flex items-center justify-between">
               <button
                 onClick={() => router.back()}
-                className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+                className="flex items-center rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
               >
                 <ArrowLeftIcon className="mr-2 h-5 w-5" />
                 Back
@@ -249,7 +249,7 @@ export default function PricingPage() {
                     router.push('/profile/questions');
                   }
                 }}
-                className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+                className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156]"
               >
                 Next
               </button>

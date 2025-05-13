@@ -322,7 +322,7 @@ export default function ContactInfoForm() {
             showMonthDropdown
             showYearDropdown
             dropdownMode="select"
-            className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
+            className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0e3a68]/20"
             placeholderText="Select date"
             maxDate={new Date()}
             yearDropdownItemNumber={100}
@@ -380,7 +380,7 @@ export default function ContactInfoForm() {
             aria-label={label}
             aria-required={required}
             aria-invalid={touched[name] && !validation[name]}
-            className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-200"
+            className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0e3a68]/20"
             placeholder={placeholder}
             {...props}
           />
@@ -474,14 +474,14 @@ export default function ContactInfoForm() {
                   id="smsOptIn"
                   checked={formData.smsOptIn}
                   onChange={handleInputChange}
-                  className="mt-1 h-5 w-5 border-[1.5px] border-gray-300 text-blue-600 focus:ring-1 focus:ring-blue-500"
+                  className="mt-1 h-5 w-5 rounded border-[1.5px] border-gray-300 accent-[#0e3a68] checked:bg-[#0e3a68] checked:hover:bg-[#0c3156] focus:ring-2 focus:ring-[#0e3a68]/20 hover:border-[#0e3a68] transition-colors cursor-pointer"
                 />
                 <div className="ml-3 flex-1">
                   <p className="text-sm leading-relaxed text-gray-700">
                     By providing your phone number and selecting the checkbox, you consent to receive new job alerts and account information via SMS text messages. Message frequency may vary based on your interactions with us. Message & data rates may apply. You can opt-out at any time by replying "STOP" to unsubscribe or contacting Customer Service. For more information, please refer to our{' '}
-                    <a href="/privacy" className="text-blue-600 underline hover:text-blue-800">Privacy Policy</a>{' '}
+                    <a href="/privacy" className="text-[#0e3a68] underline hover:text-[#0c3156]">Privacy Policy</a>{' '}
                     and{' '}
-                    <a href="/terms" className="text-blue-600 underline hover:text-blue-800">Terms of Service</a>.
+                    <a href="/terms" className="text-[#0e3a68] underline hover:text-[#0c3156]">Terms of Service</a>.
                   </p>
                 </div>
               </div>
@@ -496,7 +496,7 @@ export default function ContactInfoForm() {
               <button
                 type="submit"
                 form="contact-form"
-                className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+                className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156]"
               >
                 Next
               </button>

@@ -69,7 +69,7 @@ export default function LocationSelection() {
             City or state
           </label>
           <div className="relative">
-            <div className="relative rounded-lg border-2 border-gray-200 bg-white p-3 focus-within:border-black">
+            <div className="relative rounded-lg border-2 border-gray-200 bg-white p-3 focus-within:border-[#0e3a68]">
               <div className="flex flex-wrap gap-2">
                 {selectedLocations.map((location) => (
                   <span
@@ -154,7 +154,7 @@ export default function LocationSelection() {
               onChange={(e) => setIncludeRemote(e.target.checked)}
               className="peer sr-only"
             />
-            <div className="h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-gray-100"></div>
+            <div className="h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#0e3a68] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-[#0e3a68]/10"></div>
             <span className="ml-3 text-sm font-medium text-gray-700">
               Include Remote Jobs
             </span>
@@ -176,7 +176,7 @@ export default function LocationSelection() {
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.back()}
-              className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+              className="flex items-center rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
             >
               <ArrowLeftIcon className="mr-2 h-5 w-5" />
               Back
@@ -184,7 +184,7 @@ export default function LocationSelection() {
             <button
               onClick={() => router.push('/onboarding/start-date')}
               disabled={selectedLocations.length === 0}
-              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156] disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Next
             </button>

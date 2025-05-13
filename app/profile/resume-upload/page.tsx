@@ -106,9 +106,9 @@ export default function ResumeUpload() {
           <div className="flex-1">
             <div
               className={`relative rounded-xl border-2 border-dashed ${
-                dragActive ? 'border-[#3BA17C] bg-[#F0FDF4]' : 'border-gray-300'
+                dragActive ? 'border-[#0e3a68] bg-[#0e3a68]/5' : 'border-gray-300'
               } ${
-                uploadStatus === 'success' ? 'border-[#3BA17C] bg-[#F0FDF4]' : ''
+                uploadStatus === 'success' ? 'border-[#0e3a68] bg-[#0e3a68]/5' : ''
               } transition-colors`}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -126,15 +126,15 @@ export default function ResumeUpload() {
                 htmlFor="resume-upload"
                 className="flex flex-col items-center justify-center p-12 cursor-pointer"
               >
-                <div className="rounded-full bg-[#E8F5E9] p-4 mb-4">
+                <div className="rounded-full bg-[#0e3a68]/10 p-4 mb-4">
                   {uploadStatus === 'success' ? (
-                    <svg className="h-8 w-8 text-[#3BA17C]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="h-8 w-8 text-[#0e3a68]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   ) : uploadStatus === 'uploading' ? (
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#3BA17C] border-t-transparent" />
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0e3a68] border-t-transparent" />
                   ) : (
-                    <ArrowUpTrayIcon className="h-8 w-8 text-[#3BA17C]" />
+                    <ArrowUpTrayIcon className="h-8 w-8 text-[#0e3a68]" />
                   )}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
@@ -147,7 +147,7 @@ export default function ResumeUpload() {
                 {selectedFile ? (
                   <p className="text-gray-600">{selectedFile.name}</p>
                 ) : (
-                  <button className="mt-4 px-6 py-2 bg-[#4292FF] text-white font-medium rounded-lg hover:bg-[#237DFF] focus:outline-none focus:ring-2 focus:ring-[#4292FF] focus:ring-offset-2 transition-colors">
+                  <button className="mt-4 px-6 py-2 bg-[#0e3a68] text-white font-medium rounded-lg hover:bg-[#0c3156] focus:outline-none focus:ring-2 focus:ring-[#0e3a68] focus:ring-offset-2 transition-colors">
                     Browse
                   </button>
                 )}
@@ -179,7 +179,7 @@ export default function ResumeUpload() {
           <div className="flex justify-between items-center">
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 px-6 py-2.5 text-black font-medium border-2 border-black rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-6 py-2.5 text-[#0e3a68] font-medium border-2 border-[#0e3a68] rounded-lg hover:bg-[#0e3a68]/5 transition-colors"
             >
               <ArrowLeftIcon className="h-5 w-5" />
               Back
@@ -187,7 +187,7 @@ export default function ResumeUpload() {
             <button
               onClick={() => router.push('/profile/scan')}
               disabled={uploadStatus !== 'success'}
-              className="px-8 py-2.5 bg-black text-white font-medium rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-8 py-2.5 bg-[#0e3a68] text-white font-medium rounded-lg hover:bg-[#0c3156] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>

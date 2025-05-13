@@ -4,6 +4,7 @@
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import Logo from './Logo';
 import { useState, useId } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
@@ -25,9 +26,7 @@ export default function Header() {
           <div className="flex items-center justify-between space-x-6">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0">
-              <span className="text-[15px] md:text-[13px] font-medium px-4 py-1.5 rounded-[8px] bg-black text-white hover:bg-gray-800 transition-colors">
-                Talexus
-              </span>
+              <Logo />
             </Link>
 
             {/* Main Navigation */}
@@ -52,12 +51,6 @@ export default function Header() {
                       className="block px-10 py-2 text-[15px] font-medium text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
                     >
                       Resume Builder
-                    </Link>
-                    <Link 
-                      href="/jobs" 
-                      className="block px-10 py-2 text-[15px] font-medium text-gray-700 hover:bg-[#4292FF] hover:text-white transition-colors whitespace-nowrap"
-                    >
-                      Job Search
                     </Link>
                     <Link 
                       href="/applications" 
@@ -118,7 +111,7 @@ export default function Header() {
                     <span className="text-gray-700">Hello, {session.user?.name}</span>
                     <button
                       onClick={() => signOut({ callbackUrl: '/' })}
-                      className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[20px] md:text-[13px]"
+                      className="bg-[#0e3a68] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#0c3156] transition-colors font-medium text-[13px]"
                     >
                       Sign Out
                     </button>
@@ -127,13 +120,13 @@ export default function Header() {
                   <div className="flex items-center space-x-4">
                     <Link 
                       href="/signup" 
-                      className="bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[20px] md:text-[13px]"
+                      className="bg-[#0e3a68] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#0c3156] transition-colors font-medium text-[13px]"
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup" 
-                      className="hidden md:block bg-black text-white px-4 py-[6px] rounded-[8px] hover:bg-gray-800 transition-colors font-medium text-[20px] md:text-[13px]"
+                      className="hidden md:block bg-[#0e3a68] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#0c3156] transition-colors font-medium text-[13px]"
                     >
                       Sign Up
                     </Link>
@@ -149,7 +142,7 @@ export default function Header() {
                   {session ? (
                     <button
                       onClick={() => router.push('/signup')}
-                      className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
+                      className="p-1.5 bg-[#0e3a68] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#0c3156] transition-colors"
                       aria-label="Profile"
                     >
                       <svg
@@ -170,7 +163,7 @@ export default function Header() {
                   ) : (
                     <button
                       onClick={() => router.push('/signup')}
-                      className="p-1.5 bg-black rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-gray-800 transition-colors"
+                      className="p-1.5 bg-[#0e3a68] rounded-full flex items-center justify-center w-8 h-8 mr-1.5 hover:bg-[#0c3156] transition-colors"
                       aria-label="Sign in"
                     >
                       <svg
@@ -191,7 +184,7 @@ export default function Header() {
                   )}
                   <button
                     type="button"
-                    className="md:hidden p-2 text-gray-700"
+                    className="md:hidden p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors"
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                     aria-expanded={isMobileMenuOpen}
                     aria-label="Toggle mobile menu"
@@ -240,12 +233,12 @@ export default function Header() {
               <div className="flex justify-between items-center py-8 border-b border-gray-100">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
-                  <span className="text-[15px] font-medium px-4 py-1.5 rounded-[8px] bg-black text-white">Talexus</span>
+                  <Logo />
                 </Link>
                 {/* Close Button */}
                 <button 
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-                  className="md:hidden p-1 text-gray-600 hover:text-gray-900"
+                  className="md:hidden p-1 text-[#0e3a68] hover:text-[#0c3156] transition-colors"
                   aria-label="Close menu"
                 >
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -278,13 +271,6 @@ export default function Header() {
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Resume Builder
-                    </Link>
-                    <Link 
-                      href="/jobs" 
-                      className="block text-gray-900 text-base font-medium"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Job Search
                     </Link>
                     <Link 
                       href="/applications" 
@@ -349,7 +335,7 @@ export default function Header() {
                         setIsMobileMenuOpen(false);
                         signOut({ callbackUrl: '/' });
                       }}
-                      className="w-full bg-black text-white px-4 py-2 rounded-lg text-base font-medium"
+                      className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium hover:bg-[#0c3156] transition-colors"
                     >
                       Sign Out
                     </button>
@@ -358,14 +344,14 @@ export default function Header() {
                   <div className="flex flex-col space-y-2 mt-6">
                     <Link 
                       href="/signup"
-                      className="w-full bg-black text-white px-4 py-2 rounded-lg text-base font-medium text-center"
+                      className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log in
                     </Link>
                     <Link 
                       href="/signup"
-                      className="w-full bg-black text-white px-4 py-2 rounded-lg text-base font-medium text-center"
+                      className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign up

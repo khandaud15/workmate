@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'helvetica': ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+      },
       animation: {
         scroll: 'scroll 40s linear infinite',
       },

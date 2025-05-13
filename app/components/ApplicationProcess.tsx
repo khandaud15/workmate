@@ -110,7 +110,7 @@ export default function ApplicationProcess() {
         <div className="mt-12 text-center">
           <Link
             href="/signup"
-            className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 text-[14px] sm:text-[16px] font-medium rounded-[6px] sm:rounded-[8px] text-white bg-[#4292FF] hover:bg-[#237DFF] transition-colors"
+            className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 text-[14px] sm:text-[16px] font-medium rounded-[6px] sm:rounded-[8px] text-white bg-[#0e3a68] hover:bg-[#0c3156] transition-colors"
           >
             Get Started →
           </Link>

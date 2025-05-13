@@ -57,9 +57,9 @@ export default function SalaryPreference() {
                 max="500"
                 value={salary}
                 onChange={(e) => setSalary(Number(e.target.value))}
-                className="h-1 w-full appearance-none rounded-lg bg-gray-200 accent-black"
+                className="h-1 w-full appearance-none rounded-lg bg-gray-200 accent-[#0e3a68]"
                 style={{
-                  background: `linear-gradient(to right, black 0%, black ${
+                  background: `linear-gradient(to right, #0e3a68 0%, #0e3a68 ${
                     ((salary - 30) / (500 - 30)) * 100
                   }%, #E5E7EB ${((salary - 30) / (500 - 30)) * 100}%, #E5E7EB 100%)`
                 }}
@@ -76,14 +76,14 @@ export default function SalaryPreference() {
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.back()}
-              className="flex items-center rounded-lg border-2 border-black px-6 py-2.5 text-black transition-colors hover:bg-gray-50"
+              className="flex items-center rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
             >
               <ArrowLeftIcon className="mr-2 h-5 w-5" />
               Back
             </button>
             <button
               onClick={() => router.push('/onboarding/skills')}
-              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+              className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156]"
             >
               Next
             </button>
@@ -101,7 +101,7 @@ const styles = `
     appearance: none;
     width: 16px;
     height: 16px;
-    background: #000000;
+    background: #0e3a68;
     border-radius: 50%;
     cursor: pointer;
     margin-top: 0px; /* to vertically center the thumb */
@@ -110,7 +110,7 @@ const styles = `
   input[type='range']::-moz-range-thumb {
     width: 16px;
     height: 16px;
-    background: #000000;
+    background: #0e3a68;
     border-radius: 50%;
     cursor: pointer;
     border: none;

@@ -23,7 +23,7 @@ export default function Home() {
                 <div className="mt-8">
                   <Link
                     href="/signup"
-                    className="inline-flex items-center px-5 py-2.5 text-[15px] font-medium rounded-[8px] text-white bg-black hover:bg-gray-800 transition-colors"
+                    className="inline-flex items-center px-5 py-2.5 text-[15px] font-medium rounded-[8px] text-white bg-[#0e3a68] hover:bg-[#0c3156] transition-colors"
                   >
                     Get Started →
                   </Link>

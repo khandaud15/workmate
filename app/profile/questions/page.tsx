@@ -155,7 +155,7 @@ export default function KeyQuestionsPage() {
           <div className="absolute left-0 right-0 top-4">
             {/* Line between Step 1 and 2 */}
             <div className="absolute left-[calc(16.666%+16px)] right-[calc(50%-16px)] h-1 rounded-full bg-gray-200">
-              <div className="h-full w-full rounded-full bg-[#3BA17C]"></div>
+              <div className="h-full w-full rounded-full bg-[#0e3a68]"></div>
             </div>
             {/* Line between Step 2 and 3 */}
             <div className="absolute left-[calc(50%+16px)] right-[calc(16.666%-16px)] h-1 rounded-full bg-gray-200"></div>
@@ -165,8 +165,8 @@ export default function KeyQuestionsPage() {
           <div className="relative flex justify-between px-4">
             {/* Step 1: Key Questions */}
             <div className="flex flex-col items-center">
-              <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#3BA17C] bg-white">
-                <span className="text-base font-bold text-black">1</span>
+              <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0e3a68] bg-white">
+                <span className="text-base font-bold text-[#0e3a68]">1</span>
               </div>
               <div className="mt-3 flex flex-col items-center">
                 <span className="text-xs font-medium uppercase tracking-wider text-gray-500">STEP 1</span>
@@ -242,7 +242,7 @@ export default function KeyQuestionsPage() {
                   }}
                   className={`mt-1 block w-full rounded-lg border ${
                     errors[question.id] ? 'border-red-500' : 'border-gray-600'
-                  } bg-white pl-3 pr-8 py-2.5 text-[#1a2b4b] shadow-sm transition-colors hover:border-gray-800 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm appearance-none`}
+                  } bg-white pl-3 pr-8 py-2.5 text-[#1a2b4b] shadow-sm transition-colors hover:border-[#0e3a68] focus:border-[#0e3a68] focus:outline-none focus:ring-1 focus:ring-[#0e3a68] sm:text-sm appearance-none`}
                 >
                   <option value="">Select</option>
                   {question.options.map((option) => (
@@ -272,7 +272,7 @@ export default function KeyQuestionsPage() {
           <div className="flex justify-end">
             <button
               onClick={handleSubmit}
-              className="rounded-lg bg-black px-8 py-2.5 font-medium text-white transition-colors hover:bg-black/80"
+              className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156]"
             >
               Next
             </button>
