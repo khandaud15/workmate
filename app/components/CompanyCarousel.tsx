@@ -47,17 +47,16 @@ export default function CompanyCarousel() {
             <style jsx>{`
               @keyframes slide {
                 0% { transform: translateX(0); }
-                100% { transform: translateX(calc(-200px * ${logos.length / 2})); }
+                100% { transform: translateX(calc(-200px * ${logos.length})); }
               }
               .animate-slide {
-                animation: slide 25s linear infinite;
-                will-change: transform;
+                animation: slide 30s linear infinite;
               }
               .animate-slide:hover {
                 animation-play-state: paused;
               }
             `}</style>
-            <div className="flex gap-[80px] px-4 py-3 animate-slide will-change-transform">
+            <div className="flex gap-[80px] px-4 py-3 animate-slide">
               {/* First set of logos */}
               <div className="flex gap-[80px]">
                 {logos.map((src, i) => (

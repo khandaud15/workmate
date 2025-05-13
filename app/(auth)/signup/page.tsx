@@ -1,42 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Logo from '../../components/Logo';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 export default function SignUp() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
 
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    console.log('SignUp Page Loaded');
-    console.log('User Agent:', navigator.userAgent);
-    console.log('Platform:', navigator.platform);
-    
-    // Comprehensive diagnostic checks
-    console.log('Window Object:', typeof window);
-    console.log('Document Object:', typeof document);
-    console.log('Window Width:', window.innerWidth);
-    console.log('Window Height:', window.innerHeight);
-    console.log('Screen Width:', screen.width);
-    console.log('Screen Height:', screen.height);
-    
-    // Check for any potential rendering blockers
-    const bodyStyles = window.getComputedStyle(document.body);
-    console.log('Body Background:', bodyStyles.background);
-    console.log('Body Overflow:', bodyStyles.overflow);
-    console.log('Window Width:', window.innerWidth);
-    console.log('Window Height:', window.innerHeight);
-    console.log('Screen Width:', screen.width);
-    console.log('Screen Height:', screen.height);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,13 +30,7 @@ export default function SignUp() {
       }
 
       // Redirect to onboarding
-      try {
-        console.log('Attempting to redirect');
-        router.push('/onboarding');
-      } catch (routerError) {
-        console.error('Router push failed:', routerError);
-        window.location.href = '/onboarding';
-      }
+      window.location.href = '/onboarding';
     } catch (error) {
       setError('Something went wrong. Please try again.');
     }

@@ -80,7 +80,7 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
-              {!isRestrictedPath && <div className="flex items-center justify-center space-x-12 ml-12">
+              {!isRestrictedPath && <div className="flex items-center justify-center space-x-16 ml-16">
                 <div className="relative group">
                   <button 
                     type="button"
@@ -246,7 +246,16 @@ export default function Header() {
             </nav>
 
             {/* Mobile icons */}
-            <div className="md:hidden flex items-center space-x-2">
+            <div className="md:hidden flex items-center -mr-2">
+              {isMobileDropdownOpen && (
+                <div 
+                  className="fixed inset-0 z-40"
+                  onClick={() => {
+                    setIsMobileDropdownOpen(false);
+                    setIsCountryDropdownOpen(false);
+                  }}
+                />
+              )}
               {!isRestrictedPath && (
                 <>
                   <div className="relative inline-block">
@@ -278,21 +287,19 @@ export default function Header() {
                     </button>
                     {isMobileDropdownOpen && (
                       <div 
-                        className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg py-2 z-50 w-48 overflow-hidden"
+                        className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-lg py-2 z-50 w-48"
                       >
-                        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto">
-                          {countries.map((country) => (
-                            <button
-                              type="button"
-                              key={country.code}
-                              onClick={() => handleCountrySelect(country)}
-                              className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
-                            >
-                              <span className="mr-2 text-base">{country.flag}</span>
-                              {country.name}
-                            </button>
-                          ))}
-                        </div>
+                        {countries.map((country) => (
+                          <button
+                            type="button"
+                            key={country.code}
+                            onClick={() => handleCountrySelect(country)}
+                            className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
+                          >
+                            <span className="mr-2 text-base">{country.flag}</span>
+                            {country.name}
+                          </button>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -342,16 +349,16 @@ export default function Header() {
 
           {/* Mobile Navigation */}
           {isMobileMenuOpen && !isRestrictedPath && (
-            <div className="md:hidden bg-white fixed inset-0 z-50 px-6 overflow-y-auto">
+            <div className="md:hidden bg-white fixed inset-0 z-50 px-6">
               {/* Top Bar */}
               <div className="flex justify-between items-center py-8 border-b border-gray-100">
                 {/* Logo */}
-                <Link href="/" className="flex-shrink-0" onClick={() => setIsMobileMenuOpen(false)}>
+                <Link href="/" className="flex-shrink-0">
                   <Logo />
                 </Link>
                 {/* Close Button */}
                 <button 
-                  onClick={() => setIsMobileMenuOpen(false)} 
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
                   className="md:hidden p-1 text-[#0e3a68] hover:text-[#0c3156] transition-colors"
                   aria-label="Close menu"
                 >
@@ -455,39 +462,21 @@ export default function Header() {
                     </button>
                   </div>
                 ) : (
-                  <div className="flex flex-col space-y-2 px-2">
-                    <button 
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        console.log('Mobile Device:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-                        console.log('Current URL:', window.location.href);
-                        try {
-                          router.push('/login');
-                        } catch (error) {
-                          console.error('Router push error:', error);
-                          window.location.href = '/login';
-                        }
-                      }}
-                      className="bg-[#0e3a68] text-white px-6 py-2 rounded-full hover:bg-[#0c3156] transition-colors font-bold text-center"
+                  <div className="flex flex-col space-y-2 mt-6">
+                    <Link 
+                      href="/signup"
+                      className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Log in
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        console.log('Mobile Device:', /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
-                        console.log('Current URL:', window.location.href);
-                        try {
-                          router.push('/signup');
-                        } catch (error) {
-                          console.error('Router push error:', error);
-                          window.location.href = '/signup';
-                        }
-                      }}
-                      className="bg-[#0e3a68] text-white px-6 py-2 rounded-full hover:bg-[#0c3156] transition-colors font-bold text-center"
+                    </Link>
+                    <Link 
+                      href="/signup"
+                      className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign up
-                    </button>
+                    </Link>
                   </div>
                 )}
               </nav>
