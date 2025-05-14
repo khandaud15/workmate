@@ -11,21 +11,26 @@ import {
   FaChevronLeft, 
   FaChevronRight,
   FaExclamationTriangle,
-  FaSpinner
+  FaSpinner,
+  FaCode,
+  FaCalendar
 } from 'react-icons/fa';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // TypeScript interface for Work Experience
 interface WorkExperience {
-  id: string;
-  jobTitle: string;
-  company: string;
-  startDate: string;
-  endDate?: string;
+  id?: string;
+  jobTitle?: string;
+  company?: string;
   location?: string;
+  startDate?: string;
+  endDate?: string;
   responsibilities: string[];
-  isExpanded?: boolean;
+  jobDescription?: string;
   isEditing?: boolean;
+  isExpanded?: boolean;
 }
 
 // TypeScript interface for Resume Scan Status
@@ -46,11 +51,23 @@ type ResumeExperience = {
   organization?: string;
   startDate?: string;
   start_date?: string;
+  dates?: {
+    startDate?: string;
+    start_date?: string;
+    monthsInPosition?: number;
+    isCurrent?: boolean;
+    rawText?: string;
+  };
   endDate?: string;
   end_date?: string;
   location?: string;
   responsibilities?: string[];
   description?: string;
+  jobDescription?: string;
+  text?: string;
+  sectionType?: string;
+  pageIndex?: number;
+  bbox?: number[];
 }
 
 export default function ResumeBuilderPage() {
@@ -66,7 +83,7 @@ export default function ResumeBuilderPage() {
   const handleEditExperience = useCallback((index: number) => {
     setWorkExperience(prev => 
       prev.map((exp, i) => 
-        i === index ? { ...exp, isEditing: true } : exp
+        i === index ? { ...exp, isEditing: true } : { ...exp, isEditing: false }
       )
     );
   }, []);
@@ -75,13 +92,12 @@ export default function ResumeBuilderPage() {
     setWorkExperience(prev => prev.filter((_, i) => i !== index));
   }, []);
 
-  const handleSaveExperience = useCallback((index: number, updatedExperience: WorkExperience) => {
-    setWorkExperience(prev => 
-      prev.map((exp, i) => 
-        i === index ? { ...exp, isEditing: false, ...updatedExperience } : exp
-      )
+  const handleSaveExperience = (index: number, updatedExperience: WorkExperience) => {
+    const newWorkExperiences = [...workExperience].map((exp, i) => 
+      i === index ? { ...updatedExperience, isEditing: false } : exp
     );
-  }, []);
+    setWorkExperience(newWorkExperiences);
+  };
 
   const handleToggleExpand = useCallback((index: number) => {
     setWorkExperience(prev => 
@@ -237,25 +253,97 @@ export default function ResumeBuilderPage() {
           // Extract responsibilities from various possible formats
           let responsibilities: string[] = [];
           
-          if (Array.isArray(exp.responsibilities)) {
-            responsibilities = exp.responsibilities;
-          } else if (exp.responsibilities && typeof exp.responsibilities === 'string') {
-            responsibilities = exp.responsibilities.split('\n').filter((line: string) => line.trim() !== '');
-          } else if (exp.description && typeof exp.description === 'string') {
-            responsibilities = exp.description.split('\n').filter((line: string) => line.trim() !== '');
-          } else if (Array.isArray(exp.description)) {
-            responsibilities = exp.description;
+          // Check for text field which might contain full job description
+          if (exp.text && typeof exp.text === 'string') {
+            // Split the text into job details and responsibilities
+            const parts = exp.text.split(/\n•/);
+            
+            // If there are multiple parts, the first part is job details, rest are responsibilities
+            if (parts.length > 1) {
+              // Extract job details from the first part
+              const jobDetailsParts = parts[0].split(',');
+              
+              // Parse job details
+              const jobTitle = jobDetailsParts[0]?.trim() || '';
+              const company = jobDetailsParts[1]?.trim() || '';
+              
+              // Extract date range
+              const dateMatch = jobDetailsParts[jobDetailsParts.length - 1].match(/(\w+ \d{4})\s*-\s*(\w+|Present)/i);
+              const startDate = dateMatch ? dateMatch[1] : '';
+              const endDate = dateMatch ? dateMatch[2] : '';
+              
+              // Extract responsibilities (skip the first empty part)
+              responsibilities = parts.slice(1).map(resp => resp.trim());
+              
+              console.log('Parsed Job Details:', {
+                jobTitle,
+                company,
+                startDate,
+                endDate
+              });
+              console.log('Extracted Responsibilities:', responsibilities);
+            }
+          }
+          
+          // Fallback to other responsibility sources
+          if (responsibilities.length === 0) {
+            if (Array.isArray(exp.responsibilities)) {
+              responsibilities = exp.responsibilities;
+            } else if (exp.responsibilities && typeof exp.responsibilities === 'string') {
+              responsibilities = typeof exp.responsibilities === 'string' 
+                ? exp.responsibilities.split('\n').filter((line: string) => line.trim() !== '') 
+                : exp.responsibilities || [];
+            } else if (exp.description && typeof exp.description === 'string') {
+              responsibilities = typeof exp.description === 'string' 
+                ? exp.description.split('\n').filter((line: string) => line.trim() !== '') 
+                : exp.description || [];
+            } else if (Array.isArray(exp.description)) {
+              responsibilities = exp.description;
+            } else if (exp.jobDescription && typeof exp.jobDescription === 'string') {
+              // Split jobDescription by bullet points
+              responsibilities = exp.jobDescription
+                .split(/\n[•\-*]/)
+                .filter((line: string) => line.trim() !== '' && line.trim().length > 10)
+                .map((line: string) => line.trim().replace(/^[•\-*]\s*/, ''));
+            }
           }
           
           // Generate a unique ID if none exists
           const id = exp.id || `exp-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
           
+          // Determine start date
+          let startDate = '';
+          if (exp.dates?.startDate) {
+            startDate = exp.dates.startDate;
+          } else if (exp.startDate) {
+            startDate = exp.startDate;
+          } else if (exp.start_date) {
+            startDate = exp.start_date;
+          } else if (exp.dates?.rawText) {
+            // Try to extract date from raw text
+            const dateMatch = exp.dates.rawText.match(/(\w+ \d{4})/i);
+            startDate = dateMatch ? dateMatch[1] : '';
+          }
+
+          // Determine end date
+          let endDate = '';
+          if (exp.dates?.isCurrent) {
+            endDate = 'Present';
+          } else if (exp.endDate) {
+            endDate = exp.endDate;
+          } else if (exp.end_date) {
+            endDate = exp.end_date;
+          } else if (exp.dates?.rawText) {
+            const dateMatch = exp.dates.rawText.match(/\w+ \d{4}\s*-\s*(\w+ \d{4}|Present)/i);
+            endDate = dateMatch ? dateMatch[1] : '';
+          }
+
           return {
             id,
             jobTitle: exp.jobTitle || exp.title || exp.position || '',
             company: exp.company || exp.employer || exp.organization || '',
-            startDate: exp.startDate || exp.start_date || '',
-            endDate: exp.endDate || exp.end_date || '',
+            startDate,
+            endDate,
             location: exp.location || '',
             responsibilities,
             isExpanded: false,
@@ -388,122 +476,143 @@ export default function ResumeBuilderPage() {
     onSave: (index: number, updatedExperience: WorkExperience) => void,
     onToggleExpand: (index: number) => void
   }) => {
+    // Removed local isEditing state
+    const [editedExperience, setEditedExperience] = useState<WorkExperience>(experience);
+
+    // Update local state when edit button is clicked
+    useEffect(() => {
+      setEditedExperience(experience);
+    }, [experience]);
+
     const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      const form = e.currentTarget;
-      const formData = new FormData(form);
-      
-      const responsibilities = (formData.get('responsibilities') as string)
-        .split('\n')
-        .filter(line => line.trim() !== '');
-      
-      const updatedExperience: WorkExperience = {
-        ...experience,
-        jobTitle: formData.get('jobTitle') as string,
-        company: formData.get('company') as string,
-        location: formData.get('location') as string,
-        startDate: formData.get('startDate') as string,
-        endDate: formData.get('endDate') as string || undefined,
-        responsibilities,
-      };
-      
-      onSave(index, updatedExperience);
+      onSave(index, editedExperience);
     };
 
-    // If experience is in editing mode, render the form
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string, value: string } }) => {
+      const { name, value } = 'target' in e ? e.target : e;
+      setEditedExperience(prev => ({
+        ...prev,
+        [name]: name === 'responsibilities' && typeof value === 'string' 
+          ? value.split('\n').filter(r => r.trim() !== '') 
+          : value
+      }));
+    };
+
+    // Editing view
     if (experience.isEditing) {
       return (
         <div className="bg-white rounded-lg shadow-md p-6 mb-4">
-          <form onSubmit={handleSave}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
-                <label htmlFor={`jobTitle-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-                <input 
-                  type="text" 
-                  id={`jobTitle-${index}`}
-                  name="jobTitle"
-                  defaultValue={experience.jobTitle}
-                  placeholder="Job Title"
-                  className="border rounded p-2 w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor={`company-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-                <input 
-                  type="text" 
-                  id={`company-${index}`}
-                  name="company"
-                  defaultValue={experience.company}
-                  placeholder="Company"
-                  className="border rounded p-2 w-full"
-                  required
-                />
-              </div>
-              <div>
-                <label htmlFor={`location-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                <input 
-                  type="text" 
-                  id={`location-${index}`}
-                  name="location"
-                  defaultValue={experience.location}
-                  placeholder="Location"
-                  className="border rounded p-2 w-full"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label htmlFor={`startDate-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                  <input 
-                    type="text" 
-                    id={`startDate-${index}`}
-                    name="startDate"
-                    defaultValue={experience.startDate}
-                    placeholder="e.g. Jan 2020"
-                    className="border rounded p-2 w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor={`endDate-${index}`} className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                  <input 
-                    type="text" 
-                    id={`endDate-${index}`}
-                    name="endDate"
-                    defaultValue={experience.endDate}
-                    placeholder="e.g. Dec 2022 or Present"
-                    className="border rounded p-2 w-full"
-                  />
-                </div>
-              </div>
-            </div>
-            
+          <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label htmlFor={`responsibilities-${index}`} className="block text-sm font-medium text-gray-700 mb-1">Responsibilities</label>
-              <textarea 
-                id={`responsibilities-${index}`}
-                name="responsibilities"
-                defaultValue={experience.responsibilities.join('\n')}
-                placeholder="Enter responsibilities, one per line"
-                className="w-full border rounded p-2 mt-1 h-36"
+              <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700">Job Title</label>
+              <input
+                type="text"
+                name="jobTitle"
+                value={editedExperience.jobTitle}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
+                autoComplete="off"
+                required
               />
             </div>
-            
-            <div className="flex justify-end space-x-2 mt-4">
+            <div>
+              <label htmlFor="company" className="block text-sm font-medium text-[#173A6A]">Company</label>
+              <input
+                type="text"
+                name="company"
+                value={editedExperience.company}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
+                autoComplete="off"
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="startDate" className="block text-sm font-medium text-[#173A6A]">Start Date</label>
+                <DatePicker
+                  selected={editedExperience.startDate && !isNaN(Date.parse(editedExperience.startDate)) ? new Date(editedExperience.startDate) : null}
+                  onChange={(date) => {
+                    handleInputChange({
+                      target: {
+                        name: 'startDate',
+                        value: date && !isNaN(date.getTime()) ? date.toISOString().split('T')[0] : ''
+                      }
+                    });
+                  }}
+                  dateFormat="yyyy-MM-dd"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-sm"
+                  placeholderText="Select start date"
+                  popperClassName="z-50"
+                  popperPlacement="bottom-start"
+                  showYearDropdown
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={15}
+                />
+              </div>
+              <div>
+                <label htmlFor="endDate" className="block text-sm font-medium text-[#173A6A]">End Date</label>
+                <DatePicker
+                  selected={editedExperience.endDate && !isNaN(Date.parse(editedExperience.endDate)) ? new Date(editedExperience.endDate) : null}
+                  onChange={(date) => {
+                    handleInputChange({
+                      target: {
+                        name: 'endDate',
+                        value: date && !isNaN(date.getTime()) ? date.toISOString().split('T')[0] : ''
+                      }
+                    });
+                  }}
+                  dateFormat="yyyy-MM-dd"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-sm"
+                  placeholderText="Select end date"
+                  popperClassName="z-50"
+                  popperPlacement="bottom-start"
+                  showYearDropdown
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={15}
+                />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="location" className="block text-sm font-medium text-[#173A6A]">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={editedExperience.location || ''}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
+                autoComplete="off"
+                placeholder="City, State, or Country"
+              />
+            </div>
+            <div>
+              <label htmlFor="responsibilities" className="block text-sm font-medium text-[#173A6A]">Responsibilities</label>
+              <textarea
+                name="responsibilities"
+                value={editedExperience.responsibilities?.join('\n') || ''}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
+                autoComplete="off"
+                rows={4}
+                placeholder="Enter responsibilities, one per line"
+              />
+            </div>
+            <div className="flex justify-between items-center">
               <button 
-                type="button"
-                onClick={() => setWorkExperience(prev => 
-                  prev.map((exp, idx) => 
-                    idx === index ? { ...exp, isEditing: false } : exp
-                  )
-                )}
-                className="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200"
+                type="button" 
+                onClick={() => onEdit(index)} 
+                className="min-w-[96px] px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
               <button 
-                type="submit"
-                className="bg-[#0e3a68] text-white px-4 py-2 rounded hover:bg-[#0c3156]"
+                type="submit" 
+                className="min-w-[96px] px-4 py-2 rounded-md bg-[#173A6A] text-white hover:bg-opacity-90 transition-colors"
               >
                 Save
               </button>
@@ -520,7 +629,7 @@ export default function ResumeBuilderPage() {
         <div className="absolute top-4 right-4 flex space-x-2">
           <button 
             onClick={() => onEdit(index)}
-            className="text-blue-500 hover:text-blue-600"
+            className="text-[#173A6A] hover:opacity-80"
             aria-label="Edit Experience"
           >
             <FaEdit />
@@ -536,9 +645,14 @@ export default function ResumeBuilderPage() {
 
         {/* Job Details */}
         <h3 className="text-xl font-bold text-gray-800">{experience.jobTitle}</h3>
+        {experience.jobDescription && (
+          <div className="text-gray-700 text-sm mb-3 italic">
+            {experience.jobDescription}
+          </div>
+        )}
         <div className="flex justify-between items-center mb-2">
           <p className="text-gray-600">{experience.company}</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-gray-600 text-sm">
             {experience.startDate} - {experience.endDate || 'Present'}
           </p>
         </div>
