@@ -290,13 +290,13 @@ export default function ResumeBuilderPage() {
             if (Array.isArray(exp.responsibilities)) {
               responsibilities = exp.responsibilities;
             } else if (exp.responsibilities && typeof exp.responsibilities === 'string') {
-              responsibilities = typeof exp.responsibilities === 'string' 
+              responsibilities = exp.responsibilities && typeof exp.responsibilities === 'string' 
                 ? exp.responsibilities.split('\n').filter((line: string) => line.trim() !== '') 
-                : exp.responsibilities || [];
+                : Array.isArray(exp.responsibilities) ? exp.responsibilities : [];
             } else if (exp.description && typeof exp.description === 'string') {
-              responsibilities = typeof exp.description === 'string' 
+              responsibilities = exp.description && typeof exp.description === 'string' 
                 ? exp.description.split('\n').filter((line: string) => line.trim() !== '') 
-                : exp.description || [];
+                : Array.isArray(exp.description) ? exp.description : [];
             } else if (Array.isArray(exp.description)) {
               responsibilities = exp.description;
             } else if (exp.jobDescription && typeof exp.jobDescription === 'string') {
