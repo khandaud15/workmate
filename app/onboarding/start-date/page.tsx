@@ -127,7 +127,7 @@ export default function StartDateSelection() {
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.back()}
-              className="flex items-center rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
+              className="flex items-center rounded-lg border-2 border-[#0e3a68] w-24 px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
             >
               <ArrowLeftIcon className="mr-2 h-5 w-5" />
               Back
@@ -135,7 +135,7 @@ export default function StartDateSelection() {
             <button
               onClick={() => router.push('/onboarding/pricing')}
               disabled={!selectedOption || (selectedOption === 'custom' && !selectedDate)}
-              className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156] disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="flex items-center rounded-lg border-2 border-[#0e3a68] bg-[#0e3a68] w-24 px-6 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156] disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
               Next
             </button>

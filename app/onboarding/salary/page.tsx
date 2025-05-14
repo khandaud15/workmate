@@ -73,21 +73,21 @@ export default function SalaryPreference() {
       {/* Sticky Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
         <div className="container mx-auto px-4 py-4 max-w-2xl">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => router.back()}
-              className="flex items-center rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
-            >
-              <ArrowLeftIcon className="mr-2 h-5 w-5" />
-              Back
-            </button>
-            <button
-              onClick={() => router.push('/onboarding/skills')}
-              className="rounded-lg bg-[#0e3a68] px-8 py-2.5 font-medium text-white transition-colors hover:bg-[#0c3156]"
-            >
-              Next
-            </button>
-          </div>
+           <div className="flex justify-between items-center w-full">
+             <button
+               onClick={() => router.back()}
+               className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
+             >
+               <ArrowLeftIcon className="mr-2 h-5 w-5" />
+               Back
+             </button>
+             <button
+               onClick={() => router.push('/onboarding/skills')}
+               className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
+             >
+               Next
+             </button>
+           </div>
         </div>
       </div>
     </div>
