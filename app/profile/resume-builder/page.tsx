@@ -399,7 +399,7 @@ export default function ResumeBuilderPage() {
         </div>
 
         {/* Step Circles and Labels */}
-        <div className="relative flex justify-between px-4">
+        <div className="relative flex justify-between w-[calc(100%+4rem)] -mx-8 px-8 sm:w-auto sm:mx-0 sm:px-4">
           {/* Step 1 */}
           <div className="flex flex-col items-center">
             <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0e3a68] bg-white">
@@ -624,7 +624,7 @@ export default function ResumeBuilderPage() {
     
     // Normal view
     return (
-      <div className="bg-white rounded-lg shadow-md p-6 mb-4 relative">
+      <div className="bg-white rounded-lg shadow-md p-6 mb-4 relative w-[calc(100%+4rem)] sm:w-auto -mx-8 sm:mx-0">
         {/* Edit and Delete Icons */}
         <div className="absolute top-4 right-4 flex space-x-2">
           <button 
