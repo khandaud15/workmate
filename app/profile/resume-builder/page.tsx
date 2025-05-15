@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -338,14 +339,34 @@ export default function ResumeBuilderPage() {
             endDate = dateMatch ? dateMatch[1] : '';
           }
 
+          // Ensure location is a string, not an object
+          let locationStr = '';
+          if (exp.location) {
+            if (typeof exp.location === 'string') {
+              locationStr = exp.location;
+            } else if (typeof exp.location === 'object' && exp.location !== null) {
+              // Handle location object by extracting city and state or using formatted if available
+              const loc = exp.location as any;
+              if (loc.formatted) {
+                locationStr = loc.formatted;
+              } else if (loc.city && loc.state) {
+                locationStr = `${loc.city}, ${loc.state}`;
+              } else if (loc.city) {
+                locationStr = loc.city;
+              } else if (loc.rawInput) {
+                locationStr = loc.rawInput;
+              }
+            }
+          }
+
           return {
             id,
             jobTitle: exp.jobTitle || exp.title || exp.position || '',
             company: exp.company || exp.employer || exp.organization || '',
             startDate,
             endDate,
-            location: exp.location || '',
-            responsibilities,
+            location: locationStr, // Now we're using a string instead of possibly an object
+            responsibilities: Array.isArray(responsibilities) ? responsibilities : [],
             isExpanded: false,
             isEditing: false
           };
@@ -509,7 +530,7 @@ export default function ResumeBuilderPage() {
               <input
                 type="text"
                 name="jobTitle"
-                value={editedExperience.jobTitle}
+                value={editedExperience.jobTitle || ''}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
                 style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
@@ -522,7 +543,7 @@ export default function ResumeBuilderPage() {
               <input
                 type="text"
                 name="company"
-                value={editedExperience.company}
+                value={editedExperience.company || ''}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
                 style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
@@ -593,7 +614,7 @@ export default function ResumeBuilderPage() {
               <label htmlFor="responsibilities" className="block text-sm font-medium text-[#173A6A]">Responsibilities</label>
               <textarea
                 name="responsibilities"
-                value={editedExperience.responsibilities?.join('\n') || ''}
+                value={Array.isArray(editedExperience.responsibilities) ? editedExperience.responsibilities.join('\n') : ''}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
                 style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
@@ -661,7 +682,7 @@ export default function ResumeBuilderPage() {
         {experience.location ? (
           <div className="flex items-center text-gray-500 text-sm mb-3">
             <FaMapMarkerAlt className="mr-2" />
-            {experience.location}
+            {typeof experience.location === 'string' ? experience.location : 'Location not specified'}
           </div>
         ) : (
           <div className="flex items-center text-yellow-600 text-sm mb-3">
@@ -690,30 +711,6 @@ export default function ResumeBuilderPage() {
     );
   };
 
-  // Add Experience Button
-  const AddExperienceButton = () => {
-    return (
-      <button 
-        onClick={() => {
-          const newExperience: WorkExperience = {
-            id: `temp-${Date.now()}`,
-            jobTitle: '',
-            company: '',
-            startDate: '',
-            endDate: '',
-            location: '',
-            responsibilities: [],
-            isEditing: true
-          };
-          setWorkExperience(prev => [...prev, newExperience]);
-        }}
-        className="flex items-center justify-center w-full rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
-      >
-        <FaPlus className="mr-2" /> Add Work Experience
-      </button>
-    );
-  };
-
   const handleNextStep = () => {
     if (currentStep < 3) {
       setCurrentStep(prev => prev + 1);
@@ -731,20 +728,20 @@ export default function ResumeBuilderPage() {
   };
 
   return (
-    <div className="container mx-auto px-0 sm:px-4 py-8 max-w-4xl font-sans">
+    <div className="container mx-auto px-4 py-8 max-w-4xl font-sans">
       <ProgressIndicator />
 
-      <div className="mx-auto max-w-3xl px-0 sm:px-4 lg:px-8 mt-8">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 mt-8">
         <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Work Experience</h2>
-        
+
         {/* Show loading indicator if scanning is in progress */}
         {scanStatus.isScanning && <LoadingIndicator />}
-        
+
         {/* Show error message if there was an error */}
         {!scanStatus.isScanning && !scanStatus.isComplete && scanStatus.errorMessage && (
           <ErrorMessage message={scanStatus.errorMessage} />
         )}
-        
+
         {/* Show work experience cards */}
         {!scanStatus.isScanning && workExperience.map((experience, index) => (
           <WorkExperienceCard 
@@ -757,9 +754,29 @@ export default function ResumeBuilderPage() {
             onToggleExpand={handleToggleExpand}
           />
         ))}
-        
+
         {/* Show add experience button only after scanning is complete */}
-        {!scanStatus.isScanning && <AddExperienceButton />}
+        {!scanStatus.isScanning && (
+          <button 
+            onClick={() => {
+              const newExperience: WorkExperience = {
+                id: `temp-${Date.now()}`,
+                jobTitle: '',
+                company: '',
+                location: '',
+                startDate: '',
+                endDate: '',
+                responsibilities: [],
+                isEditing: true,
+                isExpanded: false
+              };
+              setWorkExperience(prev => [...prev, newExperience]);
+            }}
+            className="flex items-center justify-center w-full rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
+          >
+            <FaPlus className="mr-2" /> Add Work Experience
+          </button>
+        )}
       </div>
 
       {/* Sticky Navigation */}
@@ -767,14 +784,14 @@ export default function ResumeBuilderPage() {
         <div className="container mx-auto px-4 py-4 max-w-2xl">
           <div className="flex justify-between items-center w-full">
             <button
-              onClick={() => router.back()}
+              onClick={handleBackStep}
               className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
             >
               <ArrowLeftIcon className="mr-2 h-5 w-5" />
               Back
             </button>
             <button
-              onClick={() => router.push('/profile/contact-info')}
+              onClick={handleNextStep}
               className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
             >
               Next
