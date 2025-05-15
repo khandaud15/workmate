@@ -428,12 +428,12 @@ export default function ContactInfoForm() {
       <div className="min-h-screen bg-[#fefcf9] pb-28">
         {/* Main Content */}
         <div className="w-full max-w-[800px] mx-auto px-2 sm:px-4 py-6">
-          <div className="relative transform hover:-translate-y-0.5 transition-transform bg-white rounded-xl border border-black/20 shadow-[0_4px_8px_rgba(0,0,0,0.1)] p-6 mb-8">
+          <div className="relative transform hover:-translate-y-0.5 transition-transform bg-white rounded-xl border border-black shadow-[0_4px_8px_rgba(0,0,0,0.1)] p-6 mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2 drop-shadow-sm text-center font-['Helvetica_Neue']">Contact Information</h1>
             <p className="text-gray-600 mb-6 text-base drop-shadow-sm text-center font-['Helvetica_Neue'] font-medium">Ensure your contact details are up to date — employers may reach out anytime.</p>
           </div>
         
-          <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-xl border border-black/20 shadow-[0_4px_8px_rgba(0,0,0,0.1)] p-6 transform hover:translate-y-[-2px] transition-transform">
+          <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-xl border border-black shadow-[0_4px_8px_rgba(0,0,0,0.1)] p-6 transform hover:translate-y-[-2px] transition-transform">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <InputField 
                 label="First Name" 
