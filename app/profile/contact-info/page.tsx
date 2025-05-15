@@ -524,19 +524,19 @@ export default function ContactInfoForm() {
 
         {/* Sticky Navigation */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-          <div className="mx-auto px-2 sm:px-4 py-4 w-full max-w-[800px]">
+          <div className="mx-auto px-2 sm:px-4 py-3 sm:py-4 w-full max-w-[800px]">
             <div className="flex justify-between items-center w-full">
               <button
                 onClick={() => router.push('/profile/resume-upload')}
-                className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
+                className="flex items-center w-[80px] sm:w-[100px] rounded-lg border-2 border-[#0e3a68] px-4 sm:px-6 py-2 sm:py-2.5 text-[#0e3a68] text-sm sm:text-base transition-colors hover:bg-[#0e3a68]/5"
               >
-                <ArrowLeftIcon className="mr-2 h-5 w-5" />
+                <ArrowLeftIcon className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Back
               </button>
               <button
                 onClick={() => isFormValid() && router.push('/profile/resume-builder')}
                 disabled={!isFormValid()}
-                className={`flex items-center w-[100px] rounded-lg border-2 px-6 py-2.5 font-medium transition-colors ${isFormValid() ? 'border-[#0e3a68] bg-[#0e3a68] text-white hover:bg-[#0c3156]' : 'border-gray-300 bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+                className={`flex items-center w-[80px] sm:w-[100px] rounded-lg border-2 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-medium transition-colors ${isFormValid() ? 'border-[#0e3a68] bg-[#0e3a68] text-white hover:bg-[#0c3156]' : 'border-gray-300 bg-gray-200 text-gray-500 cursor-not-allowed'}`}
               >
                 Next
               </button>

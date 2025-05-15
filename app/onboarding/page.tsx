@@ -143,9 +143,9 @@ export default function Onboarding() {
 
       {/* Fixed Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4 py-4 max-w-5xl">
-          <div className="flex justify-between items-center w-full">
-            <div className="text-xs text-gray-500 max-w-[calc(100%-120px)]">
+        <div className="container mx-auto px-4 py-3 sm:py-4 max-w-5xl">
+          <div className="flex justify-between items-center w-full px-2">
+            <div className="text-xs text-gray-500 max-w-[calc(100%-100px)] sm:max-w-[calc(100%-120px)]">
               By clicking "Next", you agree to our{' '}
               <Link href="/terms" className="text-[#4F46E5] hover:underline">Terms of Use</Link>{' '}
               and{' '}
@@ -153,7 +153,7 @@ export default function Onboarding() {
             </div>
             <Link
               href="/onboarding/resume"
-              className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
+              className="flex items-center w-[80px] sm:w-[100px] rounded-lg border-2 border-[#0e3a68] px-4 sm:px-6 py-2 sm:py-2.5 bg-[#0e3a68] text-white text-sm sm:text-base font-medium transition-colors hover:bg-[#0c3156]"
             >
               Next
             </Link>

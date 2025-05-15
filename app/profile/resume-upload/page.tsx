@@ -175,19 +175,19 @@ export default function ResumeUpload() {
 
       {/* Fixed Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4 py-4 max-w-5xl">
+        <div className="container mx-auto px-4 py-3 sm:py-4 max-w-5xl">
           <div className="flex justify-between items-center w-full">
             <button
               onClick={() => router.push('/profile/questions')}
-              className="flex items-center w-[100px] px-6 py-2.5 text-[#0e3a68] font-medium border-2 border-[#0e3a68] rounded-lg hover:bg-[#0e3a68]/5 transition-colors"
+              className="flex items-center w-[80px] sm:w-[100px] px-4 sm:px-6 py-2 sm:py-2.5 text-[#0e3a68] text-sm sm:text-base font-medium border-2 border-[#0e3a68] rounded-lg hover:bg-[#0e3a68]/5 transition-colors"
             >
-              <ArrowLeftIcon className="mr-2 h-5 w-5" />
+              <ArrowLeftIcon className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Back
             </button>
             <button
               onClick={() => router.push('/profile/scan')}
               disabled={uploadStatus !== 'success'}
-              className="flex items-center w-[100px] px-6 py-2.5 bg-[#0e3a68] text-white font-medium rounded-lg border-2 border-[#0e3a68] hover:bg-[#0c3156] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center w-[80px] sm:w-[100px] px-4 sm:px-6 py-2 sm:py-2.5 bg-[#0e3a68] text-white text-sm sm:text-base font-medium rounded-lg border-2 border-[#0e3a68] hover:bg-[#0c3156] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>

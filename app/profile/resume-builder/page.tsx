@@ -414,7 +414,7 @@ export default function ResumeBuilderPage() {
 
   // Progress Indicator Component
   const ProgressIndicator = () => (
-    <div className="mx-auto max-w-3xl px-4 pt-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-3xl px-4 pt-5 sm:pt-8 sm:px-6 lg:px-8">
       <div className="relative">
         {/* Progress Lines */}
         <div className="absolute left-0 right-0 top-4">
@@ -829,7 +829,7 @@ export default function ResumeBuilderPage() {
   };
 
   return (
-    <div className="container mx-auto px-0 sm:px-4 py-8 max-w-5xl">
+    <div className="container mx-auto px-0 sm:px-4 py-5 sm:py-8 max-w-5xl">
       <style jsx global>{`
         .font-helvetica-neue-bold {
           font-family: 'Helvetica Neue Bold', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -926,18 +926,18 @@ export default function ResumeBuilderPage() {
 
       {/* Sticky Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="mx-auto px-2 sm:px-6 lg:px-8 py-4 w-full max-w-4xl">
+        <div className="mx-auto px-2 sm:px-6 lg:px-8 py-3 sm:py-4 w-full max-w-4xl">
           <div className="flex justify-between items-center w-full">
             <button
               onClick={handleBackStep}
-              className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
+              className="flex items-center w-[80px] sm:w-[100px] rounded-lg border-2 border-[#0e3a68] px-4 sm:px-6 py-2 sm:py-2.5 text-[#0e3a68] text-sm sm:text-base transition-colors hover:bg-[#0e3a68]/5"
             >
-              <ArrowLeftIcon className="mr-2 h-5 w-5" />
+              <ArrowLeftIcon className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
               Back
             </button>
             <button
               onClick={handleNextStep}
-              className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
+              className="flex items-center w-[80px] sm:w-[100px] rounded-lg border-2 border-[#0e3a68] px-4 sm:px-6 py-2 sm:py-2.5 bg-[#0e3a68] text-white text-sm sm:text-base font-medium transition-colors hover:bg-[#0c3156]"
             >
               Next
             </button>
