@@ -16,7 +16,7 @@ export default function OnboardingLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={`${inter.className} antialiased min-h-screen flex flex-col bg-white`}>
+    <div className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`}>
       {children}
     </div>
   );

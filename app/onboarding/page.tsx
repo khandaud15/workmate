@@ -5,7 +5,7 @@ import Image from 'next/image';
 
 export default function Onboarding() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-[#fefcf9] flex flex-col">
       {/* Header */}
       <div className="text-center pt-16 pb-12 max-w-2xl mx-auto">
         <h1 className="text-[32px] font-bold text-[#111827] mb-1 md:mb-2">

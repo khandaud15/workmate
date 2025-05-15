@@ -17,7 +17,7 @@ export default function SalaryPreference() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-6 md:p-8 pb-28">
+    <div className="min-h-screen bg-[#fefcf9] p-6 md:p-8 pb-28">
       {/* Main Content */}
       <div className="mx-auto max-w-2xl">
         {/* Headers */}

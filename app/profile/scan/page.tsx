@@ -162,7 +162,7 @@ export default function ResumeScan() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#fefcf9]">
       <main className="w-full max-w-md mx-auto px-4 pt-24 pb-12">
         <div className="text-center">
           {error ? (

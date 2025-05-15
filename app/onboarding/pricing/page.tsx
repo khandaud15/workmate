@@ -120,7 +120,7 @@ export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   return (
-    <main className="relative min-h-screen bg-white">
+    <main className="relative min-h-screen bg-[#fefcf9]">
       {/* Header */}
       <div className="mx-auto max-w-7xl px-6 py-12 text-center lg:px-8">
         <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">

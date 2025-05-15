@@ -79,6 +79,8 @@ export default function ResumeBuilderPage() {
     isScanning: true,
     isComplete: false
   });
+  // Track whether user has interacted with the form
+  const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
 
   // Typed state update functions
   const handleEditExperience = useCallback((index: number) => {
@@ -98,6 +100,11 @@ export default function ResumeBuilderPage() {
       i === index ? { ...updatedExperience, isEditing: false } : exp
     );
     setWorkExperience(newWorkExperiences);
+    
+    // Set user interaction flag to true when a user saves a card
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+    }
   };
 
   const handleToggleExpand = useCallback((index: number) => {
@@ -497,6 +504,8 @@ export default function ResumeBuilderPage() {
     onSave: (index: number, updatedExperience: WorkExperience) => void,
     onToggleExpand: (index: number) => void
   }) => {
+    // Check if the experience card is complete, but only apply validation after user interaction
+    const isComplete = !hasUserInteracted || isExperienceComplete(experience);
     // Removed local isEditing state
     const [editedExperience, setEditedExperience] = useState<WorkExperience>(experience);
 
@@ -507,53 +516,71 @@ export default function ResumeBuilderPage() {
 
     const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      onSave(index, editedExperience);
+      // Immediately set isEditing to false before saving
+      const updatedExperience = { ...editedExperience, isEditing: false };
+      onSave(index, updatedExperience);
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string, value: string } }) => {
       const { name, value } = 'target' in e ? e.target : e;
-      setEditedExperience(prev => ({
-        ...prev,
-        [name]: name === 'responsibilities' && typeof value === 'string' 
-          ? value.split('\n').filter(r => r.trim() !== '') 
-          : value
-      }));
+      
+      if (name === 'responsibilities') {
+        // Split by newline and filter out empty lines
+        const responsibilities = value.split('\n')
+          .map(line => line.trim())
+          .filter(line => line !== '');
+        
+        // Ensure we have at least 3 items (pad with empty strings if needed)
+        while (responsibilities.length < 3) {
+          responsibilities.push(''); // Add empty placeholders to reach minimum of 3
+        }
+        
+        setEditedExperience(prev => ({
+          ...prev,
+          responsibilities
+        }));
+      } else {
+        setEditedExperience(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      }
     };
 
     // Editing view
     if (experience.isEditing) {
       return (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+        <div className="bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)] border border-black/20 p-5 mb-5 transform hover:translate-y-[-2px] transition-transform w-full">
           <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label htmlFor="jobTitle" className="block text-sm font-medium text-gray-700">Job Title</label>
+              <label htmlFor="jobTitle" className="block text-sm font-medium text-[#1e293b]">Job Title</label>
               <input
                 type="text"
                 name="jobTitle"
                 value={editedExperience.jobTitle || ''}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white text-[#1e293b] text-base"
                 style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
                 autoComplete="off"
                 required
               />
             </div>
             <div>
-              <label htmlFor="company" className="block text-sm font-medium text-[#173A6A]">Company</label>
+              <label htmlFor="company" className="block text-sm font-medium text-[#1e293b]">Company</label>
               <input
                 type="text"
                 name="company"
                 value={editedExperience.company || ''}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white text-[#1e293b] text-base"
                 style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
                 autoComplete="off"
                 required
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="startDate" className="block text-sm font-medium text-[#173A6A]">Start Date</label>
+                <label htmlFor="startDate" className="block text-sm font-medium text-[#1e293b]">Start Date</label>
                 <DatePicker
                   selected={editedExperience.startDate && !isNaN(Date.parse(editedExperience.startDate)) ? new Date(editedExperience.startDate) : null}
                   onChange={(date) => {
@@ -565,7 +592,7 @@ export default function ResumeBuilderPage() {
                     });
                   }}
                   dateFormat="yyyy-MM-dd"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-sm"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-[#1e293b] text-base"
                   placeholderText="Select start date"
                   popperClassName="z-50"
                   popperPlacement="bottom-start"
@@ -575,7 +602,7 @@ export default function ResumeBuilderPage() {
                 />
               </div>
               <div>
-                <label htmlFor="endDate" className="block text-sm font-medium text-[#173A6A]">End Date</label>
+                <label htmlFor="endDate" className="block text-sm font-medium text-[#1e293b]">End Date</label>
                 <DatePicker
                   selected={editedExperience.endDate && !isNaN(Date.parse(editedExperience.endDate)) ? new Date(editedExperience.endDate) : null}
                   onChange={(date) => {
@@ -587,7 +614,7 @@ export default function ResumeBuilderPage() {
                     });
                   }}
                   dateFormat="yyyy-MM-dd"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-sm"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-[#1e293b] text-base"
                   placeholderText="Select end date"
                   popperClassName="z-50"
                   popperPlacement="bottom-start"
@@ -598,25 +625,26 @@ export default function ResumeBuilderPage() {
               </div>
             </div>
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-[#173A6A]">Location</label>
+              <label htmlFor="location" className="block text-sm font-medium text-[#1e293b]">Location</label>
               <input
                 type="text"
                 name="location"
                 value={editedExperience.location || ''}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white text-[#1e293b] text-base"
                 style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
                 autoComplete="off"
                 placeholder="City, State, or Country"
               />
             </div>
+            {/* Job Description field removed */}
             <div>
-              <label htmlFor="responsibilities" className="block text-sm font-medium text-[#173A6A]">Responsibilities</label>
+              <label htmlFor="responsibilities" className="block text-sm font-medium text-[#1e293b]">Responsibilities</label>
               <textarea
                 name="responsibilities"
                 value={Array.isArray(editedExperience.responsibilities) ? editedExperience.responsibilities.join('\n') : ''}
                 onChange={handleInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white text-[#1e293b] text-base"
                 style={{ WebkitTextFillColor: 'currentcolor', WebkitBoxShadow: '0 0 0px 1000px white inset' }}
                 autoComplete="off"
                 rows={4}
@@ -626,7 +654,10 @@ export default function ResumeBuilderPage() {
             <div className="flex justify-between items-center">
               <button 
                 type="button" 
-                onClick={() => onEdit(index)} 
+                onClick={() => {
+                  setEditedExperience(experience); // Reset to original experience
+                  onSave(index, {...experience, isEditing: false}); // Exit edit mode without saving changes
+                }} 
                 className="min-w-[96px] px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
               >
                 Cancel
@@ -645,68 +676,121 @@ export default function ResumeBuilderPage() {
     
     // Normal view
     return (
-      <div className="bg-white rounded-lg shadow-md border border-black/20 p-4 mb-4 relative w-[calc(100%+0.5rem)] -ml-1 -mr-1 sm:w-auto sm:ml-0 sm:mr-0">
+      <div className={`bg-white rounded-lg border ${isComplete ? 'border-black' : 'border-red-500'} p-5 sm:p-6 mb-6 relative w-full transform hover:translate-y-[-2px] transition-transform`}>
+        {/* Card Number */}
+        <div className="absolute top-0 left-0 w-10 h-10 flex items-center justify-center border-r border-b border-black rounded-tl-lg rounded-br-lg">
+          <span className="text-lg font-medium text-[#64748b]">{index + 1}</span>
+        </div>
         {/* Edit and Delete Icons */}
-        <div className="absolute top-4 right-4 flex space-x-2">
+        <div className="absolute top-3 right-3 flex space-x-2">
           <button 
             onClick={() => onEdit(index)}
-            className="text-[#173A6A] hover:opacity-80"
+            className="text-blue-600 hover:text-blue-800"
             aria-label="Edit Experience"
           >
-            <FaEdit />
+            <FaEdit className="text-lg" />
           </button>
           <button 
             onClick={() => onDelete(index)}
-            className="text-red-500 hover:text-red-600"
+            className="text-red-500 hover:text-red-700"
             aria-label="Delete Experience"
           >
-            <FaTrash />
+            <FaTrash className="text-lg" />
           </button>
         </div>
 
-        {/* Job Details */}
-        <h3 className="text-xl font-bold text-gray-800">{experience.jobTitle}</h3>
-        {experience.jobDescription && (
-          <div className="text-gray-700 text-sm mb-3 italic">
-            {experience.jobDescription}
+        {/* Job Title and Company - Styled to match screenshot */}
+        <div className="pr-14 mt-4 ml-9"> {/* Add right padding to avoid text overlapping with buttons, top margin to avoid number, and left margin to move content right */}
+          <div className="flex flex-wrap items-baseline mb-1">
+            <h3 className="text-lg sm:text-xl text-[#1e293b] font-helvetica-medium">{experience.jobTitle}</h3>
+            <span className="mx-2 text-gray-400">|</span>
+            <p className="text-lg sm:text-xl text-[#1e293b] font-helvetica-medium">{experience.company}</p>
           </div>
-        )}
-        <div className="flex justify-between items-center mb-2">
-          <p className="text-gray-600">{experience.company}</p>
-          <p className="text-gray-600 text-sm">
-            {experience.startDate} - {experience.endDate || 'Present'}
+        </div>
+        
+        {/* Location and Date Range */}
+        <div className="mb-3 ml-9">
+          <p className="text-base">
+            <span className="text-[#64748b] font-helvetica">Location:</span> <span className="text-[#1e293b] font-helvetica-light-medium">{typeof experience.location === 'string' ? experience.location : 'Not specified'} | {experience.startDate} - {experience.endDate || 'Present'}</span>
           </p>
         </div>
 
-        {/* Location */}
-        {experience.location ? (
-          <div className="flex items-center text-gray-500 text-sm mb-3">
-            <FaMapMarkerAlt className="mr-2" />
-            {typeof experience.location === 'string' ? experience.location : 'Location not specified'}
-          </div>
-        ) : (
-          <div className="flex items-center text-yellow-600 text-sm mb-3">
-            <FaExclamationTriangle className="mr-2" />
-            Location not specified
-          </div>
-        )}
-
-        {/* Responsibilities */}
-        <ul className={`list-disc list-inside text-gray-700 ${experience.isExpanded ? '' : 'line-clamp-3'}`}>
-          {experience.responsibilities.map((resp, respIndex) => (
-            <li key={respIndex} className="mb-1">{resp}</li>
-          ))}
+        {/* Responsibilities - Always show exactly 3 bullet points */}
+        <ul className="list-disc pl-14 text-[#1e293b] text-base font-helvetica-light-medium">
+          {(() => {
+            // Process responsibilities to ensure they're properly split
+            let processedResponsibilities: string[] = [];
+            
+            if (experience.responsibilities.length > 0) {
+              // If responsibilities exist as an array
+              if (experience.responsibilities.length === 1 && typeof experience.responsibilities[0] === 'string' && experience.responsibilities[0].includes('.')) {
+                // If it's a single string with periods, split by periods
+                processedResponsibilities = experience.responsibilities[0]
+                  .split('.')
+                  .map(item => item.trim())
+                  .filter(item => item.length > 0);
+              } else {
+                // Use the existing array
+                processedResponsibilities = experience.responsibilities;
+              }
+            }
+            
+            // If we have responsibilities to show
+            if (processedResponsibilities.length > 0) {
+              // Show up to 3 or all if expanded
+              const displayCount = experience.isExpanded ? processedResponsibilities.length : Math.min(3, processedResponsibilities.length);
+              const displayItems = processedResponsibilities.slice(0, displayCount);
+              
+              // If we have fewer than 3 items, pad with empty items
+              const paddingNeeded = !experience.isExpanded && displayItems.length < 3 ? 3 - displayItems.length : 0;
+              
+              return (
+                <>
+                  {displayItems.map((resp, respIndex) => (
+                    <li key={respIndex} className="mb-2">{resp}</li>
+                  ))}
+                  {Array(paddingNeeded).fill(null).map((_, index) => (
+                    <li key={`padding-${index}`} className="mb-2 text-gray-400">Additional responsibility</li>
+                  ))}
+                </>
+              );
+            } else {
+              // No responsibilities, show 3 placeholder bullets
+              return Array(3).fill(null).map((_, index) => (
+                <li key={index} className="mb-2 text-gray-400">No responsibility specified</li>
+              ));
+            }
+          })()}
         </ul>
 
-        {/* Expand/Collapse Button */}
-        {experience.responsibilities.length > 3 && (
-          <button 
-            onClick={() => onToggleExpand(index)}
-            className="text-blue-500 hover:text-blue-600 text-sm mt-2"
-          >
-            {experience.isExpanded ? 'Collapse' : 'Expand'}
-          </button>
-        )}
+        {/* Expand/Collapse Button - Only show when there are more than 3 responsibilities */}
+        {(() => {
+          // Determine if we need to show the expand/collapse button
+          let processedResponsibilities: string[] = [];
+          
+          if (experience.responsibilities.length > 0) {
+            if (experience.responsibilities.length === 1 && typeof experience.responsibilities[0] === 'string' && experience.responsibilities[0].includes('.')) {
+              processedResponsibilities = experience.responsibilities[0]
+                .split('.')
+                .map(item => item.trim())
+                .filter(item => item.length > 0);
+            } else {
+              processedResponsibilities = experience.responsibilities;
+            }
+          }
+          
+          return processedResponsibilities.length > 3 ? (
+            <button 
+              onClick={() => onToggleExpand(index)}
+              className="text-[#0e3a68] hover:text-[#0c3156] text-base mt-2 flex items-center ml-8 font-helvetica-neue-bold"
+            >
+              {experience.isExpanded ? 'Show Less' : 'Show More'}
+              <svg className="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={experience.isExpanded ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
+              </svg>
+            </button>
+          ) : null;
+        })()}
       </div>
     );
   };
@@ -719,20 +803,80 @@ export default function ResumeBuilderPage() {
     }
   };
 
-  const handleBackStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    } else {
-      router.push('/profile');
+  // Function to check if a work experience entry is complete
+  const isExperienceComplete = (experience: WorkExperience): boolean => {
+    // Skip validation for cards in edit mode
+    if (experience.isEditing) {
+      return true;
     }
+    
+    // Basic validation - check if required fields exist and aren't empty
+    const hasJobTitle = !!experience.jobTitle && experience.jobTitle.trim() !== '';
+    const hasCompany = !!experience.company && experience.company.trim() !== '';
+    const hasLocation = !!experience.location && String(experience.location).trim() !== '';
+    const hasStartDate = !!experience.startDate && experience.startDate.trim() !== '';
+    
+    // Check if there are at least 3 responsibilities
+    const hasEnoughResponsibilities = Array.isArray(experience.responsibilities) && 
+                                    experience.responsibilities.filter(r => r && r.trim() !== '').length >= 3;
+    
+    return hasJobTitle && hasCompany && hasLocation && hasStartDate && hasEnoughResponsibilities;
+  };
+
+  const handleBackStep = () => {
+    // Navigate to the contact info page
+    router.push('/profile/contact-info');
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl font-sans">
+    <div className="container mx-auto px-0 sm:px-4 py-8 max-w-5xl">
+      <style jsx global>{`
+        .font-helvetica-neue-bold {
+          font-family: 'Helvetica Neue Bold', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-weight: 700;
+        }
+        .font-helvetica-medium {
+          font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-weight: 500;
+        }
+        .font-helvetica-light-medium {
+          font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-weight: 600;
+        }
+        .font-helvetica {
+          font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+        .font-sans {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+      `}</style>
       <ProgressIndicator />
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 mt-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Work Experience</h2>
+      {/* Missing Information Alert - Only show after user interaction */}
+      {hasUserInteracted && workExperience.length > 0 && workExperience.some(exp => !isExperienceComplete(exp)) && (
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 mt-4 w-full">
+          <div className="rounded-lg border border-red-500 bg-white p-4">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <FaExclamationTriangle className="h-5 w-5 text-red-500" aria-hidden="true" />
+              </div>
+              <div className="ml-3 w-full">
+                <h3 className="text-sm font-medium text-red-800">Missing information</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>
+                    To improve your application, add missing information in the highlighted sections, where you
+                    can find it listed. Click the pencil icon next to a given section to edit.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mx-auto max-w-4xl px-0 sm:px-6 lg:px-8 mt-8 w-full">
+        <div className="bg-white rounded-lg border border-black p-5 sm:p-6 mb-8 transform hover:translate-y-[-2px] transition-transform">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Work Experience</h2>
 
         {/* Show loading indicator if scanning is in progress */}
         {scanStatus.isScanning && <LoadingIndicator />}
@@ -777,11 +921,12 @@ export default function ResumeBuilderPage() {
             <FaPlus className="mr-2" /> Add Work Experience
           </button>
         )}
+        </div>
       </div>
 
       {/* Sticky Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4 py-4 max-w-2xl">
+        <div className="mx-auto px-2 sm:px-6 lg:px-8 py-4 w-full max-w-4xl">
           <div className="flex justify-between items-center w-full">
             <button
               onClick={handleBackStep}

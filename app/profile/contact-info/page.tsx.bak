@@ -143,10 +143,12 @@ export default function ContactInfoForm() {
             }
           }
 
-          // Clean up phone number - remove any non-digit characters except + at start
-          phone = phone.replace(/[^\d+]/g, '');
-          if (phone && !phone.startsWith('+')) {
-            phone = '+1' + phone; // Add US country code if missing
+          // Format phone number properly
+          let cleanPhone = phone.replace(/\D/g, '');
+          if (cleanPhone.length === 10) {
+            phone = `(${cleanPhone.substring(0, 3)}) ${cleanPhone.substring(3, 6)}-${cleanPhone.substring(6)}`;
+          } else if (cleanPhone.length === 11 && cleanPhone.startsWith('1')) {
+            phone = `(${cleanPhone.substring(1, 4)}) ${cleanPhone.substring(4, 7)}-${cleanPhone.substring(7)}`;
           }
 
           // Extract email - try multiple possible fields

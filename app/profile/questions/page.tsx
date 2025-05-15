@@ -148,7 +148,7 @@ export default function KeyQuestionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white pb-28">
+    <div className="min-h-screen bg-[#fefcf9] pb-28">
       {/* Progress Bar */}
       <div className="mx-auto max-w-3xl px-4 pt-8 sm:px-6 lg:px-8">
         <div className="relative">

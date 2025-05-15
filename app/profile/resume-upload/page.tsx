@@ -89,7 +89,7 @@ export default function ResumeUpload() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-[#fefcf9]">
       <main className="flex-1 container mx-auto px-4 py-12 max-w-5xl">
         {/* Headers */}
         <div className="text-center mb-12">
