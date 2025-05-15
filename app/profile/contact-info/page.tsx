@@ -527,7 +527,7 @@ export default function ContactInfoForm() {
           <div className="mx-auto px-2 sm:px-4 py-4 w-full max-w-[800px]">
             <div className="flex justify-between items-center w-full">
               <button
-                onClick={() => router.push('/profile/resume-builder')}
+                onClick={() => router.push('/profile/resume-upload')}
                 className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
               >
                 <ArrowLeftIcon className="mr-2 h-5 w-5" />

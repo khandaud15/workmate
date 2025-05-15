@@ -178,7 +178,7 @@ export default function ResumeUpload() {
         <div className="container mx-auto px-4 py-4 max-w-5xl">
           <div className="flex justify-between items-center w-full">
             <button
-              onClick={() => router.back()}
+              onClick={() => router.push('/profile/questions')}
               className="flex items-center w-[100px] px-6 py-2.5 text-[#0e3a68] font-medium border-2 border-[#0e3a68] rounded-lg hover:bg-[#0e3a68]/5 transition-colors"
             >
               <ArrowLeftIcon className="mr-2 h-5 w-5" />
