@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   FaCheck, 
@@ -81,6 +80,8 @@ export default function ResumeBuilderPage() {
   });
   // Track whether user has interacted with the form
   const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
+
+
 
   // Typed state update functions
   const handleEditExperience = useCallback((index: number) => {
@@ -550,10 +551,10 @@ export default function ResumeBuilderPage() {
     // Editing view
     if (experience.isEditing) {
       return (
-        <div className="bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)] border border-black/20 p-5 mb-5 transform hover:translate-y-[-2px] transition-transform w-full">
+        <div className="bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)] border border-black/70 p-5 mb-5 transform hover:translate-y-[-2px] transition-transform w-full font-helvetica-neue-bold">
           <form onSubmit={handleSave} className="space-y-4">
             <div>
-              <label htmlFor="jobTitle" className="block text-sm font-medium text-[#1e293b]">Job Title</label>
+              <label htmlFor="jobTitle" className="block text-sm font-helvetica-neue-bold text-[#1e293b]">Job Title</label>
               <input
                 type="text"
                 name="jobTitle"
@@ -566,7 +567,7 @@ export default function ResumeBuilderPage() {
               />
             </div>
             <div>
-              <label htmlFor="company" className="block text-sm font-medium text-[#1e293b]">Company</label>
+              <label htmlFor="company" className="block text-sm font-helvetica-neue-bold text-[#1e293b]">Company</label>
               <input
                 type="text"
                 name="company"
@@ -580,7 +581,7 @@ export default function ResumeBuilderPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="startDate" className="block text-sm font-medium text-[#1e293b]">Start Date</label>
+                <label htmlFor="startDate" className="block text-sm font-helvetica-neue-bold text-[#1e293b]">Start Date</label>
                 <DatePicker
                   selected={editedExperience.startDate && !isNaN(Date.parse(editedExperience.startDate)) ? new Date(editedExperience.startDate) : null}
                   onChange={(date) => {
@@ -592,7 +593,7 @@ export default function ResumeBuilderPage() {
                     });
                   }}
                   dateFormat="yyyy-MM-dd"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-[#1e293b] text-base"
+                  className="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-[#1e293b] text-base"
                   placeholderText="Select start date"
                   popperClassName="z-50"
                   popperPlacement="bottom-start"
@@ -602,7 +603,7 @@ export default function ResumeBuilderPage() {
                 />
               </div>
               <div>
-                <label htmlFor="endDate" className="block text-sm font-medium text-[#1e293b]">End Date</label>
+                <label htmlFor="endDate" className="block text-sm font-helvetica-neue-bold text-[#1e293b]">End Date</label>
                 <DatePicker
                   selected={editedExperience.endDate && !isNaN(Date.parse(editedExperience.endDate)) ? new Date(editedExperience.endDate) : null}
                   onChange={(date) => {
@@ -614,7 +615,7 @@ export default function ResumeBuilderPage() {
                     });
                   }}
                   dateFormat="yyyy-MM-dd"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-[#1e293b] text-base"
+                  className="mt-1 block w-full rounded-md border-2 border-black shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 bg-white py-2 px-3 text-[#1e293b] text-base"
                   placeholderText="Select end date"
                   popperClassName="z-50"
                   popperPlacement="bottom-start"
@@ -625,7 +626,7 @@ export default function ResumeBuilderPage() {
               </div>
             </div>
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-[#1e293b]">Location</label>
+              <label htmlFor="location" className="block text-sm font-helvetica-neue-bold text-[#1e293b]">Location</label>
               <input
                 type="text"
                 name="location"
@@ -639,7 +640,7 @@ export default function ResumeBuilderPage() {
             </div>
             {/* Job Description field removed */}
             <div>
-              <label htmlFor="responsibilities" className="block text-sm font-medium text-[#1e293b]">Responsibilities</label>
+              <label htmlFor="responsibilities" className="block text-sm font-helvetica-neue-bold text-[#1e293b]">Experience</label>
               <textarea
                 name="responsibilities"
                 value={Array.isArray(editedExperience.responsibilities) ? editedExperience.responsibilities.join('\n') : ''}
@@ -658,13 +659,13 @@ export default function ResumeBuilderPage() {
                   setEditedExperience(experience); // Reset to original experience
                   onSave(index, {...experience, isEditing: false}); // Exit edit mode without saving changes
                 }} 
-                className="min-w-[96px] px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                className="min-w-[96px] px-4 py-2 rounded-md border-2 border-black text-gray-700 hover:bg-gray-100 transition-colors font-helvetica-neue-bold"
               >
                 Cancel
               </button>
               <button 
                 type="submit" 
-                className="min-w-[96px] px-4 py-2 rounded-md bg-[#173A6A] text-white hover:bg-opacity-90 transition-colors"
+                className="min-w-[96px] px-4 py-2 rounded-md bg-[#173A6A] text-white hover:bg-opacity-90 transition-colors font-helvetica-neue-bold"
               >
                 Save
               </button>
@@ -676,10 +677,10 @@ export default function ResumeBuilderPage() {
     
     // Normal view
     return (
-      <div className={`bg-white rounded-lg border ${isComplete ? 'border-black' : 'border-red-500'} p-5 sm:p-6 mb-6 relative w-full transform hover:translate-y-[-2px] transition-transform`}>
+      <div className={`bg-white rounded-lg border ${isComplete ? 'border-black/70' : 'border-red-500'} p-5 sm:p-6 mb-6 relative w-full transform hover:translate-y-[-2px] transition-transform font-helvetica-neue-bold`}>
         {/* Card Number */}
-        <div className="absolute top-0 left-0 w-10 h-10 flex items-center justify-center border-r border-b border-black rounded-tl-lg rounded-br-lg">
-          <span className="text-lg font-medium text-[#64748b]">{index + 1}</span>
+        <div className="absolute top-0 left-0 w-10 h-10 flex items-center justify-center border-r border-b border-black/70 rounded-tl-lg rounded-br-lg">
+          <span className="text-lg font-helvetica-neue-bold text-[#64748b]">{index + 1}</span>
         </div>
         {/* Edit and Delete Icons */}
         <div className="absolute top-3 right-3 flex space-x-2">
@@ -702,21 +703,21 @@ export default function ResumeBuilderPage() {
         {/* Job Title and Company - Styled to match screenshot */}
         <div className="pr-14 mt-4 ml-9"> {/* Add right padding to avoid text overlapping with buttons, top margin to avoid number, and left margin to move content right */}
           <div className="flex flex-wrap items-baseline mb-1">
-            <h3 className="text-lg sm:text-xl text-[#1e293b] font-helvetica-medium">{experience.jobTitle}</h3>
+            <h3 className="text-lg sm:text-xl text-[#1e293b] font-helvetica-neue-bold">{experience.jobTitle}</h3>
             <span className="mx-2 text-gray-400">|</span>
-            <p className="text-lg sm:text-xl text-[#1e293b] font-helvetica-medium">{experience.company}</p>
+            <p className="text-lg sm:text-xl text-[#1e293b] font-helvetica-neue-bold">{experience.company}</p>
           </div>
         </div>
         
         {/* Location and Date Range */}
         <div className="mb-3 ml-9">
           <p className="text-base">
-            <span className="text-[#64748b] font-helvetica">Location:</span> <span className="text-[#1e293b] font-helvetica-light-medium">{typeof experience.location === 'string' ? experience.location : 'Not specified'} | {experience.startDate} - {experience.endDate || 'Present'}</span>
+            <span className="text-[#64748b] font-helvetica-neue-bold">Location:</span> <span className="text-[#1e293b] font-helvetica-neue-bold">{typeof experience.location === 'string' ? experience.location : 'Not specified'} | {experience.startDate} - {experience.endDate || 'Present'}</span>
           </p>
         </div>
 
         {/* Responsibilities - Always show exactly 3 bullet points */}
-        <ul className="list-disc pl-14 text-[#1e293b] text-base font-helvetica-light-medium">
+        <ul className="list-disc pl-14 text-[#1e293b] text-base font-helvetica-neue-bold">
           {(() => {
             // Process responsibilities to ensure they're properly split
             let processedResponsibilities: string[] = [];
@@ -747,17 +748,17 @@ export default function ResumeBuilderPage() {
               return (
                 <>
                   {displayItems.map((resp, respIndex) => (
-                    <li key={respIndex} className="mb-2">{resp}</li>
+                    <li key={respIndex} className="mb-2 font-helvetica-neue-bold">{resp}</li>
                   ))}
                   {Array(paddingNeeded).fill(null).map((_, index) => (
-                    <li key={`padding-${index}`} className="mb-2 text-gray-400">Additional responsibility</li>
+                    <li key={`padding-${index}`} className="mb-2 text-gray-400 font-helvetica-neue-bold">Additional responsibility</li>
                   ))}
                 </>
               );
             } else {
               // No responsibilities, show 3 placeholder bullets
               return Array(3).fill(null).map((_, index) => (
-                <li key={index} className="mb-2 text-gray-400">No responsibility specified</li>
+                <li key={index} className="mb-2 text-gray-400 font-helvetica-neue-bold">No responsibility specified</li>
               ));
             }
           })()}
@@ -782,7 +783,7 @@ export default function ResumeBuilderPage() {
           return processedResponsibilities.length > 3 ? (
             <button 
               onClick={() => onToggleExpand(index)}
-              className="text-[#0e3a68] hover:text-[#0c3156] text-base mt-2 flex items-center ml-8 font-helvetica-neue-bold"
+              className="text-[#0e3a68] hover:text-[#0c3156] text-base mt-2 flex items-center ml-8 font-helvetica-neue-bold font-bold"
             >
               {experience.isExpanded ? 'Show Less' : 'Show More'}
               <svg className="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -849,6 +850,21 @@ export default function ResumeBuilderPage() {
         .font-sans {
           font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
+        /* Add black borders to all input fields with consistent height */
+        input, textarea, .react-datepicker__input-container input {
+          border: 1px solid rgba(0, 0, 0, 0.7) !important;
+          border-radius: 0.375rem !important;
+          height: 48px !important;
+          padding: 0.75rem !important;
+          font-size: 1rem !important;
+          line-height: 1.5 !important;
+        }
+        
+        /* Ensure textarea has appropriate height */
+        textarea {
+          height: auto !important;
+          min-height: 120px !important;
+        }
       `}</style>
       <ProgressIndicator />
 
@@ -875,7 +891,7 @@ export default function ResumeBuilderPage() {
       )}
 
       <div className="mx-auto max-w-4xl px-0 sm:px-6 lg:px-8 mt-8 w-full">
-        <div className="bg-white rounded-lg border border-black p-5 sm:p-6 mb-8 transform hover:translate-y-[-2px] transition-transform">
+        <div className="bg-white rounded-lg border border-black/70 p-5 sm:p-6 mb-8 transform hover:translate-y-[-2px] transition-transform">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Work Experience</h2>
 
         {/* Show loading indicator if scanning is in progress */}
