@@ -233,13 +233,14 @@ export default function PricingPage() {
       {/* Sticky Navigation - Only shows when plan is selected */}
       {selectedPlan && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 transform transition-transform duration-300 ease-in-out">
-          <div className="container mx-auto px-4 py-4 max-w-2xl">
-             <div className="flex justify-between items-center w-full">
+          <div className="container mx-auto px-4 py-3 sm:py-4 w-full">
+             {/* Mobile view - centered buttons */}
+             <div className="flex justify-between lg:hidden w-full">
                <button
                  onClick={() => router.back()}
-                 className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
+                 className="flex items-center w-[80px] sm:w-[100px] rounded-lg border-2 border-[#0e3a68] px-4 sm:px-6 py-2 sm:py-2.5 text-[#0e3a68] text-sm sm:text-base transition-colors hover:bg-[#0e3a68]/5"
                >
-                 <ArrowLeftIcon className="mr-2 h-5 w-5" />
+                 <ArrowLeftIcon className="mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                  Back
                </button>
                <button
@@ -249,10 +250,36 @@ export default function PricingPage() {
                      router.push('/profile/questions');
                    }
                  }}
-                 className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
+                 className="flex items-center w-[80px] sm:w-[100px] rounded-lg border-2 border-[#0e3a68] px-4 sm:px-6 py-2 sm:py-2.5 bg-[#0e3a68] text-white text-sm sm:text-base font-medium transition-colors hover:bg-[#0c3156]"
                >
                  Next
                </button>
+             </div>
+             
+             {/* Desktop view - aligned with columns */}
+             <div className="hidden lg:grid grid-cols-[400px_1fr] gap-12 max-w-[1400px] mx-auto">
+               <div className="flex justify-start">
+                 <button
+                   onClick={() => router.back()}
+                   className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 text-[#0e3a68] transition-colors hover:bg-[#0e3a68]/5"
+                 >
+                   <ArrowLeftIcon className="mr-2 h-5 w-5" />
+                   Back
+                 </button>
+               </div>
+               <div className="flex justify-end">
+                 <button
+                   onClick={() => {
+                     if (selectedPlan) {
+                       localStorage.setItem('selectedPlan', selectedPlan);
+                       router.push('/profile/questions');
+                     }
+                   }}
+                   className="flex items-center w-[100px] rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
+                 >
+                   Next
+                 </button>
+               </div>
              </div>
           </div>
         </div>
