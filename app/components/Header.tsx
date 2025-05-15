@@ -72,8 +72,8 @@ export default function Header() {
   return (
     <header className="fixed w-full top-0 z-[9999] bg-white border-b border-[#0e3a68]/10">
       <div className="max-w-7xl mx-auto">
-        <div className="px-4 py-4 md:px-8">
-          <div className="flex items-center justify-between space-x-6">
+        <div className="px-2 py-3 md:px-8 md:py-4">
+          <div className="flex items-center justify-between space-x-2 md:space-x-6">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0 min-w-[100px]">
               <Logo />
@@ -81,7 +81,7 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
-              {!isRestrictedPath && <div className="flex items-center justify-center space-x-16 ml-16">
+              {!isRestrictedPath && <div className="flex items-center space-x-8 ml-4">
                 <div className="relative group">
                   <button 
                     type="button"
