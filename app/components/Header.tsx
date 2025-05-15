@@ -36,7 +36,6 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
@@ -81,7 +80,7 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center flex-grow justify-between">
-              {!isRestrictedPath && <div className="flex items-center space-x-8 ml-4">
+              {!isRestrictedPath && <div className="flex items-center space-x-12 ml-4">
                 <div className="relative group">
                   <button 
                     type="button"
@@ -185,35 +184,7 @@ export default function Header() {
                 </div>
               </div>}
 
-              {/* Search Bar */}
-              {!isRestrictedPath && <div className="relative ml-auto mr-8 w-64">
-                <div className="relative">
-                  <label htmlFor={searchId} className="sr-only">Search jobs</label>
-                  <svg
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                  <input
-                    id={searchId}
-                    type="search"
-                    placeholder="Search Job"
-                    className="w-full pl-9 pr-3 py-2 text-sm rounded-full bg-[#f0f1f3] border-none focus:outline-none focus:ring-2 focus:ring-gray-300 font-medium placeholder:text-gray-500 text-gray-900"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    suppressHydrationWarning
-                  />
-                </div>
-              </div>}
+              {/* Auth Buttons - Now with ml-auto to push to the right */}
 
               {/* Auth Buttons */}
               <div className="hidden md:flex items-center space-x-4 ml-auto">
@@ -230,7 +201,7 @@ export default function Header() {
                       className="flex items-center space-x-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
                     >
                       <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
+                        <div className="h-10 w-10 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-base font-medium overflow-hidden">
                           {session.user?.image ? (
                             <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
                           ) : (
@@ -238,8 +209,8 @@ export default function Header() {
                           )}
                         </div>
                         {/* Only show name if not on home page */}
-                        {pathname !== '/' && <span className="ml-2">{session.user?.name}</span>}
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        {pathname !== '/' && <span className="ml-2 text-base">{session.user?.name}</span>}
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
@@ -455,7 +426,7 @@ export default function Header() {
                     className="p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
                   >
                     <div className="flex items-center">
-                      <div className="h-6 w-6 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-xs font-medium overflow-hidden">
+                      <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
                         {session.user?.image ? (
                           <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
                         ) : (
@@ -464,7 +435,7 @@ export default function Header() {
                       </div>
                       {/* Only show dropdown arrow if not on home page */}
                       {pathname !== '/' && (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       )}
@@ -589,41 +560,11 @@ export default function Header() {
                   Copilot
                 </Link>
 
-                {/* Mobile Search */}
-                <div className="px-2">
-                  <div className="relative">
-                    <label htmlFor="mobile-search" className="sr-only">Search jobs</label>
-                    <svg
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                    <input
-                      id="mobile-search"
-                      type="search"
-                      placeholder="Search Job"
-                      className="w-full pl-9 pr-3 py-2 text-sm rounded-full bg-[#f0f1f3] border-none focus:outline-none focus:ring-2 focus:ring-gray-300 font-medium placeholder:text-gray-500 text-gray-900"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      suppressHydrationWarning
-                    />
-                  </div>
-                </div>
-
                 {/* Mobile Auth Buttons */}
                 {session ? (
                   <div className="mt-6 space-y-3">
                     <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden mr-3">
+                      <div className="h-10 w-10 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-base font-medium overflow-hidden mr-3">
                         {session.user?.image ? (
                           <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
                         ) : (
