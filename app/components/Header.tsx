@@ -201,7 +201,7 @@ export default function Header() {
                       className="flex items-center space-x-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
                     >
                       <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-base font-medium overflow-hidden">
+                        <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
                           {session.user?.image ? (
                             <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
                           ) : (

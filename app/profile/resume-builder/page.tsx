@@ -73,13 +73,37 @@ type ResumeExperience = {
 export default function ResumeBuilderPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<number>(2); // Set to Resume Review step
-  const [workExperience, setWorkExperience] = useState<WorkExperience[]>([]);
+  // Initialize workExperience state
+  const [workExperience, setWorkExperience] = useState<WorkExperience[]>(() => {
+    if (typeof window === 'undefined') return [];
+    
+    try {
+      const saved = localStorage.getItem('resumeWorkExperience');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to parse saved work experience:', error);
+    }
+    return [];
+  });
+  
   const [scanStatus, setScanStatus] = useState<ResumeScanStatus>({
     isScanning: true,
     isComplete: false
   });
   // Track whether user has interacted with the form
   const [hasUserInteracted, setHasUserInteracted] = useState<boolean>(false);
+  
+  // Auto-save work experience to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined' && workExperience.length > 0) {
+      localStorage.setItem('resumeWorkExperience', JSON.stringify(workExperience));
+    }
+  }, [workExperience]);
 
 
 
@@ -93,7 +117,14 @@ export default function ResumeBuilderPage() {
   }, []);
 
   const handleDeleteExperience = useCallback((index: number) => {
-    setWorkExperience(prev => prev.filter((_, i) => i !== index));
+    setWorkExperience(prev => {
+      const newExperiences = prev.filter((_, i) => i !== index);
+      // Update localStorage after state update
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('resumeWorkExperience', JSON.stringify(newExperiences));
+      }
+      return newExperiences;
+    });
   }, []);
 
   const handleSaveExperience = (index: number, updatedExperience: WorkExperience) => {
@@ -101,6 +132,11 @@ export default function ResumeBuilderPage() {
       i === index ? { ...updatedExperience, isEditing: false } : exp
     );
     setWorkExperience(newWorkExperiences);
+    
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('resumeWorkExperience', JSON.stringify(newWorkExperiences));
+    }
     
     // Set user interaction flag to true when a user saves a card
     if (!hasUserInteracted) {
@@ -116,11 +152,47 @@ export default function ResumeBuilderPage() {
     );
   }, []);
 
+  const handleAddExperience = useCallback(() => {
+    const newExperience: WorkExperience = {
+      id: `exp-${Date.now()}`,
+      jobTitle: '',
+      company: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      responsibilities: [],
+      jobDescription: '',
+      isEditing: true,
+      isExpanded: true
+    };
+    setWorkExperience(prev => {
+      const newExperiences = [newExperience, ...prev];
+      // Update localStorage after state update
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('resumeWorkExperience', JSON.stringify(newExperiences));
+      }
+      return newExperiences;
+    });
+  }, [workExperience]);
+
   // Fetch parsed resume data from your API endpoint
   useEffect(() => {
     const fetchResumeData = async () => {
       try {
-        // Aggressive debugging log
+        // Check if we already have work experience data in localStorage
+        const savedWorkExperience = localStorage.getItem('resumeWorkExperience');
+        if (savedWorkExperience) {
+          const parsedExperience = JSON.parse(savedWorkExperience);
+          if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
+            setWorkExperience(parsedExperience);
+            setScanStatus({
+              isScanning: false,
+              isComplete: true
+            });
+            return; // Skip the rest of the function if we have saved data
+          }
+        }
+
         console.group('Resume Data Retrieval Process');
         console.time('Resume Data Fetch');
         
@@ -380,6 +452,36 @@ export default function ResumeBuilderPage() {
           };
         });
         
+        // Save the complete parsed resume data to localStorage for use in other sections
+        if (workExperiences.length > 0) {
+          try {
+            // Get the raw resume data from localStorage
+            const rawResumeData = localStorage.getItem('rawResumeData');
+            const parsedRawData = rawResumeData ? JSON.parse(rawResumeData) : {};
+            
+            // Create a complete resume data object with all sections
+            const completeResumeData = {
+              work_experience: workExperiences,
+              // Include education data if available
+              education: parsedRawData.education || [],
+              // Include any other sections from the parsed data
+              ...(parsedResumeData ? JSON.parse(parsedResumeData) : {})
+            };
+            
+            // Save to localStorage for use in the education page
+            localStorage.setItem('completeResumeData', JSON.stringify(completeResumeData));
+            console.log('✅ Saved complete resume data to localStorage');
+            
+            // Also save education data separately for easier access
+            if (parsedRawData.education) {
+              localStorage.setItem('educationData', JSON.stringify(parsedRawData.education));
+              console.log('✅ Saved education data to localStorage');
+            }
+          } catch (error) {
+            console.error('Error saving complete resume data:', error);
+          }
+        }
+
         // Update work experience with parsed data
         if (formattedWorkExperiences.length > 0) {
           setWorkExperience(formattedWorkExperiences);
@@ -797,11 +899,21 @@ export default function ResumeBuilderPage() {
   };
 
   const handleNextStep = () => {
-    if (currentStep < 3) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      router.push('/profile/resume-builder/finalize');
+    // Save the current state to localStorage before proceeding
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('workExperience', JSON.stringify(workExperience));
     }
+    
+    // Check if all required fields are filled
+    const incompleteExperience = workExperience.find(exp => !isExperienceComplete(exp));
+    
+    if (incompleteExperience) {
+      setHasUserInteracted(true);
+      return;
+    }
+    
+    // Navigate to the education page
+    router.push('/profile/education');
   };
 
   // Function to check if a work experience entry is complete
@@ -894,49 +1006,38 @@ export default function ResumeBuilderPage() {
         <div className="bg-white rounded-lg border border-black/70 p-5 sm:p-6 mb-8 transform hover:translate-y-[-2px] transition-transform">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Work Experience</h2>
 
-        {/* Show loading indicator if scanning is in progress */}
-        {scanStatus.isScanning && <LoadingIndicator />}
+          {/* Show loading indicator if scanning is in progress */}
+          {scanStatus.isScanning && <LoadingIndicator />}
 
-        {/* Show error message if there was an error */}
-        {!scanStatus.isScanning && !scanStatus.isComplete && scanStatus.errorMessage && (
-          <ErrorMessage message={scanStatus.errorMessage} />
-        )}
+          {/* Show error message if there was an error */}
+          {!scanStatus.isScanning && !scanStatus.isComplete && scanStatus.errorMessage && (
+            <ErrorMessage message={scanStatus.errorMessage} />
+          )}
 
-        {/* Show work experience cards */}
-        {!scanStatus.isScanning && workExperience.map((experience, index) => (
-          <WorkExperienceCard 
-            key={experience.id} 
-            experience={experience} 
-            index={index} 
-            onEdit={handleEditExperience}
-            onDelete={handleDeleteExperience}
-            onSave={handleSaveExperience}
-            onToggleExpand={handleToggleExpand}
-          />
-        ))}
+          {/* Show work experience cards */}
+          <div className="space-y-6">
+            {workExperience.map((exp, index) => (
+              <WorkExperienceCard
+                key={exp.id || index}
+                experience={exp}
+                index={index}
+                onEdit={handleEditExperience}
+                onDelete={handleDeleteExperience}
+                onSave={handleSaveExperience}
+                onToggleExpand={handleToggleExpand}
+              />
+            ))}
+          </div>
 
-        {/* Show add experience button only after scanning is complete */}
-        {!scanStatus.isScanning && (
-          <button 
-            onClick={() => {
-              const newExperience: WorkExperience = {
-                id: `temp-${Date.now()}`,
-                jobTitle: '',
-                company: '',
-                location: '',
-                startDate: '',
-                endDate: '',
-                responsibilities: [],
-                isEditing: true,
-                isExpanded: false
-              };
-              setWorkExperience(prev => [...prev, newExperience]);
-            }}
-            className="flex items-center justify-center w-full rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156]"
-          >
-            <FaPlus className="mr-2" /> Add Work Experience
-          </button>
-        )}
+          {/* Show add experience button only after scanning is complete */}
+          {!scanStatus.isScanning && (
+            <button 
+              onClick={handleAddExperience}
+              className="flex items-center justify-center w-full rounded-lg border-2 border-[#0e3a68] px-6 py-2.5 bg-[#0e3a68] text-white font-medium transition-colors hover:bg-[#0c3156] mt-4"
+            >
+              <FaPlus className="mr-2" /> Add Work Experience
+            </button>
+          )}
         </div>
       </div>
 
