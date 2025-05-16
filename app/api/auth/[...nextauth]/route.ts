@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { loginWithEmail } from "../../../../lib/auth-service";
 
 // Function to get the actual running port, regardless of NEXTAUTH_URL setting
 const getCurrentPort = () => {
@@ -54,17 +55,20 @@ const handler = NextAuth({
         }
 
         try {
-          // Here you would typically:
-          // 1. Check if user exists
-          // 2. Verify password
-          // 3. Return user data or null
+          // Use Firebase authentication
+          const result = await loginWithEmail(credentials.email, credentials.password);
           
-          // For now, we'll create a simple user object
-          // In a real app, you'd want to check against your database
+          if (!result.success || !result.user) {
+            console.error('Auth error:', result.error);
+            throw new Error(result.error || 'Authentication failed');
+          }
+          
+          // Return user data for NextAuth session
           return {
-            id: credentials.email,
-            email: credentials.email,
-            name: credentials.email.split('@')[0]
+            id: result.user.uid,
+            email: result.user.email,
+            name: result.user.displayName || result.user.email?.split('@')[0] || 'User',
+            emailVerified: result.user.emailVerified
           };
         } catch (error) {
           console.error('Auth error:', error);
