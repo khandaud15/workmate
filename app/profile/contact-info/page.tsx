@@ -812,7 +812,7 @@ export default function ContactInfoForm() {
                 const formattedAddress = data.data.formatted_address || data.data.formattedAddress || '';
                 if (formattedAddress) {
                   // Try to parse formatted address
-                  const addressParts = formattedAddress.split(',').map((part: string) => part.trim());
+                  const addressParts = formattedAddress.split(',').map(part => part.trim());
                   if (addressParts.length >= 3) {
                     // Typically format is: street, city, state zip
                     setAddress(addressParts[0]);

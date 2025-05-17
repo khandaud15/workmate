@@ -116,105 +116,73 @@ export default function FinalizePage() {
   useEffect(() => {
     const loadAllData = async () => {
       try {
-        console.log('Loading data for finalize page...');
-        
-        // Get the current resume identifier
-        const resumeIdentifier = localStorage.getItem('resumeIdentifier');
-        console.log('Current resume identifier:', resumeIdentifier);
-        
         // Load Key Questions
         const savedQuestions = localStorage.getItem('keyQuestions');
         if (savedQuestions) {
           setKeyQuestions(JSON.parse(savedQuestions));
         }
 
-        // Load Contact Info from contactFormData (which is used in the contact-info page)
-        const savedContactFormData = localStorage.getItem('contactFormData');
-        if (savedContactFormData) {
+        // Load Contact Info from the correct localStorage key
+        const savedContactInfo = localStorage.getItem('contactInfo');
+        if (savedContactInfo) {
           try {
-            const parsedContactForm = JSON.parse(savedContactFormData);
-            console.log('Loaded contact form data:', parsedContactForm);
-            setContactInfo(parsedContactForm);
+            setContactInfo(JSON.parse(savedContactInfo));
           } catch (e) {
-            console.error('Error parsing contact form data:', e);
+            console.error('Error parsing contact info:', e);
           }
         } else {
-          // Fallback to older keys if contactFormData is not available
-          const savedContactInfo = localStorage.getItem('contactInfo');
-          if (savedContactInfo) {
+          // Try alternative sources
+          const formData = localStorage.getItem('formData');
+          if (formData) {
             try {
-              setContactInfo(JSON.parse(savedContactInfo));
+              setContactInfo(JSON.parse(formData));
             } catch (e) {
-              console.error('Error parsing contact info:', e);
+              console.error('Error parsing form data:', e);
+            }
+          } else {
+            const resumeData = localStorage.getItem('resumeData');
+            if (resumeData) {
+              try {
+                const parsedData = JSON.parse(resumeData);
+                const contactInfoData: Record<string, string> = {};
+                
+                if (parsedData.name) {
+                  contactInfoData.firstName = parsedData.name.first || '';
+                  contactInfoData.lastName = parsedData.name.last || '';
+                }
+                
+                contactInfoData.email = parsedData.email || '';
+                contactInfoData.phone = parsedData.phone || '';
+                
+                if (Object.keys(contactInfoData).length > 0) {
+                  setContactInfo(contactInfoData);
+                }
+              } catch (e) {
+                console.error('Error parsing resume data:', e);
+              }
             }
           }
         }
 
-        // First try to load from the same key used in resume-builder page
-        const resumeWorkExperience = localStorage.getItem('resumeWorkExperience');
-        if (resumeWorkExperience) {
-          try {
-            const parsedExperience = JSON.parse(resumeWorkExperience);
-            console.log('Found experience data in resumeWorkExperience:', parsedExperience);
-            if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
-              setExperience(parsedExperience);
-            }
-          } catch (e) {
-            console.error('Error parsing resumeWorkExperience:', e);
+        // Load Experience - try different possible keys
+        const experienceKeys = ['experienceData', 'workExperience', 'experience'];
+        for (const key of experienceKeys) {
+          const savedExperience = localStorage.getItem(key);
+          if (savedExperience) {
+            setExperience(JSON.parse(savedExperience));
+            break;
           }
         }
         
-        // If no experience found, try user edited work experience
+        // If no experience found, try to extract from resume data
         if (experience.length === 0) {
-          const userEditedWorkExperience = localStorage.getItem('userEditedWorkExperience');
-          if (userEditedWorkExperience) {
-            try {
-              const parsedExperience = JSON.parse(userEditedWorkExperience);
-              console.log('Found experience data in userEditedWorkExperience:', parsedExperience);
-              if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
-                setExperience(parsedExperience);
-              }
-            } catch (e) {
-              console.error('Error parsing userEditedWorkExperience:', e);
-            }
-          }
-        }
-        
-        // If still no experience, try parsed resume data
-        if (experience.length === 0) {
-          const parsedResumeData = localStorage.getItem('parsedResumeData');
-          if (parsedResumeData && resumeIdentifier) {
-            try {
-              const parsedData = JSON.parse(parsedResumeData);
-              console.log('Parsed resume data:', parsedData);
-              
-              // Check if work_experience exists in the parsed data
-              if (parsedData.data && parsedData.data.work_experience && Array.isArray(parsedData.data.work_experience)) {
-                console.log('Setting experience from parsed resume data');
-                setExperience(parsedData.data.work_experience);
-              }
-            } catch (e) {
-              console.error('Error parsing resume data for experience:', e);
-            }
-          }
-        }
-        
-        // If still no experience found, try other localStorage keys as fallback
-        if (experience.length === 0) {
-          console.log('No experience found in primary sources, checking alternative keys');
-          // Load Experience from localStorage - try different possible keys
-          const experienceKeys = ['workExperiences', 'experienceData', 'workExperience', 'experience'];
-          for (const key of experienceKeys) {
-            const savedExperience = localStorage.getItem(key);
-            if (savedExperience) {
-              try {
-                const parsedExperience = JSON.parse(savedExperience);
-                console.log(`Found experience data in localStorage key: ${key}`, parsedExperience);
-                setExperience(parsedExperience);
-                break;
-              } catch (e) {
-                console.error(`Error parsing experience data from ${key}:`, e);
-              }
+          const resumeData = localStorage.getItem('resumeData');
+          if (resumeData) {
+            const parsedData = JSON.parse(resumeData);
+            if (parsedData.work && Array.isArray(parsedData.work)) {
+              setExperience(parsedData.work);
+            } else if (parsedData.experience && Array.isArray(parsedData.experience)) {
+              setExperience(parsedData.experience);
             }
           }
         }
@@ -222,67 +190,13 @@ export default function FinalizePage() {
         // Load Education
         const savedEducation = localStorage.getItem('educationData');
         if (savedEducation) {
-          try {
-            setEducation(JSON.parse(savedEducation));
-          } catch (e) {
-            console.error('Error parsing education data:', e);
-          }
+          setEducation(JSON.parse(savedEducation));
         }
 
         // Load Skills
         const savedSkills = localStorage.getItem('skillsData');
         if (savedSkills) {
-          try {
-            setSkills(JSON.parse(savedSkills));
-          } catch (e) {
-            console.error('Error parsing skills data:', e);
-          }
-        }
-        
-        // If no skills found, try to extract from parsed resume data
-        if (skills.length === 0) {
-          const parsedResumeData = localStorage.getItem('parsedResumeData');
-          if (parsedResumeData) {
-            try {
-              const parsedData = JSON.parse(parsedResumeData);
-              if (parsedData.data && parsedData.data.skills && Array.isArray(parsedData.data.skills)) {
-                console.log('Setting skills from parsed resume data');
-                setSkills(parsedData.data.skills);
-              }
-            } catch (e) {
-              console.error('Error parsing resume data for skills:', e);
-            }
-          }
-        }
-        
-        // If still no skills, try to extract from workExperiences for keywords
-        if (skills.length === 0 && experience.length > 0) {
-          console.log('Extracting skills from work experience');
-          const extractedSkills = new Set<string>();
-          
-          // Common tech skills to look for in job descriptions
-          const skillKeywords = [
-            'JavaScript', 'TypeScript', 'React', 'Angular', 'Vue', 'Node.js',
-            'HTML', 'CSS', 'Python', 'Java', 'C#', 'C++', 'Ruby', 'PHP',
-            'SQL', 'NoSQL', 'MongoDB', 'PostgreSQL', 'MySQL', 'AWS', 'Azure',
-            'Docker', 'Kubernetes', 'Git', 'REST API', 'GraphQL',
-            'Agile', 'Scrum', 'Project Management', 'Leadership'
-          ];
-          
-          // Extract skills from job descriptions
-          experience.forEach(job => {
-            const jobText = JSON.stringify(job).toLowerCase();
-            skillKeywords.forEach(skill => {
-              if (jobText.toLowerCase().includes(skill.toLowerCase())) {
-                extractedSkills.add(skill);
-              }
-            });
-          });
-          
-          if (extractedSkills.size > 0) {
-            console.log('Extracted skills:', Array.from(extractedSkills));
-            setSkills(Array.from(extractedSkills));
-          }
+          setSkills(JSON.parse(savedSkills));
         }
       } catch (error) {
         console.error('Error loading data:', error);
