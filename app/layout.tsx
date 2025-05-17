@@ -38,15 +38,12 @@ export default function RootLayout({
   const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
 
   useEffect(() => {
-    // Only apply white theme color for the home page
+    // Apply white theme color for the home page
     if (pathname === '/') {
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
       document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
-    } else {
-      // Reset to default for other pages
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#05070A');
-      document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'black');
     }
+    // Don't set anything for other pages - let the default theme colors work
   }, [pathname]);
   
   const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
