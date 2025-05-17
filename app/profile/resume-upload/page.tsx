@@ -69,6 +69,18 @@ export default function ResumeUpload() {
       // Store the Affinda identifier
       console.log('Storing identifier:', data.identifier);
       localStorage.setItem('resumeIdentifier', data.identifier);
+      
+      // Add a timestamp to indicate when the resume was last uploaded
+      // This will help other pages know when to refresh their data
+      localStorage.setItem('resumeUploadTimestamp', Date.now().toString());
+      
+      // Clear any previously stored resume data to ensure we don't mix old and new data
+      localStorage.removeItem('resumeData');
+      localStorage.removeItem('parsedResumeData');
+      localStorage.removeItem('workExperience');
+      localStorage.removeItem('resumeWorkExperience');
+      localStorage.removeItem('educationData');
+      localStorage.removeItem('completeResumeData');
 
       // Redirect to scan page after a brief delay
       setTimeout(() => {

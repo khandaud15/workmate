@@ -565,7 +565,7 @@ export default function EducationPage() {
             </div>
           </div>
           
-          <div className="flex justify-end space-x-3 mt-4">
+          <div className="flex justify-between items-center mt-6">
             <button
               type="button"
               onClick={() => {
@@ -575,7 +575,7 @@ export default function EducationPage() {
                   saveEducation(edu.id!, { ...edu, isEditing: false });
                 }
               }}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="min-w-[96px] px-4 py-2 rounded-md border-2 border-black text-gray-700 hover:bg-gray-100 transition-colors font-helvetica-neue-bold"
             >
               Cancel
             </button>
@@ -583,11 +583,11 @@ export default function EducationPage() {
               type="button"
               onClick={() => saveEducation(edu.id!, { ...edu, isEditing: false })}
               disabled={!isEducationComplete(edu)}
-              className={`px-4 py-2 text-sm font-medium text-white rounded-md ${
-                isEducationComplete(edu) 
-                  ? 'bg-blue-600 hover:bg-blue-700' 
-                  : 'bg-blue-300 cursor-not-allowed'
-              }`}
+              className={`min-w-[96px] px-4 py-2 rounded-md border-2 border-[#173A6A] shadow-sm focus:ring-2 focus:ring-[#173A6A]/30 focus:border-[#173A6A] transition-all duration-200 ${
+                isEducationComplete(edu)
+                  ? 'bg-[#173A6A] text-white hover:bg-[#0c3156]' 
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300'
+              } font-helvetica-neue-bold`}
             >
               Save
             </button>

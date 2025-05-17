@@ -101,9 +101,15 @@ export default function ResumeBuilderPage() {
   // Auto-save work experience to localStorage whenever it changes
   useEffect(() => {
     if (typeof window !== 'undefined' && workExperience.length > 0) {
+      // Save to both standard and user-edited storage
       localStorage.setItem('resumeWorkExperience', JSON.stringify(workExperience));
+      
+      // If the user has interacted with the form, mark this as user-edited data
+      if (hasUserInteracted) {
+        localStorage.setItem('userEditedWorkExperience', JSON.stringify(workExperience));
+      }
     }
-  }, [workExperience]);
+  }, [workExperience, hasUserInteracted]);
 
 
 
@@ -128,14 +134,120 @@ export default function ResumeBuilderPage() {
   }, []);
 
   const handleSaveExperience = (index: number, updatedExperience: WorkExperience) => {
+    // Process responsibilities to ensure they're in the correct format
+    const processedExperience = { ...updatedExperience };
+    
+    // Ensure responsibilities is an array and handle different input formats
+    let responsibilities: string[] = [];
+    
+    // Helper function to clean and validate string items
+    const cleanStringItem = (item: unknown): string => {
+      if (typeof item === 'string') return item.trim();
+      return String(item || '').trim();
+    };
+    
+    // Function to split text into sentences
+    const splitIntoSentences = (text: string): string[] => {
+      // First try to split by periods followed by space or newlines
+      const byPeriods = text
+        .replace(/\. /g, '.\n')
+        .split(/\n+|\r\n+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+      
+      if (byPeriods.length > 1) {
+        return byPeriods;
+      }
+      
+      // If that didn't work, try other delimiters
+      if (text.includes('•')) {
+        return text.split('•')
+          .map(s => s.trim())
+          .filter(s => s.length > 0);
+      }
+      
+      if (text.includes('- ')) {
+        return text.split(/\s*-\s+/)
+          .map(s => s.trim())
+          .filter(s => s.length > 0);
+      }
+      
+      if (text.includes(', ')) {
+        return text.split(/,\s+/)
+          .map(s => s.trim())
+          .filter(s => s.length > 0);
+      }
+      
+      // Last resort: just use the whole text
+      return text ? [text] : [];
+    };
+    
+    // Handle different possible types for responsibilities
+    const responsibilitiesValue = processedExperience.responsibilities;
+    
+    if (Array.isArray(responsibilitiesValue)) {
+      // If it's already an array, process each item to potentially split further
+      responsibilities = [];
+      for (const item of responsibilitiesValue) {
+        const cleanedItem = cleanStringItem(item);
+        if (cleanedItem) {
+          // Try to split each array item into sentences
+          const sentences = splitIntoSentences(cleanedItem);
+          responsibilities.push(...sentences);
+        }
+      }
+    } else if (typeof responsibilitiesValue === 'string') {
+      // If it's a string, split it into sentences
+      const respText = cleanStringItem(responsibilitiesValue);
+      responsibilities = splitIntoSentences(respText);
+    }
+    
+    // Format each responsibility
+    responsibilities = responsibilities.map(resp => {
+      resp = resp.trim();
+      // Ensure proper sentence casing and periods
+      if (!resp.endsWith('.') && resp.length > 1) {
+        resp += '.';
+      }
+      // Capitalize first letter
+      return resp.charAt(0).toUpperCase() + resp.slice(1);
+    });
+    
+    // Ensure we have at least 3 responsibilities (pad with empty strings if needed)
+    while (responsibilities.length < 3) {
+      responsibilities.push('');
+    }
+    
+    // Update the experience with processed responsibilities
+    const finalExperience = {
+      ...processedExperience,
+      responsibilities,
+      isEditing: false
+    };
+    
     const newWorkExperiences = [...workExperience].map((exp, i) => 
-      i === index ? { ...updatedExperience, isEditing: false } : exp
+      i === index ? finalExperience : exp
     );
+    
     setWorkExperience(newWorkExperiences);
     
     // Save to localStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('resumeWorkExperience', JSON.stringify(newWorkExperiences));
+      try {
+        // Save the current work experience
+        localStorage.setItem('resumeWorkExperience', JSON.stringify(newWorkExperiences));
+        
+        // Mark this as user-edited data
+        localStorage.setItem('userHasEditedWorkExperience', 'true');
+        
+        // Store the current resume upload timestamp to track which resume this edit belongs to
+        const resumeUploadTimestamp = localStorage.getItem('resumeUploadTimestamp');
+        if (resumeUploadTimestamp) {
+          localStorage.setItem('lastProcessedWorkExperienceTimestamp', resumeUploadTimestamp);
+        }
+      } catch (error) {
+        console.error('Error saving work experience:', error);
+      }
     }
     
     // Set user interaction flag to true when a user saves a card
@@ -179,18 +291,43 @@ export default function ResumeBuilderPage() {
   useEffect(() => {
     const fetchResumeData = async () => {
       try {
-        // Check if we already have work experience data in localStorage
+        // Set loading state initially
+        setScanStatus({
+          isScanning: true,
+          isComplete: false
+        });
+        
+        // Get the resume identifier and upload timestamp
+        const resumeIdentifier = localStorage.getItem('resumeIdentifier');
+        const resumeUploadTimestamp = localStorage.getItem('resumeUploadTimestamp');
+        const lastProcessedTimestamp = localStorage.getItem('lastProcessedWorkExperienceTimestamp');
+        
+        // Check if we have saved work experience data
         const savedWorkExperience = localStorage.getItem('resumeWorkExperience');
-        if (savedWorkExperience) {
-          const parsedExperience = JSON.parse(savedWorkExperience);
-          if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
-            setWorkExperience(parsedExperience);
-            setScanStatus({
-              isScanning: false,
-              isComplete: true
-            });
-            return; // Skip the rest of the function if we have saved data
+        
+        // If we have saved work experience and either:
+        // 1. There's no new resume upload OR
+        // 2. We've already processed this resume upload
+        if (savedWorkExperience && (!resumeUploadTimestamp || (lastProcessedTimestamp && lastProcessedTimestamp === resumeUploadTimestamp))) {
+          try {
+            const parsedExperience = JSON.parse(savedWorkExperience);
+            if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
+              setWorkExperience(parsedExperience);
+              setScanStatus({
+                isScanning: false,
+                isComplete: true
+              });
+              return; // Use saved data if it's current
+            }
+          } catch (error) {
+            console.error('Failed to parse saved work experience:', error);
           }
+        }
+        
+        // If we have a new resume upload that hasn't been processed yet, clear work experience
+        if (resumeUploadTimestamp && (!lastProcessedTimestamp || lastProcessedTimestamp !== resumeUploadTimestamp)) {
+          console.log('New resume detected, clearing old work experience data');
+          setWorkExperience([]);
         }
 
         console.group('Resume Data Retrieval Process');
@@ -214,17 +351,16 @@ export default function ResumeBuilderPage() {
         console.table(localStorageContents);
         
         // Get the resume identifier from localStorage
-        const identifier = localStorage.getItem('resumeIdentifier');
         const parsedResumeData = localStorage.getItem('parsedResumeData');
         const rawResumeData = localStorage.getItem('rawResumeData');
         
         console.log('🔑 Key Storage Values:');
-        console.log('Resume Identifier:', identifier);
+        console.log('Resume Identifier:', resumeIdentifier);
         console.log('Parsed Resume Data:', parsedResumeData);
         console.log('Raw Resume Data:', rawResumeData);
         
         // If no identifier and no parsed data, throw an error
-        if (!identifier && !parsedResumeData && !rawResumeData) {
+        if (!resumeIdentifier && !parsedResumeData && !rawResumeData) {
           throw new Error('No resume data sources found');
         }
         
@@ -262,10 +398,10 @@ export default function ResumeBuilderPage() {
         }
         
         // If no work experiences found in localStorage, try API
-        if (workExperiences.length === 0 && identifier) {
+        if (workExperiences.length === 0 && resumeIdentifier) {
           try {
             console.log('🌐 Attempting API Fetch');
-            const response = await fetch(`/api/resume/scan?identifier=${identifier}`);
+            const response = await fetch(`/api/resume/scan?identifier=${resumeIdentifier}`);
             
             if (!response.ok) {
               throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
@@ -491,6 +627,12 @@ export default function ResumeBuilderPage() {
             isScanning: false,
             isComplete: true
           });
+          
+          // Store the current timestamp to mark that we've processed this resume
+          const resumeUploadTimestamp = localStorage.getItem('resumeUploadTimestamp');
+          if (resumeUploadTimestamp) {
+            localStorage.setItem('lastProcessedWorkExperienceTimestamp', resumeUploadTimestamp);
+          }
         } else {
           // No work experiences found
           setScanStatus({
@@ -498,6 +640,12 @@ export default function ResumeBuilderPage() {
             isComplete: true,
             errorMessage: 'No work experience found in the resume. Please add your experience manually.'
           });
+          
+          // Even with no experiences, mark as processed
+          const resumeUploadTimestamp = localStorage.getItem('resumeUploadTimestamp');
+          if (resumeUploadTimestamp) {
+            localStorage.setItem('lastProcessedWorkExperienceTimestamp', resumeUploadTimestamp);
+          }
         }
       } catch (error) {
         console.error('Error in fetchResumeData:', error);
@@ -607,8 +755,15 @@ export default function ResumeBuilderPage() {
     onSave: (index: number, updatedExperience: WorkExperience) => void,
     onToggleExpand: (index: number) => void
   }) => {
-    // Check if the experience card is complete, but only apply validation after user interaction
+    // Check if the experience card is complete
+    // Only show validation after user interaction
     const isComplete = !hasUserInteracted || isExperienceComplete(experience);
+    
+    // Track if this card has been edited by the user
+    const [hasBeenEdited, setHasBeenEdited] = useState(false);
+    
+    // Only show validation if the card has been edited or if we're in edit mode
+    const shouldShowValidation = hasBeenEdited || experience.isEditing || hasUserInteracted;
     // Removed local isEditing state
     const [editedExperience, setEditedExperience] = useState<WorkExperience>(experience);
 
@@ -628,19 +783,29 @@ export default function ResumeBuilderPage() {
       const { name, value } = 'target' in e ? e.target : e;
       
       if (name === 'responsibilities') {
+        // Ensure value is treated as a string
+        const stringValue = String(value || '');
+        
         // Split by newline and filter out empty lines
-        const responsibilities = value.split('\n')
-          .map(line => line.trim())
-          .filter(line => line !== '');
+        const responsibilities = stringValue
+          .split('\n')
+          .map((line: string) => line.trim())
+          .filter((line: string) => line !== '');
         
         // Ensure we have at least 3 items (pad with empty strings if needed)
-        while (responsibilities.length < 3) {
-          responsibilities.push(''); // Add empty placeholders to reach minimum of 3
+        const paddedResponsibilities: string[] = [];
+        
+        // First, add all valid responsibilities
+        paddedResponsibilities.push(...responsibilities);
+        
+        // Then pad with empty strings if needed
+        while (paddedResponsibilities.length < 3) {
+          paddedResponsibilities.push('');
         }
         
         setEditedExperience(prev => ({
           ...prev,
-          responsibilities
+          responsibilities: paddedResponsibilities
         }));
       } else {
         setEditedExperience(prev => ({
@@ -818,82 +983,37 @@ export default function ResumeBuilderPage() {
           </p>
         </div>
 
-        {/* Responsibilities - Always show exactly 3 bullet points */}
+        {/* Responsibilities - Show all bullet points */}
         <ul className="list-disc pl-14 text-[#1e293b] text-base font-helvetica-neue-bold">
-          {(() => {
-            // Process responsibilities to ensure they're properly split
-            let processedResponsibilities: string[] = [];
-            
-            if (experience.responsibilities.length > 0) {
-              // If responsibilities exist as an array
-              if (experience.responsibilities.length === 1 && typeof experience.responsibilities[0] === 'string' && experience.responsibilities[0].includes('.')) {
-                // If it's a single string with periods, split by periods
-                processedResponsibilities = experience.responsibilities[0]
-                  .split('.')
-                  .map(item => item.trim())
-                  .filter(item => item.length > 0);
-              } else {
-                // Use the existing array
-                processedResponsibilities = experience.responsibilities;
-              }
-            }
-            
-            // If we have responsibilities to show
-            if (processedResponsibilities.length > 0) {
-              // Show up to 3 or all if expanded
-              const displayCount = experience.isExpanded ? processedResponsibilities.length : Math.min(3, processedResponsibilities.length);
-              const displayItems = processedResponsibilities.slice(0, displayCount);
-              
-              // If we have fewer than 3 items, pad with empty items
-              const paddingNeeded = !experience.isExpanded && displayItems.length < 3 ? 3 - displayItems.length : 0;
-              
-              return (
-                <>
-                  {displayItems.map((resp, respIndex) => (
-                    <li key={respIndex} className="mb-2 font-helvetica-neue-bold">{resp}</li>
-                  ))}
-                  {Array(paddingNeeded).fill(null).map((_, index) => (
-                    <li key={`padding-${index}`} className="mb-2 text-gray-400 font-helvetica-neue-bold">Additional responsibility</li>
-                  ))}
-                </>
-              );
-            } else {
-              // No responsibilities, show 3 placeholder bullets
-              return Array(3).fill(null).map((_, index) => (
-                <li key={index} className="mb-2 text-gray-400 font-helvetica-neue-bold">No responsibility specified</li>
-              ));
-            }
-          })()}
+          {Array.isArray(experience.responsibilities) && experience.responsibilities.length > 0 ? (
+            // Show up to 3 or all if expanded
+            experience.responsibilities
+              .slice(0, experience.isExpanded ? undefined : Math.min(3, experience.responsibilities.length))
+              .map((resp, respIndex) => (
+                <li key={respIndex} className="mb-2 font-helvetica-neue-bold whitespace-normal break-words">
+                  {resp}
+                </li>
+              ))
+          ) : (
+            // No responsibilities, show placeholder
+            <li className="mb-2 text-gray-400 font-helvetica-neue-bold">
+              No responsibilities specified
+            </li>
+          )}
         </ul>
 
-        {/* Expand/Collapse Button - Only show when there are more than 3 responsibilities */}
-        {(() => {
-          // Determine if we need to show the expand/collapse button
-          let processedResponsibilities: string[] = [];
-          
-          if (experience.responsibilities.length > 0) {
-            if (experience.responsibilities.length === 1 && typeof experience.responsibilities[0] === 'string' && experience.responsibilities[0].includes('.')) {
-              processedResponsibilities = experience.responsibilities[0]
-                .split('.')
-                .map(item => item.trim())
-                .filter(item => item.length > 0);
-            } else {
-              processedResponsibilities = experience.responsibilities;
-            }
-          }
-          
-          return processedResponsibilities.length > 3 ? (
-            <button 
-              onClick={() => onToggleExpand(index)}
-              className="text-[#0e3a68] hover:text-[#0c3156] text-base mt-2 flex items-center ml-8 font-helvetica-neue-bold font-bold"
-            >
-              {experience.isExpanded ? 'Show Less' : 'Show More'}
-              <svg className="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={experience.isExpanded ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
-              </svg>
-            </button>
-          ) : null;
-        })()}
+        {/* Show More/Less button if there are more than 3 responsibilities */}
+        {Array.isArray(experience.responsibilities) && experience.responsibilities.length > 3 && (
+          <button 
+            onClick={() => onToggleExpand(index)}
+            className="text-[#0e3a68] hover:text-[#0c3156] text-base mt-2 flex items-center ml-8 font-helvetica-neue-bold font-bold"
+          >
+            {experience.isExpanded ? 'Show Less' : 'Show More'}
+            <svg className="ml-1 w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={experience.isExpanded ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
+            </svg>
+          </button>
+        )}
       </div>
     );
   };
@@ -902,18 +1022,21 @@ export default function ResumeBuilderPage() {
     // Save the current state to localStorage before proceeding
     if (typeof window !== 'undefined') {
       localStorage.setItem('workExperience', JSON.stringify(workExperience));
-    }
-    
-    // Check if all required fields are filled
-    const incompleteExperience = workExperience.find(exp => !isExperienceComplete(exp));
-    
-    if (incompleteExperience) {
+      
+      // Mark that user has interacted with the form
       setHasUserInteracted(true);
-      return;
+      
+      // Check if all required fields are filled
+      const incompleteExperience = workExperience.find(exp => !isExperienceComplete(exp));
+      
+      if (incompleteExperience) {
+        // If there are incomplete fields, show validation but still allow proceeding
+        console.log('Some fields are incomplete, but allowing to proceed');
+      }
+      
+      // Always allow proceeding to the next step
+      router.push('/profile/education');
     }
-    
-    // Navigate to the education page
-    router.push('/profile/education');
   };
 
   // Function to check if a work experience entry is complete
@@ -926,14 +1049,21 @@ export default function ResumeBuilderPage() {
     // Basic validation - check if required fields exist and aren't empty
     const hasJobTitle = !!experience.jobTitle && experience.jobTitle.trim() !== '';
     const hasCompany = !!experience.company && experience.company.trim() !== '';
-    const hasLocation = !!experience.location && String(experience.location).trim() !== '';
-    const hasStartDate = !!experience.startDate && experience.startDate.trim() !== '';
     
-    // Check if there are at least 3 responsibilities
-    const hasEnoughResponsibilities = Array.isArray(experience.responsibilities) && 
-                                    experience.responsibilities.filter(r => r && r.trim() !== '').length >= 3;
+    // Make start date optional for now to allow progression
+    const hasStartDate = true; // Make start date optional
     
-    return hasJobTitle && hasCompany && hasLocation && hasStartDate && hasEnoughResponsibilities;
+    // Check if there's at least one responsibility with content
+    let hasAnyResponsibility = false;
+    if (Array.isArray(experience.responsibilities) && experience.responsibilities.length > 0) {
+      hasAnyResponsibility = experience.responsibilities.some(
+        r => r && String(r).trim() !== ''
+      );
+    }
+    
+    // For now, only require job title and company to be filled
+    // This makes it easier to progress while still ensuring some basic info is provided
+    return hasJobTitle && hasCompany;
   };
 
   const handleBackStep = () => {
