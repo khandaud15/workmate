@@ -87,39 +87,47 @@ const handler = NextAuth({
     error: '/error'
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      // Redirect to onboarding after successful authentication
-      if (url.startsWith(baseUrl + '/api/auth/callback')) {
-        return '/onboarding'
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      // List of allowed domains
+      const allowedDomains = [
+        'http://localhost:3000',
+        'https://telaxus.ai',
+        'https://www.telaxus.ai'
+      ];
+
+      // Handle relative URLs
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
       }
-      // Handle direct onboarding redirect
-      if (url === '/onboarding') {
-        return '/onboarding'
-      }
-      // Allow relative URLs
-      if (url.startsWith("/")) {
-        return url
-      }
-      // Allow same-origin URLs
-      if (new URL(url).origin === baseUrl) {
-        return url
-      }
-      return baseUrl
-    },
-    async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session?.user,
-          id: token.sub || ''
+
+      // Handle absolute URLs
+      try {
+        const redirectUrl = new URL(url);
+        
+        // Check if the URL is from an allowed domain
+        const isAllowed = allowedDomains.some(domain => 
+          redirectUrl.origin === new URL(domain).origin
+        );
+        
+        if (isAllowed) {
+          return url;
         }
-      };
-    },
-    async jwt({ token }) {
-      // Use the token.sub as the user ID
-      if (token?.sub) {
-        token.id = token.sub;
+
+        // Default to base URL if not allowed
+        return baseUrl;
+      } catch (e) {
+        // If URL parsing fails, return base URL
+        return baseUrl;
       }
+    },
+    async session({ session, token }: { session: any; token: any }) {
+      if (session?.user) {
+        session.user.id = token.sub || '';
+      }
+      return session;
+    },
+    async jwt({ token }: { token: any }) {
+      if (!token.sub) return token;
       return token;
     },
   },
