@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://talexus.ai'; // Your actual domain
+  const baseUrl = 'https://www.telaxus.ai'; // Your actual domain
 
   return [
     {

@@ -98,8 +98,9 @@ const handler = NextAuth({
       // Handle the callback URL after successful authentication
       if (url.includes('/api/auth/callback') || 
           url.includes('/signin?callbackUrl=') ||
-          url === baseUrl ||
-          url === productionDomain) {
+          url === baseUrl || 
+          url === productionDomain ||
+          url.includes('talexus.ai')) {  // Handle any talexus.ai URLs
         return `${productionDomain}/onboarding`;
       }
 

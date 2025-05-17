@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       // disallow: '/private/',
     },
-    sitemap: 'https://talexus.ai/sitemap.xml', // Your sitemap URL
+    sitemap: 'https://www.telaxus.ai/sitemap.xml', // Your sitemap URL
   }
 }
