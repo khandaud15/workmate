@@ -92,19 +92,23 @@ const handler = NextAuth({
       console.log('Redirect URL:', url);
       console.log('Base URL:', baseUrl);
       
+      // Force production domain for all redirects
+      const productionDomain = 'https://www.telaxus.ai';
+      
       // Handle the callback URL after successful authentication
       if (url.includes('/api/auth/callback') || 
           url.includes('/signin?callbackUrl=') ||
-          url === baseUrl) {
-        return `${baseUrl}/onboarding`;
+          url === baseUrl ||
+          url === productionDomain) {
+        return `${productionDomain}/onboarding`;
       }
 
-      // List of allowed domains (add your production domain here)
+      // List of allowed domains
       const allowedDomains = [
         'http://localhost:3000',
         'https://telaxus.ai',
         'https://www.telaxus.ai',
-        'https://your-vercel-app.vercel.app' // Add your Vercel URL here
+        'https://your-vercel-app.vercel.app' // Replace with your Vercel URL
       ];
 
       // Handle relative URLs
