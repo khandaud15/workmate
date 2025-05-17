@@ -1072,7 +1072,7 @@ export default function ResumeBuilderPage() {
   };
 
   return (
-    <div className="container mx-auto px-0 sm:px-4 py-5 sm:py-8 max-w-5xl">
+    <div className="container mx-auto px-0 sm:px-4 pt-2 sm:pt-4 max-w-5xl">
       <style jsx global>{`
         .font-helvetica-neue-bold {
           font-family: 'Helvetica Neue Bold', 'Helvetica Neue', Helvetica, Arial, sans-serif;

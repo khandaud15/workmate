@@ -46,12 +46,12 @@ export default function SkillsSelection() {
       {/* Main Content */}
       <div className="mx-auto max-w-2xl">
         {/* Headers */}
-        <div className="mb-10 text-center">
-          <h1 className="mb-3 text-4xl font-bold text-gray-900">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             What skills would you like to highlight to employers?
           </h1>
-          <p className="text-lg text-gray-600">
-            Choose 3 or more to help stand out.
+          <p className="text-base text-gray-600">
+            Select at least 3 skills that best represent your expertise.
           </p>
         </div>
 

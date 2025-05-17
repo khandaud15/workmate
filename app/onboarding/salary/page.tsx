@@ -21,18 +21,21 @@ export default function SalaryPreference() {
       {/* Main Content */}
       <div className="mx-auto max-w-2xl">
         {/* Headers */}
-        <div className="mb-10 text-center">
-          <div className="mb-2 flex items-center justify-center">
-            <h1 className="text-4xl font-bold text-gray-900">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
               How much would you like to earn?
             </h1>
             <button
               className="ml-2 text-gray-400 hover:text-gray-600"
               onClick={() => alert('This helps us find jobs matching your compensation requirements.')}
             >
-              <InformationCircleIcon className="h-6 w-6" />
+              <InformationCircleIcon className="h-5 w-5" />
             </button>
           </div>
+          <p className="text-base text-gray-600">
+            This helps us find jobs matching your compensation requirements.
+          </p>
         </div>
 
         {/* Salary Slider */}

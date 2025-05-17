@@ -85,11 +85,11 @@ export default function JobTitles() {
       {/* Main Content */}
       <div className="mx-auto max-w-2xl">
         {/* Headers */}
-        <div className="mb-12 text-center">
-          <h1 className="mb-3 text-4xl font-bold text-gray-900">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             What kind of jobs are you looking for?
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base text-gray-600">
             We recommend up to 5 titles to get a great list of jobs.
           </p>
         </div>

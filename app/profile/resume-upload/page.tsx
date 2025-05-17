@@ -102,10 +102,10 @@ export default function ResumeUpload() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fefcf9]">
-      <main className="flex-1 container mx-auto px-4 py-12 max-w-5xl">
+      <main className="flex-1 container mx-auto px-4 pt-4 max-w-5xl">
         {/* Headers */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-2xl font-helvetica font-bold text-gray-900 mb-3">
             Upload a resume
           </h1>
           <p className="text-lg text-[#64748B]">

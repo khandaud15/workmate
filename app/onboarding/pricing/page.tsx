@@ -122,11 +122,11 @@ export default function PricingPage() {
   return (
     <main className="relative min-h-screen bg-[#fefcf9]">
       {/* Header */}
-      <div className="mx-auto max-w-7xl px-6 py-12 text-center lg:px-8">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+      <div className="mx-auto max-w-2xl px-6 pt-8 pb-6 text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Land Jobs Faster. Stay Organized Effortlessly.
         </h1>
-        <p className="mx-auto max-w-2xl text-lg text-gray-600">
+        <p className="text-base text-gray-600">
           From auto-applying to interviews to syncing your calendar, Workmate keeps
           every part of your job journey on track.
         </p>

@@ -28,11 +28,11 @@ export default function ResumeUpload() {
       {/* Main Content */}
       <div className="mx-auto max-w-3xl">
         {/* Headers */}
-        <div className="mb-10 text-center">
-          <h1 className="mb-3 text-4xl font-bold text-gray-900">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Upload your resume to get great matches
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base text-gray-600">
             Your resume will also help us complete applications faster.
           </p>
         </div>

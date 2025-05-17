@@ -7,11 +7,11 @@ export default function Onboarding() {
   return (
     <div className="min-h-screen bg-[#fefcf9] flex flex-col">
       {/* Header */}
-      <div className="text-center pt-16 pb-12 max-w-2xl mx-auto">
-        <h1 className="text-[32px] font-bold text-[#111827] mb-1 md:mb-2">
+      <div className="text-center pt-5 pb-6 max-w-2xl mx-auto">
+        <h1 className="text-2xl font-bold text-[#111827] mb-1 md:mb-2">
           Let&apos;s set you up for success!
         </h1>
-        <p className="text-[#4B5563] text-lg">
+        <p className="text-[#4B5563] text-base">
           Automate your job search in 3 simple steps.
         </p>
       </div>

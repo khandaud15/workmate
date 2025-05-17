@@ -52,9 +52,9 @@ export default function StartDateSelection() {
       {/* Main Content */}
       <div className="mx-auto max-w-2xl">
         {/* Headers */}
-        <div className="mb-10 text-center">
-          <div className="mb-3 flex items-center justify-center">
-            <h1 className="text-4xl font-bold text-gray-900">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
               When are you looking to start your new job?
             </h1>
             <button
@@ -62,9 +62,12 @@ export default function StartDateSelection() {
               className="ml-2 text-gray-400 hover:text-gray-600"
               title="Choose when you'd like to start your new position"
             >
-              <InformationCircleIcon className="h-6 w-6" />
+              <InformationCircleIcon className="h-5 w-5" />
             </button>
           </div>
+          <p className="text-base text-gray-600">
+            Choose when you'd like to start your new position
+          </p>
         </div>
 
         {/* Options */}
