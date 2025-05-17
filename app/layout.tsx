@@ -1,6 +1,5 @@
 'use client';
 
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -8,6 +7,19 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./globals.css";
 import { Providers } from "./providers";
+// Metadata is automatically picked up by Next.js from metadata.ts
+
+// Viewport configuration for meta tags
+const viewportConfig = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
+} as const;
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,10 +28,6 @@ const inter = Inter({
   adjustFontFallback: true,
   preload: true,
 });
-
-// Metadata moved to metadata.ts
-
-
 
 export default function RootLayout({
   children,
@@ -30,6 +38,7 @@ export default function RootLayout({
   const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
 
   useEffect(() => {
+    // Update theme color based on authentication state
     if (isAuth) {
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#05070A');
       document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'black');
@@ -38,15 +47,18 @@ export default function RootLayout({
       document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
     }
   }, [isAuth]);
+  
   const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#ffffff" />
+        {/* Viewport and theme meta tags are handled by Next.js metadata API */}
+        <meta name="viewport" content={`width=${viewportConfig.width}, initial-scale=${viewportConfig.initialScale}, maximum-scale=${viewportConfig.maximumScale}, user-scalable=${viewportConfig.userScalable ? 'yes' : 'no'}`} />
+        {viewportConfig.themeColor.map((color, index) => (
+          <meta key={index} name="theme-color" media={color.media} content={color.color} />
+        ))}
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`} suppressHydrationWarning>
         <Providers>
