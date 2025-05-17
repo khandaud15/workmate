@@ -34,8 +34,44 @@ const handler = NextAuth({
         params: {
           prompt: "select_account",
           access_type: 'offline',
-          response_type: 'code',
-          hd: "talexus.ai" // Restrict to your domain
+          response_type: 'code'
+        }
+      }
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID || "",
+      clientSecret: process.env.GITHUB_CLIENT_SECRET || "",
+    }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        try {
+          // For demo purposes, we're using a simplified authentication
+          // In a real app, you would validate against a database
+          
+          // Simple validation - in production, replace with actual auth
+          if (credentials.email && credentials.password) {
+            // Return a mock user for demonstration
+            return {
+              id: '1',
+              email: credentials.email,
+              name: credentials.email.split('@')[0] || 'User',
+              emailVerified: true
+            };
+          }
+          
+          return null;
+        } catch (error) {
+          console.error('Auth error:', error);
+          return null;
         }
       }
     })
@@ -46,16 +82,10 @@ const handler = NextAuth({
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/signup',
     signOut: '/',
-    error: '/auth/error'
+    error: '/error'
   },
-  theme: {
-    colorScheme: 'light',
-    brandColor: '#2563eb',
-    logo: 'https://talexus.ai/logo.png'
-  },
-  debug: process.env.NODE_ENV === 'development',
   callbacks: {
     async redirect({ url, baseUrl }) {
       // Redirect to onboarding after successful authentication
