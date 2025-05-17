@@ -88,6 +88,11 @@ const handler = NextAuth({
   },
   callbacks: {
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      // Handle the callback URL after successful authentication
+      if (url.includes('/api/auth/callback') || url.includes('/signin?callbackUrl=')) {
+        return `${baseUrl}/onboarding`;
+      }
+
       // List of allowed domains
       const allowedDomains = [
         'http://localhost:3000',
