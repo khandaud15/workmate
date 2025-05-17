@@ -41,9 +41,12 @@ if (typeof document !== 'undefined') {
   document.head.appendChild(style);
 }
 
-export default function ContactInfoPage() {
+export default function ContactInfoForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
+
+  // Store form values directly in local state variables instead of a single object
+  // This helps prevent re-renders that cause cursor position issues
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -55,10 +58,11 @@ export default function ContactInfoPage() {
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [smsOptIn, setSmsOptIn] = useState(false);
+  
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   
   // Track which fields have been touched for validation
-  const [touched, setTouched] = useState<Record<string, boolean>>({
+  const [touched, setTouched] = useState({
     firstName: false,
     lastName: false,
     dateOfBirth: false,
@@ -73,7 +77,7 @@ export default function ContactInfoPage() {
   });
   
   // Store validation state
-  const [validFields, setValidFields] = useState<Record<string, boolean>>({
+  const [validFields, setValidFields] = useState({
     firstName: false,
     lastName: false,
     dateOfBirth: false,
@@ -86,34 +90,6 @@ export default function ContactInfoPage() {
     email: false,
     smsOptIn: false,
   });
-
-  // Validation function for a single field
-  const validateField = useCallback((fieldName: string, value: string | boolean | undefined | null, silent: boolean = false): boolean => {
-    if (value === undefined || value === null) return false;
-    
-    // Handle boolean values (like checkboxes)
-    if (typeof value === 'boolean') {
-      return value; // For checkboxes, return the boolean value directly
-    }
-    
-    // Handle string values
-    const stringValue = String(value);
-    
-    switch (fieldName) {
-      case 'email':
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(stringValue);
-      case 'phone':
-        return /^\+?[\d\s-()]{10,}$/.test(stringValue);
-      case 'postalCode':
-        return /^\d{5}(-\d{4})?$/.test(stringValue);
-      case 'dateOfBirth':
-        // Basic date validation - can be enhanced
-        return stringValue.length > 0;
-      default:
-        // For required fields, just check if not empty
-        return stringValue.trim().length > 0;
-    }
-  }, []);
 
   // Update validation state when form fields change
   useEffect(() => {
@@ -324,63 +300,48 @@ export default function ContactInfoPage() {
               // Update other fields if available
               if (resumeData.address) setAddress(resumeData.address);
               if (resumeData.city) setCity(resumeData.city);
+              if (resumeData.state) setState(resumeData.state);
+              if (resumeData.postalCode) setPostalCode(resumeData.postalCode);
+              if (resumeData.linkedIn) setLinkedIn(resumeData.linkedIn);
+              
+              // Mark this resume as processed for contact info
+              localStorage.setItem('lastProcessedContactTimestamp', resumeLastUploaded || '');
+              
+              // Update the saved contact form data with the new resume data
+              const updatedFormData = {
+                firstName: resumeData.name?.first || '',
+                lastName: resumeData.name?.last || '',
+                email: resumeData.email || '',
+                phone: resumeData.phone || '',
+                address: resumeData.address || '',
+                city: resumeData.city || '',
+                state: resumeData.state || '',
+                postalCode: resumeData.postalCode || '',
+                linkedIn: resumeData.linkedIn || '',
+                dateOfBirth: '', // Don't overwrite DOB from resume
+                smsOptIn: false // Reset opt-in
+              };
+              
+              localStorage.setItem('contactFormData', JSON.stringify(updatedFormData));
+            } catch (error) {
+              console.error('Error parsing resume data:', error);
+            }
+          }
+        }
+        
+        // Then try to fetch from API
+        const fetchResumeData = async () => {
+          const identifier = localStorage.getItem('resumeIdentifier');
+          if (!identifier) {
+            console.error('No resume identifier found');
+            return;
+          }
     
-    // Fetch resume data if available
-    const fetchResumeData = async () => {
-      try {
-        const resumeData = localStorage.getItem('resumeData');
-        if (resumeData) {
-          const data = JSON.parse(resumeData);
-          if (data.name?.first) setFirstName(data.name.first);
-          if (data.name?.last) setLastName(data.name.last);
-          if (data.email) setEmail(data.email);
-          if (data.phone) setPhone(data.phone);
-          
-          // Update other fields if available
-          if (data.address) setAddress(data.address);
-          if (data.city) setCity(data.city);
-          if (data.state) setState(data.state);
-          if (data.postalCode) setPostalCode(data.postalCode);
-          if (data.linkedIn) setLinkedIn(data.linkedIn);
-          
-          // Mark this resume as processed for contact info
-          localStorage.setItem('lastProcessedContactTimestamp', localStorage.getItem('resumeUploadTimestamp') || '');
-          
-          // Update the saved contact form data with the new resume data
-          const updatedFormData = {
-            firstName: data.name?.first || '',
-            lastName: data.name?.last || '',
-            email: data.email || '',
-            phone: data.phone || '',
-            address: data.address || '',
-            city: data.city || '',
-            state: data.state || '',
-            postalCode: data.postalCode || '',
-            linkedIn: data.linkedIn || '',
-            dateOfBirth: '', // Don't overwrite DOB from resume
-            smsOptIn: false // Reset opt-in
-          };
-          
-          localStorage.setItem('contactFormData', JSON.stringify(updatedFormData));
-        }
-      } catch (error) {
-        console.error('Error parsing resume data:', error);
-      }
-    };
-
-    // Fetch resume data from API if needed
-    const fetchResumeFromApi = async () => {
-      const identifier = localStorage.getItem('resumeIdentifier');
-      if (!identifier) {
-        console.error('No resume identifier found');
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/resume/scan?identifier=${identifier}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch resume data');
-        }
+          try {
+            const response = await fetch(`/api/resume/scan?identifier=${identifier}`);
+            if (!response.ok) {
+              throw new Error('Failed to fetch resume data');
+            }
     
             const data = await response.json();
             if (data.data) {
@@ -831,9 +792,9 @@ export default function ContactInfoPage() {
                   
                   // If we have raw input and nothing else, use that
                   if (!addressVal && !cityVal && !stateVal && location.rawInput) {
-                    const rawLocation: string | undefined = location.rawInput;
+                    const rawLocation = location.rawInput;
                     if (typeof rawLocation === 'string') {
-                      const parts: string[] = rawLocation.split(',').map((part: string) => part.trim());
+                      const parts = rawLocation.split(',').map(part => part.trim());
                       if (parts.length === 1) {
                         setCity(parts[0]);
                       } else if (parts.length >= 2) {
@@ -846,12 +807,12 @@ export default function ContactInfoPage() {
               }
               
               // If we couldn't extract from location object, try alternate approaches
-              if (!address && data?.data) {
+              if (!address) {
                 // Try to extract from formatted address string
                 const formattedAddress = data.data.formatted_address || data.data.formattedAddress || '';
                 if (formattedAddress) {
                   // Try to parse formatted address
-                  const addressParts = formattedAddress.split(',').map((part: string) => part.trim());
+                  const addressParts = formattedAddress.split(',').map(part => part.trim());
                   if (addressParts.length >= 3) {
                     // Typically format is: street, city, state zip
                     setAddress(addressParts[0]);
@@ -885,9 +846,21 @@ export default function ContactInfoPage() {
                 try {
                   setSelectedDate(new Date(dobVal));
                 } catch (e) {
+                  console.error('Invalid date format:', dobVal);
+                }
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching resume data:', error);
           }
-        }
+        };
+        
+        await fetchResumeData();
+      } finally {
+        setIsLoading(false);
       }
+    };
+    
     loadInitialData();
   }, []);
 
