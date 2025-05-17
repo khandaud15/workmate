@@ -17,7 +17,7 @@ const viewportConfig = {
   userScalable: true,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+    { media: '(prefers-color-scheme: dark)', color: '#ffffff' }, // Changed to white for dark mode too
   ],
 } as const;
 
@@ -38,15 +38,10 @@ export default function RootLayout({
   const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
 
   useEffect(() => {
-    // Update theme color based on authentication state
-    if (isAuth) {
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#05070A');
-      document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'black');
-    } else {
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
-      document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
-    }
-  }, [isAuth]);
+    // Always use white theme color for the status bar
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
+    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
+  }, []);
   
   const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
 
