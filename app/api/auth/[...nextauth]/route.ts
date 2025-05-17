@@ -92,16 +92,29 @@ const handler = NextAuth({
       console.log('Redirect URL:', url);
       console.log('Base URL:', baseUrl);
       
-      // Force production domain for all redirects
-      const productionDomain = 'https://www.telaxus.ai';
+      // Use talexus.ai for production, localhost for development
+      const productionDomain = process.env.NODE_ENV === 'production' 
+        ? 'https://www.talexus.ai' 
+        : 'http://localhost:3000';
       
-      // Handle the callback URL after successful authentication
-      if (url.includes('/api/auth/callback') || 
-          url.includes('/signin?callbackUrl=') ||
-          url === baseUrl || 
-          url === productionDomain ||
-          url.includes('talexus.ai')) {  // Handle any talexus.ai URLs
+      // Always redirect to onboarding after successful auth
+      const isAuthCallback = [
+        '/api/auth/callback',
+        '/signin',
+        '/signup',
+        baseUrl,
+        'talexus.ai',
+        'vercel.app',
+        'localhost:3000'
+      ].some(path => url.includes(path));
+
+      if (isAuthCallback) {
         return `${productionDomain}/onboarding`;
+      }
+
+      // Allow other redirects to proceed as normal
+      if (url.startsWith('http')) {
+        return url;
       }
 
       // List of allowed domains

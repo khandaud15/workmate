@@ -15,11 +15,11 @@ export const metadata: Metadata = {
     address: false,
     telephone: true,
   },
-  metadataBase: new URL('https://www.telaxus.ai'),
+  metadataBase: new URL('https://www.talexus.ai'),
   openGraph: {
     title: 'Talexus – AI-Powered Job Application Platform',
     description: 'Land your dream job faster with AI-powered resume building, cover letter generation, and job application automation.',
-    url: 'https://www.telaxus.ai',
+    url: 'https://www.talexus.ai',
     siteName: 'Talexus',
     locale: 'en_US',
     type: 'website',
