@@ -701,7 +701,7 @@ export default function ContactInfoForm() {
                 // Handle case where location is just a string
                 if (typeof location === 'string') {
                   // Try to extract information from a simple string location
-                  const parts = location.split(',').map(part => part.trim());
+                  const parts = location.split(',').map((part: string) => part.trim());
                   if (parts.length === 1) {
                     // Likely just a country or city
                     if (parts[0].length > 0) {
@@ -794,7 +794,7 @@ export default function ContactInfoForm() {
                   if (!addressVal && !cityVal && !stateVal && location.rawInput) {
                     const rawLocation = location.rawInput;
                     if (typeof rawLocation === 'string') {
-                      const parts = rawLocation.split(',').map(part => part.trim());
+                      const parts = rawLocation.split(',').map((part: string) => part.trim());
                       if (parts.length === 1) {
                         setCity(parts[0]);
                       } else if (parts.length >= 2) {
@@ -812,7 +812,7 @@ export default function ContactInfoForm() {
                 const formattedAddress = data.data.formatted_address || data.data.formattedAddress || '';
                 if (formattedAddress) {
                   // Try to parse formatted address
-                  const addressParts = formattedAddress.split(',').map(part => part.trim());
+                  const addressParts = formattedAddress.split(',').map((part: string) => part.trim());
                   if (addressParts.length >= 3) {
                     // Typically format is: street, city, state zip
                     setAddress(addressParts[0]);
