@@ -5,7 +5,17 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Head from 'next/head';
-import { FaBars, FaTimes, FaChevronRight } from 'react-icons/fa';
+import { 
+  FaBars, 
+  FaTimes, 
+  FaChevronRight, 
+  FaHome, 
+  FaFileAlt, 
+  FaEnvelopeOpenText, 
+  FaBriefcase, 
+  FaRobot, 
+  FaFlask 
+} from 'react-icons/fa';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -119,22 +129,22 @@ export default function DashboardPage() {
             <div className="menu-group">
               <div className="menu-label">Workspace</div>
               <Link href="/dashboard" className="menu-item active">
-                <i className="fas fa-home"></i> <span>Home</span>
+                <FaHome className="icon" /> <span>Home</span>
               </Link>
               <Link href="/dashboard/resume" className="menu-item">
-                <i className="fas fa-file-alt"></i> <span>Resume</span>
+                <FaFileAlt className="icon" /> <span>Resume</span>
               </Link>
               <Link href="/dashboard/cover-letter" className="menu-item">
-                <i className="fas fa-envelope-open-text"></i> <span>Cover Letter</span>
+                <FaEnvelopeOpenText className="icon" /> <span>Cover Letter</span>
               </Link>
               <Link href="/dashboard/job-tracker" className="menu-item">
-                <i className="fas fa-briefcase"></i> <span>Job Tracker</span>
+                <FaBriefcase className="icon" /> <span>Job Tracker</span>
               </Link>
               <Link href="/dashboard/copilot" className="menu-item">
-                <i className="fas fa-robot"></i> <span>Copilot</span>
+                <FaRobot className="icon" /> <span>Copilot</span>
               </Link>
               <Link href="/dashboard/playground" className="menu-item">
-                <i className="fas fa-flask"></i> <span>Playground</span>
+                <FaFlask className="icon" /> <span>Playground</span>
               </Link>
             </div>
           </div>
@@ -205,18 +215,15 @@ export default function DashboardPage() {
             padding-right: 4px;
           }
           
+          /* Hide scrollbar for Chrome, Safari and Opera */
           .top-section::-webkit-scrollbar {
-            width: 4px;
+            display: none;
           }
           
-          .top-section::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-          }
-          
-          .top-section::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
+          /* Hide scrollbar for IE, Edge and Firefox */
+          .top-section {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
           }
 
           .menu-group {
@@ -250,9 +257,10 @@ export default function DashboardPage() {
             transform: translateX(2px);
           }
 
-          .menu-item i {
+          .menu-item .icon {
             min-width: 20px;
             text-align: center;
+            font-size: 16px;
           }
 
           .bottom-card {
