@@ -214,8 +214,6 @@ export default function FinalizePage() {
 
   const handleSubmit = () => {
     // Here you would typically submit all the data to your API
-    alert('Profile completed successfully!');
-    // Redirect to dashboard or another page
     router.push('/dashboard');
   };
 
