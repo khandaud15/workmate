@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Head from 'next/head';
@@ -14,13 +14,16 @@ import {
   FaEnvelopeOpenText, 
   FaBriefcase, 
   FaRobot, 
-  FaFlask 
+  FaFlask,
+  FaArrowLeft
 } from 'react-icons/fa';
+import AccountSettings from '../components/AccountSettings';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showAccountSettings, setShowAccountSettings] = useState(false);
   
   // Close sidebar when clicking outside
   useEffect(() => {
@@ -109,10 +112,13 @@ export default function DashboardPage() {
                   boxShadow: '2px 2px 5px rgba(0,0,0,0.2), -1px -1px 3px rgba(255,255,255,0.4)'
                 }}
               />
-              <div className="text-lg font-semibold text-white">Talexus</div>
+              <div className="text-lg font-semibold text-white">Talexus AI</div>
             </div>
 
-            <div className="user hover:bg-white/5 rounded-lg transition-colors duration-200 p-2 -mx-2">
+            <div 
+              className="user hover:bg-white/5 rounded-lg transition-colors duration-200 p-2 -mx-2 cursor-pointer"
+              onClick={() => setShowAccountSettings(true)}
+            >
               <div className="flex items-center gap-3">
                 <img 
                   src={session.user?.image || 'https://randomuser.me/api/portraits/men/75.jpg'} 
@@ -156,13 +162,20 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <main className="flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 lg:ml-0">
-          <div className="max-w-4xl mx-auto p-4 lg:p-8">
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Welcome back, {session.user?.name?.split(' ')[0] || 'User'}!</h1>
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <p className="text-gray-600">Your dashboard is ready. Start by creating a new resume or exploring the job tracker.</p>
+        <main className="flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 lg:ml-0 bg-[#0e0c12] text-white">
+          {showAccountSettings ? (
+            <div className="relative">
+
+              <AccountSettings onClose={() => setShowAccountSettings(false)} />
             </div>
-          </div>
+          ) : (
+            <div className="max-w-4xl mx-auto p-4 lg:p-8">
+              <h1 className="text-2xl font-bold text-white mb-6">Welcome back, {session.user?.name?.split(' ')[0] || 'User'}!</h1>
+              <div className="bg-[#1f1e22] rounded-xl shadow-sm p-6">
+                <p className="text-gray-300">Your dashboard is ready. Start by creating a new resume or exploring the job tracker.</p>
+              </div>
+            </div>
+          )}
         </main>
 
         <style jsx global>{`
