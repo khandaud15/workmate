@@ -36,6 +36,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
+  const isDashboard = pathname?.startsWith('/dashboard');
 
   useEffect(() => {
     // Always use white theme color for the status bar
@@ -43,7 +44,8 @@ export default function RootLayout({
     document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
   }, []);
   
-  const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile');
+  const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile') || isDashboard;
+  const hideHeader = isAuth || isDashboard;
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -57,8 +59,8 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`} suppressHydrationWarning>
         <Providers>
-          {!isAuth && <Header />}
-          <div className={`flex-grow ${!isAuth ? 'pt-24 bg-[#fefcf9]' : ''}`}>
+          {!hideHeader && <Header />}
+          <div className={`flex-grow ${!hideHeader ? 'pt-24 bg-[#fefcf9]' : ''}`}>
             {children}
           </div>
           {!hideFooter && <Footer />}
