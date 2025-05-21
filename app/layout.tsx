@@ -45,7 +45,7 @@ export default function RootLayout({
   }, []);
   
   const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile') || isDashboard;
-  const hideHeader = isAuth || isDashboard;
+  const hideHeader = isAuth || isDashboard || pathname?.startsWith('/onboarding');
 
   return (
     <html lang="en" suppressHydrationWarning>
