@@ -493,7 +493,7 @@ export default function Onboarding() {
       {/* Main onboarding content */}
       <main className="flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 lg:ml-0 bg-[#0e0c12] text-white">
         {showAccountSettings ? (
-          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
+          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-[2px]">
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-white mb-2">Account</h1>
