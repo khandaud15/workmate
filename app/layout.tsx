@@ -57,6 +57,9 @@ export default function RootLayout({
         ))}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <title>Talexus AI</title>
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`} suppressHydrationWarning>
         <Providers>

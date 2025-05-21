@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: 'Talexus – AI-Powered Job Application Platform',
-    template: '%s | Talexus',
+    default: 'Talexus AI – AI-Powered Job Application Platform',
+    template: '%s | Talexus AI',
   },
   description: 'Talexus helps you land jobs faster with AI. Build resumes, generate cover letters, get ATS scores, and apply to jobs automatically.',
   keywords: ['job search', 'AI resume builder', 'ATS resume checker', 'cover letter generator', 'job application automation', 'career tools'],
@@ -17,10 +17,10 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://www.talexus.ai'),
   openGraph: {
-    title: 'Talexus – AI-Powered Job Application Platform',
+    title: 'Talexus AI – AI-Powered Job Application Platform',
     description: 'Land your dream job faster with AI-powered resume building, cover letter generation, and job application automation.',
     url: 'https://www.talexus.ai',
-    siteName: 'Talexus',
+    siteName: 'Talexus AI',
     locale: 'en_US',
     type: 'website',
     images: [
