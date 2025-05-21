@@ -56,6 +56,7 @@ export default function RootLayout({
           <meta key={index} name="theme-color" media={color.media} content={color.color} />
         ))}
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`} suppressHydrationWarning>
         <Providers>

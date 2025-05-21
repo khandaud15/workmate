@@ -414,7 +414,19 @@ export default function Onboarding() {
             </div>
           </div>
           <div className="menu-group">
-            <div className="menu-label">Getting Started</div>
+            <div 
+              className="menu-label cursor-pointer hover:text-purple-300 transition-colors flex items-center"
+              onClick={() => {
+                setShowResumeUpload(false);
+                setShowJobTitles(false);
+                setShowSalary(false);
+                setShowLocation(false);
+                setShowAccountSettings(false);
+                setIsSidebarOpen(false); // Close sidebar on mobile
+              }}
+            >
+              <span>Getting Started</span>
+            </div>
             <button 
               onClick={() => {
                 setShowResumeUpload(true);
@@ -481,18 +493,13 @@ export default function Onboarding() {
       {/* Main onboarding content */}
       <main className="flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 lg:ml-0 bg-[#0e0c12] text-white">
         {showAccountSettings ? (
-          <div className="w-full max-w-4xl mx-auto p-6">
+          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-white mb-2">Account</h1>
                 <p className="text-gray-400 text-sm">Manage billing and account settings</p>
               </div>
-              <button 
-                onClick={() => setShowAccountSettings(false)}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <FaTimes size={20} />
-              </button>
+              {/* Cross button removed as requested */}
             </div>
 
             <div className="bg-[#1f1e22] rounded-xl p-4 mb-4">
@@ -578,23 +585,16 @@ export default function Onboarding() {
             </div>
           </div>
         ) : !showResumeUpload && !showJobTitles && !showSalary && !showLocation && (
-          <div className="max-w-5xl mx-auto p-4 text-center mt-16">
+          <div className="w-[calc(100%-1rem)] max-w-5xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
             <h2 className="text-[28px] font-semibold mb-2">Let's set you up for success!</h2>
             <p className="text-[#a0a0a0] text-[15px] mb-8">Automate your job search in 3 simple steps.</p>
 
             <div className="card-container flex flex-col md:flex-row gap-6 justify-center w-full items-center md:items-stretch">
               {/* Card 1 - Resume Upload */}
               <div 
-                onClick={() => {
-                  setShowResumeUpload(true);
-                  setShowJobTitles(false);
-                  setShowSalary(false);
-                  setShowLocation(false);
-                  setShowAccountSettings(false);
-                }} 
-                className="card w-full md:w-[300px] h-[300px] bg-gradient-to-br from-[#1e1b2d] to-[#0f0e15] border border-[#282630] rounded-[20px] p-5 shadow-[0_10px_40px_rgba(168,85,247,0.15)] transition-all duration-300 hover:border-[#a855f7] hover:scale-[1.04] hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] flex flex-col justify-between cursor-pointer max-w-[90%] md:max-w-none"
+                className="card w-[95%] md:w-[300px] h-[300px] bg-gradient-to-br from-[#1e1b2d] to-[#0f0e15] border border-[#282630] rounded-[20px] p-5 shadow-[0_10px_40px_rgba(168,85,247,0.15)] transition-all duration-300 hover:border-[#a855f7] hover:scale-[1.04] hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] flex flex-col justify-between md:max-w-none"
               >
-                <div className="text-left pt-2">
+                <div className="text-left pt-0">
                   <h2 className="text-[1.2rem] mb-2 font-semibold text-white text-left">Upload your resume.</h2>
                   <p className="text-[#a3a3a3] text-[0.95rem] mb-3 text-left">Help us understand your experience.</p>
                   <div className="badge bg-[#6d28d9] text-white text-[14px] rounded-[8px] py-[6px] px-[14px] inline-block mb-3">
@@ -611,17 +611,10 @@ export default function Onboarding() {
               </div>
 
               {/* Card 2 - Job Titles */}
-              <div 
-                onClick={() => {
-                  setShowJobTitles(true);
-                  setShowResumeUpload(false);
-                  setShowSalary(false);
-                  setShowLocation(false);
-                  setShowAccountSettings(false);
-                }}
-                className="card w-full md:w-[300px] h-[300px] bg-gradient-to-br from-[#1e1b2d] to-[#0f0e15] border border-[#282630] rounded-[20px] p-5 shadow-[0_10px_40px_rgba(168,85,247,0.15)] transition-all duration-300 hover:border-[#a855f7] hover:scale-[1.04] hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] flex flex-col justify-between cursor-pointer max-w-[90%] md:max-w-none"
+              <div
+                className="card w-[95%] md:w-[300px] h-[300px] bg-gradient-to-br from-[#1e1b2d] to-[#0f0e15] border border-[#282630] rounded-[20px] p-5 shadow-[0_10px_40px_rgba(168,85,247,0.15)] transition-all duration-300 hover:border-[#a855f7] hover:scale-[1.04] hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] flex flex-col justify-between md:max-w-none"
               >
-                <div className="text-left">
+                <div className="text-left pt-0">
                   <h2 className="text-[1.2rem] mb-2 font-semibold text-white text-left">Complete a quick profile.</h2>
                   <p className="text-[#a3a3a3] text-[0.95rem] mb-3 text-left">Share your preferences and career goals.</p>
                   <p className="text-[0.95rem] mb-2 text-left"><span className="bold text-white font-semibold">Desired job?</span><br/>Project Manager</p>
@@ -632,9 +625,9 @@ export default function Onboarding() {
 
               {/* Card 3 - Job Applications */}
               <div 
-                className="card w-full md:w-[300px] h-[300px] bg-gradient-to-br from-[#1e1b2d] to-[#0f0e15] border border-[#282630] rounded-[20px] p-5 shadow-[0_10px_40px_rgba(168,85,247,0.15)] transition-all duration-300 hover:border-[#a855f7] hover:scale-[1.04] hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] flex flex-col justify-between max-w-[90%] md:max-w-none"
+                className="card w-[95%] md:w-[300px] h-[300px] bg-gradient-to-br from-[#1e1b2d] to-[#0f0e15] border border-[#282630] rounded-[20px] p-5 shadow-[0_10px_40px_rgba(168,85,247,0.15)] transition-all duration-300 hover:border-[#a855f7] hover:scale-[1.04] hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] flex flex-col justify-between md:max-w-none"
               >
-                <div className="text-left">
+                <div className="text-left pt-0">
                   <h2 className="text-[1.2rem] mb-2 font-semibold text-white text-left">We find jobs and fill out applications.</h2>
                   <p className="text-[#a3a3a3] text-[0.95rem] mb-3 text-left">Sit back while we do the heavy lifting.</p>
                   <div className="badge bg-[#6d28d9] text-white text-[14px] rounded-[8px] py-[6px] px-[14px] inline-block mb-2">
@@ -650,7 +643,7 @@ export default function Onboarding() {
         )}
         
         {showResumeUpload && !showJobTitles && !showSalary && (
-          <div className="max-w-2xl mx-auto p-4 lg:p-8 mt-32">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
             <div className="mb-6">
               {/* Back button removed as requested */}
             </div>
@@ -725,7 +718,7 @@ export default function Onboarding() {
         )}
         
         {showJobTitles && !showSalary && (
-          <div className="max-w-2xl mx-auto p-4 lg:p-8 mt-32">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
             {/* Main Content */}
             <div className="mx-auto max-w-3xl">
               {/* Headers */}
@@ -812,7 +805,7 @@ export default function Onboarding() {
         
         {/* Salary Section */}
         {showSalary && (
-          <div className="max-w-2xl mx-auto p-4 lg:p-8 mt-32">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
             {/* Main Content */}
             <div className="mx-auto max-w-3xl">
               {/* Headers */}
@@ -886,7 +879,7 @@ export default function Onboarding() {
         
         {/* Location Section */}
         {showLocation && (
-          <div className="max-w-2xl mx-auto p-4 lg:p-8 mt-32">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
             {/* Main Content */}
             <div className="mx-auto max-w-3xl">
               {/* Headers */}
