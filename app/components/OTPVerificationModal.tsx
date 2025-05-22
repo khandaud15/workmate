@@ -86,21 +86,22 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
   return (
     <div style={{position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(15,15,17,0.92)', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
       <div className="verify-box" style={{
-        width: 420,
+        width: '92vw',
+        maxWidth: 340,
         background: 'linear-gradient(to bottom right, #1e1b2d, #0f0e15)',
         border: '1px solid #282630',
-        borderRadius: 16,
-        boxShadow: '0 10px 40px rgba(168, 85, 247, 0.15)',
-        padding: 32,
+        borderRadius: 14,
+        boxShadow: '0 8px 32px rgba(168, 85, 247, 0.13)',
+        padding: '18px 10px 24px 10px',
         textAlign: 'center',
       }}>
-        <h2 style={{fontSize: '1.3rem', fontWeight: 600, marginBottom: 12}}>Verify Your Email</h2>
+        <h2 style={{fontSize: '1.15rem', fontWeight: 600, marginBottom: 12, color: '#fff'}}>Verify Your Email</h2>
         <p style={{fontSize: '0.95rem', color: '#bcbcbc', lineHeight: 1.6}}>
           We've sent a verification code to <strong style={{color: '#fff'}}>{email}</strong>.<br />
           Please enter the 6-digit code below.
         </p>
 
-        <div className="otp-inputs" style={{display: 'flex', justifyContent: 'space-between', margin: '24px 0'}}>
+        <div className="otp-inputs" style={{display: 'flex', justifyContent: 'space-between', margin: '18px 0'}}>
           {Array(6).fill(0).map((_, index) => (
             <input
               key={index}
@@ -112,13 +113,13 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
               onKeyDown={e => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
               style={{
-                width: 48,
-                height: 56,
+                width: 36,
+                height: 42,
                 background: '#0f0e15',
                 border: '2px solid #1f1f25',
-                borderRadius: 10,
+                borderRadius: 8,
                 color: '#fff',
-                fontSize: '1.5rem',
+                fontSize: '1.1rem',
                 textAlign: 'center',
                 outline: 'none',
                 transition: 'all 0.2s ease',
