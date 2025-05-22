@@ -491,7 +491,7 @@ export default function Onboarding() {
         </div>
       </div>
       {/* Main onboarding content */}
-      <main className="flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 lg:ml-0 bg-[#0e0c12] text-white">
+      <main className="flex-1 flex items-center justify-center min-h-screen overflow-auto pt-4 lg:pt-0 transition-all duration-300 lg:ml-0 bg-[#0e0c12] text-white">
         {showAccountSettings ? (
           <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-[2px]">
             <div className="flex justify-between items-start mb-8">
@@ -547,7 +547,7 @@ export default function Onboarding() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Trial Access Card */}
-                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)]">
+                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
                   <div className="text-lg font-semibold mb-1">Trial Access</div>
                   <div className="text-2xl font-bold mb-2">$2.95</div>
                   <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
@@ -559,7 +559,7 @@ export default function Onboarding() {
                 </div>
 
                 {/* 3 Month Full Access Card */}
-                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] focus-within:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)]">
+                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] focus-within:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
                   <div className="text-lg font-semibold mb-1 flex items-center">3 Month Full Access <span className="ml-2 bg-[#2ecc71] text-black text-[11px] px-2 py-0.5 rounded-full">RECOMMENDED</span></div>
                   <div className="text-2xl font-bold mb-2">$13.95<span className="text-base font-normal">/mo</span></div>
                   <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
@@ -571,7 +571,7 @@ export default function Onboarding() {
                 </div>
 
                 {/* 6 Month Full Access Card */}
-                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)]">
+                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
                   <div className="text-lg font-semibold mb-1">6 Month Full Access</div>
                   <div className="text-2xl font-bold mb-2">$10.95<span className="text-base font-normal">/mo</span></div>
                   <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
@@ -585,11 +585,11 @@ export default function Onboarding() {
             </div>
           </div>
         ) : !showResumeUpload && !showJobTitles && !showSalary && !showLocation && (
-          <div className="w-[calc(100%-1rem)] max-w-5xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
+          <div className="w-[calc(100%-1rem)] max-w-5xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
             <h2 className="text-[28px] font-semibold mb-2">Let's set you up for success!</h2>
             <p className="text-[#a0a0a0] text-[15px] mb-8">Automate your job search in 3 simple steps.</p>
 
-            <div className="card-container flex flex-col md:flex-row gap-6 justify-center w-full items-center md:items-stretch">
+            <div className="card-container flex flex-col md:flex-row gap-6 justify-center w-full items-center md:items-stretch mt-2">
               {/* Card 1 - Resume Upload */}
               <div 
                 className="card w-[95%] md:w-[300px] h-[300px] bg-gradient-to-br from-[#1e1b2d] to-[#0f0e15] border border-[#282630] rounded-[20px] p-5 shadow-[0_10px_40px_rgba(168,85,247,0.15)] transition-all duration-300 hover:border-[#a855f7] hover:scale-[1.04] hover:shadow-[0_0_18px_rgba(168,85,247,0.35)] flex flex-col justify-between md:max-w-none"
@@ -643,7 +643,7 @@ export default function Onboarding() {
         )}
         
         {showResumeUpload && !showJobTitles && !showSalary && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
             <div className="mb-6">
               {/* Back button removed as requested */}
             </div>
@@ -718,9 +718,9 @@ export default function Onboarding() {
         )}
         
         {showJobTitles && !showSalary && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Main Content */}
-            <div className="mx-auto max-w-3xl">
+            <div className="container mx-auto px-4 py-8 mt-2">
               {/* Headers */}
               <div className="mb-8 text-center">
                 <h1 className="text-2xl font-bold text-white mb-2">
@@ -805,9 +805,9 @@ export default function Onboarding() {
         
         {/* Salary Section */}
         {showSalary && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Main Content */}
-            <div className="mx-auto max-w-3xl">
+            <div className="container mx-auto px-4 py-8 mt-2">
               {/* Headers */}
               <div className="mb-8 text-center">
                 <h1 className="text-2xl font-bold text-white mb-2">
@@ -879,9 +879,9 @@ export default function Onboarding() {
         
         {/* Location Section */}
         {showLocation && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto">
+          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Main Content */}
-            <div className="mx-auto max-w-3xl">
+            <div className="container mx-auto px-4 py-8 mt-2">
               {/* Headers */}
               <div className="mb-8 text-center">
                 <h1 className="text-2xl font-bold text-white mb-2">

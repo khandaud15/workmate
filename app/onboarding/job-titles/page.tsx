@@ -169,7 +169,7 @@ export default function JobTitles() {
 
       {/* Sticky Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4 py-3 sm:py-4 max-w-2xl">
+        <div className="container mx-auto px-4 py-3 sm:py-4 max-w-2xl mt-2">
            <div className="flex justify-between items-center w-full px-2">
              <button
                onClick={() => router.back()}
