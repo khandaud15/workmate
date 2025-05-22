@@ -69,6 +69,9 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ success: false, message: 'No verification request found.' }, { status: 400 });
     }
     const data = doc.data();
+    if (!data) {
+      return NextResponse.json({ success: false, message: 'No verification request found.' }, { status: 400 });
+    }
     if (data.verified) {
       return NextResponse.json({ success: false, message: 'Email already verified.' }, { status: 400 });
     }
