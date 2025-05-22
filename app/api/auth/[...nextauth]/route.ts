@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { db } from '@/lib/firebase';
+import bcrypt from 'bcryptjs';
 
 // Function to get the actual running port, regardless of NEXTAUTH_URL setting
 const getCurrentPort = () => {
@@ -54,21 +56,27 @@ const handler = NextAuth({
         }
 
         try {
-          // For demo purposes, we're using a simplified authentication
-          // In a real app, you would validate against a database
-          
-          // Simple validation - in production, replace with actual auth
-          if (credentials.email && credentials.password) {
-            // Return a mock user for demonstration
-            return {
-              id: '1',
-              email: credentials.email,
-              name: credentials.email.split('@')[0] || 'User',
-              emailVerified: true
-            };
+          // Look up user by email in Firestore
+          const userDoc = await db.collection('users').doc(credentials.email).get();
+          if (!userDoc.exists) {
+            return null;
           }
-          
-          return null;
+          const user = userDoc.data();
+          // Compare hashed password
+          if (!user || !user.hashedPassword) {
+            return null;
+          }
+          const passwordMatch = await bcrypt.compare(credentials.password, user.hashedPassword);
+          if (!passwordMatch) {
+            return null;
+          }
+          // Return user object for session
+          return {
+            id: user.id || userDoc.id,
+            email: user.email,
+            name: user.name || user.email.split('@')[0] || 'User',
+            emailVerified: true
+          };
         } catch (error) {
           console.error('Auth error:', error);
           return null;

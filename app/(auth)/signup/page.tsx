@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Logo from '../../components/Logo';
 import { signIn } from 'next-auth/react';
+import OTPVerificationModal from '@/app/components/OTPVerificationModal';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -12,29 +13,67 @@ export default function SignUp() {
   const [agreed, setAgreed] = useState(false);
 
   const [error, setError] = useState('');
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false
+      // Only trigger OTP flow for email sign-up
+      const response = await fetch('/api/auth/email-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
-
-      if (result?.error) {
-        setError('Invalid email or password');
-        return;
+      const data = await response.json();
+      if (data.success) {
+        setShowOTPModal(true);
+      } else {
+        setError(data.message || 'Failed to send verification email.');
       }
-
-      // Redirect to onboarding
-      window.location.href = '/onboarding';
     } catch (error) {
       setError('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  // Handle OTP modal verification
+  const handleOTPVerification = async (success: boolean) => {
+    if (success) {
+      // Auto-login after successful verification
+      try {
+        const result = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+        });
+        if (!result?.error) {
+          window.location.href = '/onboarding';
+        } else {
+          setError('Authentication failed. Please sign in.');
+        }
+      } catch (err) {
+        setError('Something went wrong. Please try again.');
+      }
+    }
+    setShowOTPModal(false);
+  };
+
+  // If OTP modal is open, hide the rest of the sign-up page UI
+  if (showOTPModal) {
+    return (
+      <OTPVerificationModal
+        email={email}
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerify={handleOTPVerification}
+      />
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-start pt-24">
@@ -169,9 +208,9 @@ export default function SignUp() {
               <button
                 type="submit"
                 className="mt-2 w-full rounded-[8px] bg-[#FFFFFF] text-black px-4 py-3 text-[15px] font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!agreed}
+                disabled={!agreed || isSubmitting}
               >
-                Sign up
+                {isSubmitting ? 'Processing...' : 'Sign up'}
               </button>
             </div>
           </form>
