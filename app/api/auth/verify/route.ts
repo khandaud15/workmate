@@ -16,6 +16,9 @@ export async function GET(request: NextRequest) {
       return new Response('Verification link expired or invalid.', { status: 400 });
     }
     const data = doc.data();
+    if (!data) {
+      return new Response('No verification request found.', { status: 400 });
+    }
     if (data.verified) {
       return new Response('Email already verified.', { status: 400 });
     }
