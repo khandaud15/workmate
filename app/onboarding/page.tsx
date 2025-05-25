@@ -1328,8 +1328,8 @@ export default function Onboarding() {
       state: getValue(['data', 'address', 'state']) || getValue(['address', 'state']),
       postalCode: getValue(['data', 'address', 'postcode']) || getValue(['address', 'postalCode']) || getValue(['address', 'zipCode']),
       linkedin: linkedinUrl,
-      phone: String(getValue(['data', 'phoneNumbers', 0, 'number']) || getValue(['phoneNumbers', 0]) || getValue(['phone']) || ''),
-      email: String(getValue(['data', 'emails', 0]) || getValue(['emails', 0]) || getValue(['email']) || '')
+      phone: String(getValue(['data', 'phoneNumbers', '0', 'number']) || getValue(['phoneNumbers', '0']) || getValue(['phone']) || ''),
+      email: String(getValue(['data', 'emails', '0']) || getValue(['emails', '0']) || getValue(['email']) || '')
     };
   };
   
