@@ -156,9 +156,20 @@ export default function Onboarding() {
           setIsLoadingSkills(true);
           setSkillsError(null);
           
-          // First check if we have skills in localStorage
+          // Check if we have a new parsed resume that should be prioritized
+          // This ensures we always use the most recent resume data
+          let shouldFetchFromResume = false;
+          
+          // Check if there's a flag in localStorage indicating a new resume was uploaded
+          const newResumeUploaded = localStorage.getItem('newResumeUploaded');
+          if (newResumeUploaded === 'true') {
+            console.log('New resume was uploaded, prioritizing parsed resume data for skills');
+            shouldFetchFromResume = true;
+          }
+          
+          // If no new resume was uploaded, check localStorage as usual
           const savedSkills = localStorage.getItem('resumeSkills');
-          if (savedSkills) {
+          if (savedSkills && !shouldFetchFromResume) {
             try {
               const parsedSkills = JSON.parse(savedSkills);
               if (Array.isArray(parsedSkills) && parsedSkills.length > 0) {
@@ -282,9 +293,20 @@ export default function Onboarding() {
           setIsLoadingEducation(true);
           setEducationError(null);
           
-          // First check if we have education in localStorage
+          // Check if we have a new parsed resume that should be prioritized
+          // This ensures we always use the most recent resume data
+          let shouldFetchFromResume = false;
+          
+          // Check if there's a flag in localStorage indicating a new resume was uploaded
+          const newResumeUploaded = localStorage.getItem('newResumeUploaded');
+          if (newResumeUploaded === 'true') {
+            console.log('New resume was uploaded, prioritizing parsed resume data for education');
+            shouldFetchFromResume = true;
+          }
+          
+          // If no new resume was uploaded, check localStorage as usual
           const savedEducation = localStorage.getItem('resumeEducation');
-          if (savedEducation) {
+          if (savedEducation && !shouldFetchFromResume) {
             try {
               const parsedEducation = JSON.parse(savedEducation);
               if (Array.isArray(parsedEducation) && parsedEducation.length > 0) {
@@ -443,9 +465,22 @@ export default function Onboarding() {
           setIsLoadingWorkExperience(true);
           setWorkExperienceError(null);
           
-          // First check if we have work experience in localStorage
+          // Check if we have a new parsed resume that should be prioritized
+          // This ensures we always use the most recent resume data
+          let shouldFetchFromResume = false;
+          
+          // Check if there's a flag in localStorage indicating a new resume was uploaded
+          const newResumeUploaded = localStorage.getItem('newResumeUploaded');
+          if (newResumeUploaded === 'true') {
+            console.log('New resume was uploaded, prioritizing parsed resume data');
+            shouldFetchFromResume = true;
+            // Clear the flag after checking
+            localStorage.removeItem('newResumeUploaded');
+          }
+          
+          // If no new resume was uploaded, check localStorage as usual
           const savedWorkExperience = localStorage.getItem('resumeWorkExperience');
-          if (savedWorkExperience) {
+          if (savedWorkExperience && !shouldFetchFromResume) {
             try {
               const parsedExperience = JSON.parse(savedWorkExperience);
               if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
@@ -1259,6 +1294,11 @@ export default function Onboarding() {
           localStorage.removeItem('selectedTitles');
           localStorage.removeItem('selectedLocations');
           localStorage.removeItem('questionnaireAnswers');
+          
+          // Set a flag indicating a new resume was uploaded
+          // This will be checked by each section to prioritize fetching from the parsed resume
+          localStorage.setItem('newResumeUploaded', 'true');
+          console.log('Set newResumeUploaded flag to true');
           
           // Also clear any cached data in the application state
           setWorkExperienceError(null);
