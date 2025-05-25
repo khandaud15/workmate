@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { FaBars, FaTimes, FaChevronRight, FaFileAlt, FaBriefcase, FaDollarSign, FaMapMarkerAlt, FaCheckCircle, FaArrowLeft, FaUpload, FaCheck, FaSearch, FaCreditCard, FaAddressBook, FaPlus, FaExclamationTriangle, FaEdit, FaTrash, FaGraduationCap, FaClipboardList, FaChevronDown } from 'react-icons/fa';
+import { useResumeData } from '../hooks/useResumeData.js';
 
 // TypeScript interface for Work Experience
 interface WorkExperience {
@@ -1203,6 +1204,28 @@ export default function Onboarding() {
     }
   };
   
+// Utility to clear all resume-related localStorage
+  const clearResumeLocalStorage = () => {
+    const keysToRemove = [
+      'contactInfo',
+      'workExperience',
+      'education',
+      'skills',
+      'resumeData',
+      'resumeEducation',
+      'resumeExperience',
+      'resumeSkills',
+      'resumeContactInfo',
+      // Add any other keys as needed
+    ];
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+  };
+
+  // Use the useResumeData hook at the top of your component
+  // Make sure this import is at the top of your file:
+  // import useResumeData from '../hooks/useResumeData';
+  const { fetchResumeData } = useResumeData();
+
   const handleFile = async (file: File) => {
     setSelectedFile(file);
     setUploadStatus('uploading');
@@ -1244,6 +1267,33 @@ export default function Onboarding() {
       
       const data = await res.json();
       console.log('Upload successful! Response:', data);
+      if (res.ok) {
+        // Clear all resume-related localStorage keys
+        clearResumeLocalStorage();
+        // Reset in-memory state to valid empty objects/arrays
+        setContactInfo({
+          firstName: '',
+          lastName: '',
+          dob: '',
+          address: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          linkedin: '',
+          phone: '',
+          email: '',
+          smsConsent: false
+        });
+        setWorkExperience([]);
+        setEducation([]);
+        setSkills([]);
+        // Fetch fresh data from the server
+        if (typeof fetchResumeData === 'function') {
+          fetchResumeData();
+        }
+        setUploadStatus('success');
+        setUploadError(null);
+      }
       setUploadStatus('success');
       
       // If parsedResumeUrl is returned, fetch the parsed resume JSON

@@ -99,22 +99,39 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     
-    // Get the user's profile document
+    // Get the user's profile data from Firestore
     const userEmail = session.user.email;
     const userDocRef = db.collection('users').doc(userEmail);
     const userDoc = await userDocRef.get();
-    if (!userDoc.exists) {
-      return NextResponse.json({ profile: {} });
+    const userData = userDoc.exists ? userDoc.data() : {};
+    
+    // Get the parsed resume data if available
+    let parsedResumeData = null;
+    const parsedResumeDoc = await db.collection('parsedResumes').doc(userEmail).get();
+    if (parsedResumeDoc.exists) {
+      parsedResumeData = parsedResumeDoc.data()?.parsedResumeData;
     }
-    const userData = userDoc.data();
-    if (!userData) {
-      return NextResponse.json({ profile: {} });
+    
+    // Check if there's a new resume available
+    const newResumeAvailable = userData?.newResumeAvailable === true;
+    
+    // If there's a new resume, include a flag in the response
+    if (newResumeAvailable) {
+      console.log('[PROFILE API] New resume available, returning flag');
+      
+      // Clear the flag to prevent it from being returned multiple times
+      await userDocRef.update({
+        newResumeAvailable: false
+      });
     }
-    // Also return parsedResumeUrl and resumeUrl if present
+    
+    // Return profile data, parsed resume data, and flags
     return NextResponse.json({ 
-      profile: userData.profile || {},
-      parsedResumeUrl: userData.parsedResumeUrl || null,
-      resumeUrl: userData.resumeUrl || null
+      profile: userData?.profile || {},
+      parsedResumeUrl: userData?.parsedResumeUrl || null,
+      resumeUrl: userData?.resumeUrl || null,
+      newResumeAvailable: newResumeAvailable,
+      parsedResumeData: parsedResumeData
     });
     
   } catch (error) {

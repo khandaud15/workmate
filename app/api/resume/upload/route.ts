@@ -134,34 +134,42 @@ export async function POST(request: Request) {
         expires: Date.now() + 365 * 24 * 60 * 60 * 1000
       });
       parsedResumeUrl = parsedUrl;
-      // Store parsed resume URL in Firestore and mark that profile data should be replaced
-      await db.collection('users').doc(userEmail).set({ 
-        parsedResumeUrl,
-        shouldReplaceProfileData: true, // Always mark for replacement when a new parsed resume is available
+      // Save the parsed resume URL to the user's document in Firestore
+      await db.collection('parsedResumes').doc(userEmail).set({
+        parsedResumeUrl: parsedResumeUrl,
+        parsedResumeData: result.parsed !== undefined ? result.parsed : null,
         parsedResumeTimestamp: new Date().toISOString()
-      }, { merge: true });
+      }, { merge: false }); // Use merge: false to completely replace any existing data
       
-      // Also clear any existing profile data in Firestore to ensure fresh start
+      // Get user document reference
       const userDocRef = db.collection('users').doc(userEmail);
       const userDoc = await userDocRef.get();
+      
       if (userDoc.exists) {
-        const userData = userDoc.data();
-        if (userData && userData.profile) {
-          // Create a new profile object without the sections we want to clear
-          const updatedProfile = { ...userData.profile };
-          // Clear sections that will be repopulated from the new resume
-          delete updatedProfile.contactInfo;
-          delete updatedProfile.workExperience;
-          delete updatedProfile.education;
-          delete updatedProfile.skills;
-          
-          // Update the profile with cleared sections
-          await userDocRef.set({
-            profile: updatedProfile
-          }, { merge: true });
-          
-          console.log('[UPLOAD API] Cleared existing profile sections for fresh resume data');
-        }
+        // CRITICAL: Completely delete and recreate the user document
+        // This ensures absolutely no old data persists
+        await userDocRef.set({
+          // Create a completely new profile object
+          profile: {
+            // Only keep a timestamp
+            lastUpdated: new Date().toISOString(),
+            // These empty arrays ensure we start fresh
+            workExperience: [],
+            education: [],
+            skills: [],
+            // This flag indicates we've completely reset the profile
+            completelyReset: true
+          },
+          // Set the parsed resume URL and timestamp
+          parsedResumeUrl: parsedResumeUrl,
+          resumeUploadTimestamp: new Date().toISOString(),
+          // This is a critical flag that tells the frontend to ignore localStorage
+          ignoreLocalStorage: true,
+          // Add a flag specifically for Vercel deployments
+          forceRefreshData: true
+        }, { merge: false }); // Use merge: false to completely replace the document
+        
+        console.log('[UPLOAD API] COMPLETELY RESET user profile for new resume data');
       }
     } catch (parseError) {
       console.error('[UPLOAD API] Error parsing/saving resume with Python Cloud Run:', parseError);
