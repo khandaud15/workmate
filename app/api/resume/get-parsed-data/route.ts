@@ -36,6 +36,10 @@ export async function GET(request: NextRequest) {
       parsedResumeData: parsedResumeData?.parsedResumeData || null,
       parsedResumeUrl: parsedResumeData?.parsedResumeUrl || null,
       timestamp: parsedResumeData?.parsedResumeTimestamp || null
+    }, {
+      headers: {
+        'Cache-Control': 'no-store'
+      }
     });
     
   } catch (error) {
