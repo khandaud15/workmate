@@ -5,18 +5,679 @@ import Image from 'next/image';
 
 import { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
-import { FaBars, FaTimes, FaChevronRight, FaFileAlt, FaBriefcase, FaDollarSign, FaMapMarkerAlt, FaCheckCircle, FaArrowLeft, FaUpload, FaCheck, FaSearch, FaCreditCard } from 'react-icons/fa';
+import { FaBars, FaTimes, FaChevronRight, FaFileAlt, FaBriefcase, FaDollarSign, FaMapMarkerAlt, FaCheckCircle, FaArrowLeft, FaUpload, FaCheck, FaSearch, FaCreditCard, FaAddressBook, FaPlus, FaExclamationTriangle, FaEdit, FaTrash, FaGraduationCap, FaClipboardList, FaChevronDown } from 'react-icons/fa';
+
+// TypeScript interface for Work Experience
+interface WorkExperience {
+  id?: string;
+  jobTitle?: string;
+  company?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  responsibilities: string[];
+  jobDescription?: string;
+  isEditing?: boolean;
+  isExpanded?: boolean;
+}
+
+// TypeScript interface for Education
+interface Education {
+  id?: string;
+  school?: string;
+  degree?: string;
+  fieldOfStudy?: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  isEditing?: boolean;
+  isExpanded?: boolean;
+}
+
+// Type for Resume Experience from API
+type ResumeExperience = {
+  id?: string;
+  jobTitle?: string;
+  title?: string;
+  position?: string;
+  company?: string;
+  employer?: string;
+  organization?: string;
+  startDate?: string;
+  start_date?: string;
+  dates?: {
+    startDate?: string;
+    start_date?: string;
+    monthsInPosition?: number;
+    isCurrent?: boolean;
+    rawText?: string;
+  };
+  endDate?: string;
+  end_date?: string;
+  location?: string;
+  responsibilities?: string[];
+  description?: string;
+  jobDescription?: string;
+  text?: string;
+  sectionType?: string;
+  pageIndex?: number;
+  bbox?: number[];
+}
 
 export default function Onboarding() {
   // State variables for UI components
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showResumeUpload, setShowResumeUpload] = useState(false);
+  // State for uploaded resume info
+  const [uploadedResumeUrl, setUploadedResumeUrl] = useState<string | null>(null);
+  const [uploadedResumeName, setUploadedResumeName] = useState<string | null>(null);
+  const [showContactInfo, setShowContactInfo] = useState(false);
+  const [showWorkExperience, setShowWorkExperience] = useState(false);
+  const [showEducation, setShowEducation] = useState(false);
+  const [showSkills, setShowSkills] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success'>('idle');
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [showJobTitles, setShowJobTitles] = useState(false);
   const [showSalary, setShowSalary] = useState(false);
   const [showLocation, setShowLocation] = useState(false);
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const [showAccountSettings, setShowAccountSettings] = useState(false);
+  // Work experience state
+  const [workExperience, setWorkExperience] = useState<WorkExperience[]>([]);
+  const [isLoadingWorkExperience, setIsLoadingWorkExperience] = useState(false);
+  const [workExperienceError, setWorkExperienceError] = useState<string | null>(null);
+  // Education state
+  const [education, setEducation] = useState<Education[]>([]);
+  const [isLoadingEducation, setIsLoadingEducation] = useState(false);
+  const [educationError, setEducationError] = useState<string | null>(null);
+  
+  // Skills state
+  const [skills, setSkills] = useState<string[]>([]);
+  const [isLoadingSkills, setIsLoadingSkills] = useState(false);
+  const [skillsError, setSkillsError] = useState<string | null>(null);
+  const [newSkill, setNewSkill] = useState('');
+  
+  // Contact info state
+  const [contactInfo, setContactInfo] = useState({
+    firstName: '',
+    lastName: '',
+    dob: '',
+    address: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    linkedin: '',
+    phone: '',
+    email: '',
+    smsConsent: true
+  });
+
+  // Fetch uploaded resume info when Resume Upload section is shown
+  useEffect(() => {
+    if (showResumeUpload) {
+      const fetchResumeInfo = async () => {
+        try {
+          const res = await fetch('/api/profile');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.resumeUrl) {
+              setUploadedResumeUrl(data.resumeUrl);
+              // Try to extract the file name from the URL
+              try {
+                const urlParts = data.resumeUrl.split('/');
+                setUploadedResumeName(urlParts[urlParts.length - 1].split('?')[0]);
+              } catch {
+                setUploadedResumeName('Uploaded Resume');
+              }
+              console.log('DEBUG: uploadedResumeUrl:', data.resumeUrl);
+              console.log('DEBUG: uploadedResumeName:', uploadedResumeName);
+            } else {
+              setUploadedResumeUrl(null);
+              setUploadedResumeName(null);
+            }
+          }
+        } catch {
+          setUploadedResumeUrl(null);
+          setUploadedResumeName(null);
+        }
+      };
+      fetchResumeInfo();
+    }
+  }, [showResumeUpload]);
+
+  // Fetch and parse work experience when the Work Experience section is shown
+  // Fetch and parse education data when the Education section is shown
+  // Fetch and parse skills data when the Skills section is shown
+  useEffect(() => {
+    if (showSkills) {
+      const fetchSkills = async () => {
+        try {
+          setIsLoadingSkills(true);
+          setSkillsError(null);
+          
+          // First check if we have skills in localStorage
+          const savedSkills = localStorage.getItem('resumeSkills');
+          if (savedSkills) {
+            try {
+              const parsedSkills = JSON.parse(savedSkills);
+              if (Array.isArray(parsedSkills) && parsedSkills.length > 0) {
+                setSkills(parsedSkills);
+                setIsLoadingSkills(false);
+                return; // Use saved data if available
+              }
+            } catch (error) {
+              console.error('Failed to parse saved skills:', error);
+            }
+          }
+          
+          // If no saved data, try to get parsed resume data
+          const res = await fetch('/api/profile');
+          if (res.ok) {
+            const data = await res.json();
+            // If parsedResumeUrl exists, fetch and extract skills from parsed resume
+            if (data && data.parsedResumeUrl) {
+              try {
+                const resp = await fetch(data.parsedResumeUrl);
+                const parsed = await resp.json();
+                console.log('ONBOARDING: FULL PARSED RESUME (for skills):', parsed);
+                
+                // Try to find skills data in various possible paths
+                let extractedSkills: string[] = [];
+                
+                // First check for the specific format from the example
+                if (parsed['Skills'] && Array.isArray(parsed['Skills'])) {
+                  console.log('Found Skills in the parsed resume');
+                  extractedSkills = parsed['Skills'];
+                } else if (parsed['Technical Skills']) {
+                  // Handle nested technical skills
+                  const technicalSkills = parsed['Technical Skills'];
+                  Object.keys(technicalSkills).forEach(category => {
+                    if (Array.isArray(technicalSkills[category])) {
+                      extractedSkills = [...extractedSkills, ...technicalSkills[category]];
+                    }
+                  });
+                } else {
+                  // Fallback to other possible paths if the specific format is not found
+                  const possiblePaths = [
+                    'skills', 'skill_set', 'technical_skills', 'core_competencies', 
+                    'competencies', 'expertise', 'proficiencies'
+                  ];
+                  
+                  // Look for skills in different paths
+                  for (const path of possiblePaths) {
+                    const skillItems = parsed[path] || parsed.data?.[path];
+                    if (skillItems) {
+                      if (Array.isArray(skillItems)) {
+                        extractedSkills = skillItems;
+                        console.log(`Found skills in path: ${path}`);
+                        break;
+                      } else if (typeof skillItems === 'object') {
+                        // Handle case where skills are categorized
+                        Object.keys(skillItems).forEach(category => {
+                          if (Array.isArray(skillItems[category])) {
+                            extractedSkills = [...extractedSkills, ...skillItems[category]];
+                          }
+                        });
+                        console.log(`Found categorized skills in path: ${path}`);
+                        break;
+                      }
+                    }
+                  }
+                }
+                
+                // If we found skills, save them
+                if (extractedSkills.length > 0) {
+                  // Remove duplicates and sort alphabetically
+                  const uniqueSkills = Array.from(new Set(extractedSkills)).sort();
+                  setSkills(uniqueSkills);
+                  
+                  // Save to localStorage
+                  try {
+                    localStorage.setItem('resumeSkills', JSON.stringify(uniqueSkills));
+                  } catch (error) {
+                    console.error('Error saving skills to localStorage:', error);
+                  }
+                }
+              } catch (e) {
+                console.error('Error fetching parsed resume for skills:', e);
+                setSkillsError('Failed to parse resume data. Please try again.');
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching skills:', error);
+          setSkillsError('Failed to load skills. Please try again.');
+        } finally {
+          setIsLoadingSkills(false);
+        }
+      };
+      
+      fetchSkills();
+    }
+  }, [showSkills]);
+
+  useEffect(() => {
+    if (showEducation) {
+      const fetchEducation = async () => {
+        try {
+          setIsLoadingEducation(true);
+          setEducationError(null);
+          
+          // First check if we have education in localStorage
+          const savedEducation = localStorage.getItem('resumeEducation');
+          if (savedEducation) {
+            try {
+              const parsedEducation = JSON.parse(savedEducation);
+              if (Array.isArray(parsedEducation) && parsedEducation.length > 0) {
+                setEducation(parsedEducation);
+                setIsLoadingEducation(false);
+                return; // Use saved data if available
+              }
+            } catch (error) {
+              console.error('Failed to parse saved education:', error);
+            }
+          }
+          
+          // If no saved data, try to get parsed resume data
+          const res = await fetch('/api/profile');
+          if (res.ok) {
+            const data = await res.json();
+            // If parsedResumeUrl exists, fetch and extract education from parsed resume
+            if (data && data.parsedResumeUrl) {
+              try {
+                const resp = await fetch(data.parsedResumeUrl);
+                const parsed = await resp.json();
+                console.log('ONBOARDING: FULL PARSED RESUME (for education):', parsed);
+                
+                // Try to find education data in various possible paths
+                let educations: any[] = [];
+                
+                // First check for the specific format from the example
+                if (parsed['Education'] && Array.isArray(parsed['Education'])) {
+                  console.log('Found Education in the parsed resume');
+                  educations = parsed['Education'];
+                } else {
+                  // Fallback to other possible paths if the specific format is not found
+                  const possiblePaths = [
+                    'education', 'educations', 'education_history', 
+                    'academic_history', 'schools', 'degrees'
+                  ];
+                  
+                  // Look for education in different paths
+                  for (const path of possiblePaths) {
+                    const educationItems = parsed[path] || parsed.data?.[path];
+                    if (educationItems && Array.isArray(educationItems)) {
+                      educations = educationItems;
+                      console.log(`Found education in path: ${path}`);
+                      break;
+                    }
+                  }
+                }
+                
+                // If we found education items, format them
+                if (educations.length > 0) {
+                  const formattedEducation = educations.map((edu: any, index: number) => {
+                    // Handle the specific format from the example
+                    if (edu['Institution'] && edu['Degree']) {
+                      console.log('Processing education in the new format:', edu);
+                      
+                      // Extract dates from Year field
+                      let startDate = '';
+                      let endDate = '';
+                      if (edu['Year']) {
+                        const dateRange = edu['Year'].split(' - ');
+                        startDate = dateRange[0] || '';
+                        endDate = dateRange.length > 1 ? dateRange[1] : 'Present';
+                      }
+                      
+                      return {
+                        id: `edu-${index}`,
+                        school: edu['Institution'] || '',
+                        degree: edu['Degree'] || '',
+                        fieldOfStudy: '',  // Not explicitly provided in this format
+                        startDate,
+                        endDate,
+                        description: '',  // Not explicitly provided in this format
+                        isExpanded: index === 0, // Expand the first one by default
+                        isEditing: false
+                      };
+                    } else {
+                      // Fallback to the original format for other resume formats
+                      // Extract school name from various possible fields
+                      const school = edu.school || edu.institution || edu.university || edu.college || '';
+                      
+                      // Extract degree from various possible fields
+                      const degree = edu.degree || edu.certification || edu.diploma || '';
+                      
+                      // Extract field of study
+                      const fieldOfStudy = edu.fieldOfStudy || edu.major || edu.field || edu.area || '';
+                      
+                      // Extract dates
+                      const startDate = edu.startDate || edu.start_date || (edu.dates?.startDate) || (edu.dates?.start_date) || '';
+                      const endDate = edu.endDate || edu.end_date || (edu.dates?.endDate) || (edu.dates?.end_date) || '';
+                      
+                      // Extract description
+                      const description = edu.description || edu.notes || edu.achievements || '';
+                      
+                      return {
+                        id: `edu-${index}`,
+                        school,
+                        degree,
+                        fieldOfStudy,
+                        startDate,
+                        endDate,
+                        description,
+                        isExpanded: index === 0, // Expand the first one by default
+                        isEditing: false
+                      };
+                    }
+                  });
+                  
+                  setEducation(formattedEducation);
+                  
+                  // Save to localStorage
+                  try {
+                    localStorage.setItem('resumeEducation', JSON.stringify(formattedEducation));
+                  } catch (error) {
+                    console.error('Error saving education to localStorage:', error);
+                  }
+                }
+              } catch (e) {
+                console.error('Error fetching parsed resume for education:', e);
+                setEducationError('Failed to parse resume data. Please try again.');
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching education:', error);
+          setEducationError('Failed to load education. Please try again.');
+        } finally {
+          setIsLoadingEducation(false);
+        }
+      };
+      
+      fetchEducation();
+    }
+  }, [showEducation]);
+
+  useEffect(() => {
+    if (showWorkExperience) {
+      const fetchWorkExperience = async () => {
+        try {
+          setIsLoadingWorkExperience(true);
+          setWorkExperienceError(null);
+          
+          // First check if we have work experience in localStorage
+          const savedWorkExperience = localStorage.getItem('resumeWorkExperience');
+          if (savedWorkExperience) {
+            try {
+              const parsedExperience = JSON.parse(savedWorkExperience);
+              if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
+                setWorkExperience(parsedExperience);
+                setIsLoadingWorkExperience(false);
+                return; // Use saved data if available
+              }
+            } catch (error) {
+              console.error('Failed to parse saved work experience:', error);
+            }
+          }
+          
+          
+          // If no saved data, try to get parsed resume data
+          const res = await fetch('/api/profile');
+          if (res.ok) {
+            const data = await res.json();
+            // If parsedResumeUrl exists, fetch and extract work experience from parsed resume
+            if (data && data.parsedResumeUrl) {
+              try {
+                const resp = await fetch(data.parsedResumeUrl);
+                const parsed = await resp.json();
+                console.log('ONBOARDING: FULL PARSED RESUME (for work exp):', parsed);
+                
+                // Initialize work experiences array
+                let workExperiences: any[] = [];
+                
+                // Try to find work experience data in various possible paths
+                // First check for the specific format from the example
+                if (parsed['Work Experience'] && Array.isArray(parsed['Work Experience'])) {
+                  console.log('Found Work Experience in the parsed resume');
+                  workExperiences = parsed['Work Experience'];
+                } else {
+                  // Fallback to other possible paths if the specific format is not found
+                  const possiblePaths = [
+                    'work_experience', 'workExperience', 'work_experiences', 
+                    'jobs', 'positions', 'experience', 'professional_experience'
+                  ];
+                  
+                  // Look for work experience in different paths
+                  for (const path of possiblePaths) {
+                    const experiences = parsed[path] || parsed.data?.[path];
+                    if (experiences && Array.isArray(experiences)) {
+                      workExperiences = experiences;
+                      console.log(`Found experiences in path: ${path}`);
+                      break;
+                    }
+                  }
+                }
+                
+                // If we found work experiences, format them
+                if (workExperiences.length > 0) {
+                  const formattedWorkExperiences = workExperiences.map((exp: any, index: number) => {
+                    // Handle the specific format from the example
+                    if (exp['Job Title'] && exp['Company']) {
+                      console.log('Processing work experience in the new format:', exp);
+                      // Extract dates from Start/End Year field
+                      let startDate = '';
+                      let endDate = '';
+                      if (exp['Start/End Year']) {
+                        const dateRange = exp['Start/End Year'].split(' - ');
+                        startDate = dateRange[0] || '';
+                        endDate = dateRange.length > 1 ? dateRange[1] : 'Present';
+                      }
+                      
+                      // Extract responsibilities from Description array
+                      let responsibilities: string[] = [];
+                      if (Array.isArray(exp['Description'])) {
+                        responsibilities = exp['Description'];
+                      }
+                      
+                      // Ensure we have at least 3 responsibilities (pad with empty strings if needed)
+                      while (responsibilities.length < 3) {
+                        responsibilities.push('');
+                      }
+                      
+                      return {
+                        id: `exp-${index}`,
+                        jobTitle: exp['Job Title'] || '',
+                        company: exp['Company'] || '',
+                        location: exp['Location'] || '',
+                        startDate,
+                        endDate,
+                        responsibilities,
+                        isExpanded: index === 0, // Expand the first one by default
+                        isEditing: false
+                      };
+                    } else {
+                      // Fallback to the original format for other resume formats
+                      // Extract job title from various possible fields
+                      const jobTitle = exp.jobTitle || exp.title || exp.position || '';
+                      
+                      // Extract company from various possible fields
+                      const company = exp.company || exp.employer || exp.organization || '';
+                      
+                      // Extract dates
+                      const startDate = exp.startDate || exp.start_date || exp.dates?.startDate || exp.dates?.start_date || '';
+                      const endDate = exp.endDate || exp.end_date || (exp.dates?.isCurrent ? 'Present' : '') || '';
+                      
+                      // Extract location
+                      const location = exp.location || '';
+                      
+                      // Helper function to clean and validate string items
+                      const cleanStringItem = (item: unknown): string => {
+                        if (typeof item === 'string') return item.trim();
+                        return String(item || '').trim();
+                      };
+                      
+                      // Function to split text into sentences
+                      const splitIntoSentences = (text: string): string[] => {
+                        // First try to split by periods followed by space or newlines
+                        const byPeriods = text
+                          .replace(/\. /g, '.\n')
+                          .split(/\n+|\r\n+/)
+                          .map(s => s.trim())
+                          .filter(s => s.length > 0);
+                        
+                        if (byPeriods.length > 1) {
+                          return byPeriods;
+                        }
+                        
+                        // If that didn't work, try other delimiters
+                        if (text.includes('•')) {
+                          return text.split('•')
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+                        }
+                        
+                        if (text.includes('- ')) {
+                          return text.split(/\s*-\s+/)
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+                        }
+                        
+                        if (text.includes(', ')) {
+                          return text.split(/,\s+/)
+                            .map(s => s.trim())
+                            .filter(s => s.length > 0);
+                        }
+                        
+                        // Last resort: just use the whole text
+                        return text ? [text] : [];
+                      };
+                      
+                      // Extract responsibilities from various possible formats
+                      let responsibilities: string[] = [];
+                      
+                      // Check for responsibilities in various fields
+                      if (exp.responsibilities && Array.isArray(exp.responsibilities)) {
+                        responsibilities = exp.responsibilities.map(cleanStringItem).filter(Boolean);
+                      } else if (exp.description) {
+                        responsibilities = splitIntoSentences(cleanStringItem(exp.description));
+                      } else if (exp.jobDescription) {
+                        responsibilities = splitIntoSentences(cleanStringItem(exp.jobDescription));
+                      } else if (exp.text) {
+                        responsibilities = splitIntoSentences(cleanStringItem(exp.text));
+                      }
+                      
+                      // Format each responsibility
+                      responsibilities = responsibilities.map(resp => {
+                        resp = resp.trim();
+                        // Ensure proper sentence casing and periods
+                        if (!resp.endsWith('.') && resp.length > 1) {
+                          resp += '.';
+                        }
+                        // Capitalize first letter
+                        return resp.charAt(0).toUpperCase() + resp.slice(1);
+                      });
+                      
+                      // Ensure we have at least 3 responsibilities (pad with empty strings if needed)
+                      while (responsibilities.length < 3) {
+                        responsibilities.push('');
+                      }
+                      
+                      return {
+                        id: `exp-${index}`,
+                        jobTitle,
+                        company,
+                        location,
+                        startDate,
+                        endDate,
+                        responsibilities,
+                        isExpanded: index === 0, // Expand the first one by default
+                        isEditing: false
+                      };
+                    }
+                  });
+                  
+                  setWorkExperience(formattedWorkExperiences);
+                  
+                  // Save to localStorage
+                  try {
+                    localStorage.setItem('resumeWorkExperience', JSON.stringify(formattedWorkExperiences));
+                  } catch (error) {
+                    console.error('Error saving work experience to localStorage:', error);
+                  }
+                }
+              } catch (e) {
+                console.error('Error fetching parsed resume for work experience:', e);
+                setWorkExperienceError('Failed to parse resume data. Please try again.');
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching work experience:', error);
+          setWorkExperienceError('Failed to load work experience. Please try again.');
+        } finally {
+          setIsLoadingWorkExperience(false);
+        }
+      };
+      
+      fetchWorkExperience();
+    }
+  }, [showWorkExperience]);
+  
+  // Prefill Contact Info on section mount (fetch from backend, fallback to localStorage)
+  useEffect(() => {
+    if (showContactInfo) {
+      const fetchContactInfo = async () => {
+        try {
+          const res = await fetch('/api/profile');
+          if (res.ok) {
+            const data = await res.json();
+            // If parsedResumeUrl exists, fetch and extract contact info from parsed resume
+            if (data && data.parsedResumeUrl) {
+              try {
+                const resp = await fetch(data.parsedResumeUrl);
+                const parsed = await resp.json();
+                console.log('ONBOARDING: FULL PARSED RESUME (from saved):', parsed);
+                const extractedInfo = extractContactInfoFromResume(parsed);
+                console.log('DEBUG: extracted LinkedIn:', extractedInfo.linkedin);
+                setContactInfo((prev) => ({ ...prev, ...extractedInfo }));
+                // Sync to localStorage
+                try {
+                  localStorage.setItem('contactFormData', JSON.stringify({ ...contactInfo, ...extractedInfo }));
+                } catch {}
+                return;
+              } catch (e) {
+                console.error('Error fetching parsed resume from saved URL:', e);
+              }
+            }
+            // Otherwise, fallback to contactInfo in backend profile
+            if (data && data.profile && data.profile.contactInfo) {
+              setContactInfo((prev) => ({ ...prev, ...data.profile.contactInfo }));
+              // Sync to localStorage
+              try {
+                localStorage.setItem('contactFormData', JSON.stringify({ ...contactInfo, ...data.profile.contactInfo }));
+              } catch {}
+              return;
+            }
+          }
+        } catch (e) {
+          // Ignore fetch errors, fallback to localStorage
+        }
+        // Fallback: load from localStorage
+        try {
+          const savedFormData = localStorage.getItem('contactFormData');
+          if (savedFormData) {
+            setContactInfo((prev) => ({ ...prev, ...JSON.parse(savedFormData) }));
+          }
+        } catch {}
+      };
+      fetchContactInfo();
+    }
+  }, [showContactInfo]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [parsedResume, setParsedResume] = useState<any>(null);
   const [salary, setSalary] = useState(50); // Starting at $50k
   const [searchTerm, setSearchTerm] = useState('');
   const [locationSearchTerm, setLocationSearchTerm] = useState('');
@@ -25,6 +686,107 @@ export default function Onboarding() {
   const [selectedTitles, setSelectedTitles] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [includeRemote, setIncludeRemote] = useState(false);
+  const [locationSearch, setLocationSearch] = useState('');
+  
+  // Questionnaire state
+  const [questionnaireAnswers, setQuestionnaireAnswers] = useState<Record<string, string>>({});
+  const [questionnaireErrors, setQuestionnaireErrors] = useState<Record<string, boolean>>({});
+  
+  // Questionnaire data
+  const questions = [
+    {
+      id: 'workAuth',
+      text: 'Are you authorized to work in the United States?',
+      options: ['Yes', 'No'],
+      required: true,
+    },
+    {
+      id: 'sponsorship',
+      text: 'Will you now or in the future require sponsorship to work in the United States?',
+      options: ['Yes', 'No'],
+      required: true,
+    },
+    {
+      id: 'felony',
+      text: 'Have you ever been convicted of a felony?',
+      options: ['Yes', 'No'],
+      required: true,
+    },
+    {
+      id: 'startDate',
+      text: 'When can you start a new job?',
+      options: ['Immediately', '2 weeks', '1 month', 'More than 1 month'],
+      required: true,
+    },
+    {
+      id: 'screening',
+      text: 'Are you willing to conduct any sort of pre-employment screening that is required?',
+      options: ['Yes', 'No', 'Prefer not to say'],
+    },
+    {
+      id: 'relocation',
+      text: 'Are you willing to relocate for a job?',
+      options: ['Yes', 'No', 'Maybe'],
+    },
+    {
+      id: 'travel',
+      text: 'Are you willing to travel for work?',
+      options: ['Yes', 'No', 'Maybe'],
+    },
+    {
+      id: 'workType',
+      text: 'What type of work are you looking for?',
+      options: ['Full-time', 'Part-time', 'Contract', 'Internship'],
+      required: true,
+    },
+    {
+      id: 'workLocation',
+      text: 'What is your preferred work location?',
+      options: ['On-site', 'Hybrid', 'Remote'],
+      required: true,
+    },
+    {
+      id: 'experience',
+      text: 'How many years of relevant experience do you have?',
+      options: ['0-1 years', '1-3 years', '3-5 years', '5+ years'],
+      required: true,
+    },
+    {
+      id: 'gender',
+      text: 'What gender do you identify as?',
+      options: ['Male', 'Female', 'Non-binary', 'Prefer not to say'],
+    },
+    {
+      id: 'pronouns',
+      text: 'What are your desired pronouns?',
+      options: ['He/Him', 'She/Her', 'They/Them', 'Prefer not to say'],
+    },
+    {
+      id: 'ethnicity',
+      text: 'Which race or ethnicity best describes you?',
+      options: [
+        'Asian',
+        'Black or African American',
+        'Hispanic or Latino',
+        'Native American',
+        'Pacific Islander',
+        'White',
+        'Two or more races',
+        'Prefer not to say',
+      ],
+    },
+    {
+      id: 'disability',
+      text: 'Do you have a disability?',
+      options: ['Yes', 'No', 'Prefer not to say'],
+    },
+    {
+      id: 'veteran',
+      text: 'Are you a veteran?',
+      options: ['Yes', 'No', 'Prefer not to say'],
+    },
+  ];
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
   
@@ -306,7 +1068,36 @@ export default function Onboarding() {
     if (showJobTitles) {
       window.history.pushState({ jobTitles: true }, '');
     }
-
+    
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showJobTitles, setShowJobTitles]);
+  
+  // Load questionnaire answers from localStorage when section is shown
+  useEffect(() => {
+    if (showQuestionnaire) {
+      // Load saved questionnaire answers from localStorage
+      const savedAnswers = localStorage.getItem('questionnaireAnswers');
+      if (savedAnswers) {
+        try {
+          const parsedAnswers = JSON.parse(savedAnswers);
+          setQuestionnaireAnswers(parsedAnswers);
+        } catch (error) {
+          console.error('Failed to parse saved questionnaire answers:', error);
+        }
+      }
+    }
+  }, [showQuestionnaire]);
+  
+  // Handle browser back button
+  useEffect(() => {
+    const handlePopState = () => {
+      // Logic for handling browser back button
+      console.log('Back button pressed');
+    };
+    
     window.addEventListener('popstate', handlePopState);
     return () => {
       window.removeEventListener('popstate', handlePopState);
@@ -315,12 +1106,9 @@ export default function Onboarding() {
   
   // Handle back button click
   const handleBackClick = () => {
-    if (showLocation) {
-      setShowSalary(true);
-      setShowLocation(false);
-    } else if (showSalary) {
+    if (showQuestionnaire) {
       setShowJobTitles(true);
-      setShowSalary(false);
+      setShowQuestionnaire(false);
     } else if (showJobTitles) {
       setShowResumeUpload(true);
       setShowJobTitles(false);
@@ -329,24 +1117,260 @@ export default function Onboarding() {
     }
   };
   
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      setUploadStatus('uploading');
-      // Simulate upload process
-      setTimeout(() => {
-        setUploadStatus('success');
-      }, 1500);
+  const handleFile = async (file: File) => {
+    setSelectedFile(file);
+    setUploadStatus('uploading');
+    setUploadError(null);
+    console.log('Starting upload process for file:', file.name);
+    
+    try {
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      console.log('Sending file to /api/resume/upload...');
+      
+      // Upload to API
+      const res = await fetch('/api/resume/upload', {
+        method: 'POST',
+        body: formData,
+        // Prevent browser from caching the request
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (!res.ok) {
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          // If response is not JSON
+        }
+        
+        console.error('Upload failed:', errorMessage);
+        setUploadStatus('idle');
+        setUploadError(errorMessage);
+        return;
+      }
+      
+      const data = await res.json();
+      console.log('Upload successful! Response:', data);
+      setUploadStatus('success');
+      
+      // If parsedResumeUrl is returned, fetch the parsed resume JSON
+      if (data.parsedResumeUrl) {
+        try {
+          const resp = await fetch(data.parsedResumeUrl);
+          const parsed = await resp.json();
+          console.log('FULL PARSED RESUME:', parsed);
+          setParsedResume(parsed);
+          
+          // Prefill contact info with parsed resume data
+          const extractedInfo = extractContactInfoFromResume(parsed);
+          console.log('Extracted contact info from resume:', extractedInfo);
+          setContactInfo(prev => ({
+            ...prev,
+            ...extractedInfo
+          }));
+          
+          // Save the extracted info to backend
+          await saveContactInfoToBackend(extractedInfo);
+          
+          // Clear localStorage data for work experience, education, and skills
+          // This ensures that when these sections are shown, they will fetch the new resume data
+          localStorage.removeItem('resumeWorkExperience');
+          localStorage.removeItem('resumeEducation');
+          localStorage.removeItem('resumeSkills');
+          
+          // Navigate to the Contact Info section after successful parsing
+          setShowResumeUpload(false);
+          setShowContactInfo(true);
+          
+        } catch (e) {
+          console.error('Failed to fetch parsed resume JSON:', e);
+        }
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      setUploadStatus('idle');
+      setUploadError(err instanceof Error ? err.message : 'Unknown error occurred');
     }
   };
   
+  // Extract contact info from parsed resume
+  const extractContactInfoFromResume = (parsedResume: any) => {
+    console.log('Extracting contact info from resume:', parsedResume);
+    
+    // Safe extraction helper
+    const getValue = (path: string[], fallback = '') => {
+      const value = path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : undefined, parsedResume);
+      // Convert to string if needed
+      return value !== undefined ? String(value) : fallback;
+    };
+    
+    // Safe array extraction
+    const getArrayValue = (path: string[], fallback: any[] = []) => {
+      const value = path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : undefined, parsedResume);
+      return Array.isArray(value) ? value : fallback;
+    };
+    
+    // Check for GPT-4 parsed resume format (our Python service)
+    if (parsedResume['Full Name'] || parsedResume['Email'] || parsedResume['Phone']) {
+      console.log('Detected GPT-4 parsed resume format');
+      
+      // Split full name into first and last name
+      let firstName = '';
+      let lastName = '';
+      if (parsedResume['Full Name']) {
+        const nameParts = parsedResume['Full Name'].split(' ');
+        firstName = nameParts[0] || '';
+        lastName = nameParts.slice(1).join(' ') || '';
+      }
+      
+      // Try to extract address information
+      let address = '';
+      let city = '';
+      let state = '';
+      let postalCode = '';
+      
+      // Check for Address field
+      if (parsedResume['Address']) {
+        // If it's a string, try to parse it
+        if (typeof parsedResume['Address'] === 'string') {
+          address = parsedResume['Address'];
+          
+          // Try to extract city, state, zip from address string
+          const addressParts = address.split(',').map(part => part.trim());
+          if (addressParts.length >= 2) {
+            // Last part might contain state and zip
+            const lastPart = addressParts[addressParts.length - 1];
+            const stateZipMatch = lastPart.match(/([A-Z]{2})\s+(\d{5}(-\d{4})?)/);
+            
+            if (stateZipMatch) {
+              state = stateZipMatch[1];
+              postalCode = stateZipMatch[2];
+            }
+            
+            // Second to last part might be the city
+            if (addressParts.length >= 2) {
+              city = addressParts[addressParts.length - 2];
+            }
+          }
+        } else if (typeof parsedResume['Address'] === 'object') {
+          // If it's an object, try to extract fields directly
+          address = parsedResume['Address']['street'] || parsedResume['Address']['line1'] || '';
+          city = parsedResume['Address']['city'] || '';
+          state = parsedResume['Address']['state'] || parsedResume['Address']['region'] || '';
+          postalCode = parsedResume['Address']['postalCode'] || parsedResume['Address']['zip'] || '';
+        }
+      }
+      
+      // Check for separate location fields
+      city = parsedResume['City'] || city;
+      state = parsedResume['State'] || state;
+      postalCode = parsedResume['Postal Code'] || parsedResume['Zip Code'] || parsedResume['ZIP'] || postalCode;
+      
+      // Check if location is in Work Experience
+      if (!city && !state && parsedResume['Work Experience'] && parsedResume['Work Experience'].length > 0) {
+        const latestJob = parsedResume['Work Experience'][0];
+        if (latestJob.Location) {
+          const locationParts = latestJob.Location.split(',').map((part: string) => part.trim());
+          if (locationParts.length >= 2) {
+            city = locationParts[0] || city;
+            // State might include zip
+            const stateWithZip = locationParts[1];
+            const stateZipMatch = stateWithZip.match(/([A-Z]{2})\s+(\d{5}(-\d{4})?)/);
+            if (stateZipMatch) {
+              state = stateZipMatch[1] || state;
+              postalCode = stateZipMatch[2] || postalCode;
+            } else {
+              state = stateWithZip || state;
+            }
+          } else if (locationParts.length === 1) {
+            city = locationParts[0] || city;
+          }
+        }
+      }
+      
+      return {
+        firstName,
+        lastName,
+        email: parsedResume['Email'] || '',
+        phone: parsedResume['Phone'] || '',
+        linkedin: parsedResume['LinkedIn'] || '',
+        dob: '',
+        address,
+        city,
+        state,
+        postalCode,
+        smsConsent: true
+      };
+    }
+    
+    // Extract data based on common resume parsing structures (fallback to original method)
+    const links = getArrayValue(['data', 'links'], []);
+    let linkedinUrl = links.find((l: any) => l?.type?.toLowerCase?.()?.includes?.('linkedin'))?.url || '';
+    // Try both 'linkedin' and 'linkedIn' keys
+    if (!linkedinUrl) {
+      linkedinUrl = getValue(['linkedin']) || getValue(['linkedIn']);
+    }
+    console.log('Extracted LinkedIn:', linkedinUrl);
+    
+    return {
+      firstName: getValue(['data', 'name', 'first']) || getValue(['name', 'first']) || getValue(['firstName']),
+      lastName: getValue(['data', 'name', 'last']) || getValue(['name', 'last']) || getValue(['lastName']),
+      dob: getValue(['data', 'dateOfBirth']) || getValue(['dateOfBirth']),
+      address: getValue(['data', 'address', 'street']) || getValue(['address', 'street']) || getValue(['address']),
+      city: getValue(['data', 'address', 'city']) || getValue(['address', 'city']),
+      state: getValue(['data', 'address', 'state']) || getValue(['address', 'state']),
+      postalCode: getValue(['data', 'address', 'postcode']) || getValue(['address', 'postalCode']) || getValue(['address', 'zipCode']),
+      linkedin: linkedinUrl,
+      phone: String(getValue(['data', 'phoneNumbers', 0, 'number']) || getValue(['phoneNumbers', 0]) || getValue(['phone']) || ''),
+      email: String(getValue(['data', 'emails', 0]) || getValue(['emails', 0]) || getValue(['email']) || '')
+    };
+  };
+  
+  // Save contact info to backend
+  const saveContactInfoToBackend = async (data: any) => {
+    setIsSaving(true);
+    try {
+      const response = await fetch('/api/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          section: 'contactInfo', 
+          data: data 
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save contact info');
+      }
+      
+      console.log('Contact info saved successfully');
+    } catch (error) {
+      console.error('Error saving contact info:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  // Handle contact info field changes
+  const handleContactInfoChange = (field: string, value: string | boolean) => {
+    const updatedInfo = { ...contactInfo, [field]: value };
+    setContactInfo(updatedInfo);
+    saveContactInfoToBackend(updatedInfo);
+  };
+
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
 
   return (
-    <div className="flex min-h-screen w-full overflow-hidden bg-[#0f0f11]">
+    <div className="flex h-screen w-full overflow-hidden bg-[#0f0f11]">
 
       
       {/* Sidebar */}
@@ -414,84 +1438,168 @@ export default function Onboarding() {
             </div>
           </div>
           <div className="menu-group">
-            <div 
-              className="menu-label cursor-pointer hover:text-purple-300 transition-colors flex items-center"
-              onClick={() => {
-                setShowResumeUpload(false);
-                setShowJobTitles(false);
-                setShowSalary(false);
-                setShowLocation(false);
-                setShowAccountSettings(false);
-                setIsSidebarOpen(false); // Close sidebar on mobile
-              }}
-            >
-              <span>Getting Started</span>
-            </div>
-            <button 
-              onClick={() => {
-                setShowResumeUpload(true);
-                setShowJobTitles(false);
-                setShowSalary(false);
-                setShowLocation(false);
-                setShowAccountSettings(false);
-                setIsSidebarOpen(false); // Close sidebar on mobile
-              }} 
-              className="menu-item"
-            >
-              <FaFileAlt className="icon" /><span>Upload Resume</span>
-            </button>
-            <button 
-              onClick={() => {
-                setShowJobTitles(true);
-                setShowResumeUpload(false);
-                setShowSalary(false);
-                setShowLocation(false);
-                setShowAccountSettings(false);
-                setIsSidebarOpen(false); // Close sidebar on mobile
-              }} 
-              className="menu-item text-left w-full"
-            >
-              <FaBriefcase className="icon" /><span>Job Title</span>
-            </button>
-            <button 
-              onClick={() => {
-                setShowSalary(true);
-                setShowJobTitles(false);
-                setShowResumeUpload(false);
-                setShowLocation(false);
-                setShowAccountSettings(false);
-                setIsSidebarOpen(false); // Close sidebar on mobile
-              }} 
-              className="menu-item text-left w-full"
-            >
-              <FaDollarSign className="icon" /><span>Salary</span>
-            </button>
-            <button 
-              onClick={() => {
-                setShowLocation(true);
-                setShowSalary(false);
-                setShowJobTitles(false);
-                setShowResumeUpload(false);
-                setShowAccountSettings(false);
-                setIsSidebarOpen(false); // Close sidebar on mobile
-              }} 
-              className="menu-item text-left w-full"
-            >
-              <FaMapMarkerAlt className="icon" /><span>Location</span>
-            </button>
-            <a href="#finish" className="menu-item"><FaCheckCircle className="icon" /><span>Finish</span></a>
-          </div>
+  <div 
+    className="menu-label cursor-pointer hover:text-purple-300 transition-colors flex items-center"
+    onClick={() => {
+      setShowResumeUpload(false);
+      setShowContactInfo(false);
+      setShowWorkExperience(false);
+      setShowSkills(false);
+      setShowJobTitles(false);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }}
+  >
+    <span>Getting Started</span>
+  </div>
+
+  {/* 1. Upload Resume */}
+  <button 
+    onClick={() => {
+      setShowResumeUpload(true);
+      setShowContactInfo(false);
+      setShowWorkExperience(false);
+      setShowSkills(false);
+      setShowJobTitles(false);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }} 
+    className="menu-item"
+  >
+    <FaFileAlt className="icon" /><span>Upload Resume</span>
+  </button>
+
+  {/* 2. Contact Info */}
+  <button 
+    onClick={() => {
+      setShowResumeUpload(false);
+      setShowContactInfo(true);
+      setShowWorkExperience(false);
+      setShowSkills(false);
+      setShowJobTitles(false);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }} 
+    className="menu-item text-left w-full"
+  >
+    <FaAddressBook className="icon" /><span>Contact Info</span>
+  </button>
+
+  {/* 3. Work Experience */}
+  <button 
+    onClick={() => {
+      setShowResumeUpload(false);
+      setShowContactInfo(false);
+      setShowWorkExperience(true);
+      setShowEducation(false);
+      setShowSkills(false);
+      setShowJobTitles(false);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }} 
+    className="menu-item text-left w-full"
+  >
+    <FaBriefcase className="icon" /><span>Work Experience</span>
+  </button>
+
+  {/* 4. Education */}
+  <button 
+    onClick={() => {
+      setShowResumeUpload(false);
+      setShowContactInfo(false);
+      setShowWorkExperience(false);
+      setShowEducation(true);
+      setShowSkills(false);
+      setShowJobTitles(false);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }} 
+    className="menu-item text-left w-full"
+  >
+    <FaGraduationCap className="icon" /><span>Education</span>
+  </button>
+
+  {/* 5. Skills */}
+  <button 
+    onClick={() => {
+      setShowResumeUpload(false);
+      setShowContactInfo(false);
+      setShowWorkExperience(false);
+      setShowEducation(false);
+      setShowSkills(true);
+      setShowJobTitles(false);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }} 
+    className="menu-item text-left w-full"
+  >
+    <FaCheckCircle className="icon" /><span>Skills</span>
+  </button>
+
+  {/* 5. Job Title */}
+  <button 
+    onClick={() => {
+      setShowResumeUpload(false);
+      setShowContactInfo(false);
+      setShowWorkExperience(false);
+      setShowSkills(false);
+      setShowJobTitles(true);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }} 
+    className="menu-item text-left w-full"
+  >
+    <FaBriefcase className="icon" /><span>Job Title</span>
+  </button>
+
+  {/* 6. Questionnaire */}
+  <button 
+    onClick={() => {
+      setShowResumeUpload(false);
+      setShowContactInfo(false);
+      setShowWorkExperience(false);
+      setShowSkills(false);
+      setShowJobTitles(false);
+      setShowSalary(false);
+      setShowLocation(false);
+      setShowQuestionnaire(true);
+      setShowAccountSettings(false);
+      setIsSidebarOpen(false);
+    }} 
+    className="menu-item text-left w-full"
+  >
+    <FaClipboardList className="icon" /><span>Questionnaire</span>
+  </button>
+
+  {/* 9. Finalize */}
+  <a href="#finish" className="menu-item"><FaCheckCircle className="icon" /><span>Finalize</span></a>
+</div>
           
           {/* Sidebar menu items end */}
         </div>
-        <div className="bottom-card">
+        <div className="bottom-card mt-10">
           <strong>Need help?</strong>
           <p>Contact support for onboarding assistance</p>
           <button>Contact Us</button>
         </div>
       </div>
       {/* Main onboarding content */}
-      <main className="flex-1 flex items-center justify-center min-h-screen overflow-auto pt-4 lg:pt-0 transition-all duration-300 lg:ml-0 bg-[#0e0c12] text-white">
+      <main className="h-screen overflow-y-auto flex-1 bg-[#0e0c12] text-white">
+        {/* Hide the main UI when Education section is shown */}
         {showAccountSettings ? (
           <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-[2px]">
             <div className="flex justify-between items-start mb-8">
@@ -584,7 +1692,7 @@ export default function Onboarding() {
               </div>
             </div>
           </div>
-        ) : !showResumeUpload && !showJobTitles && !showSalary && !showLocation && (
+        ) : !showResumeUpload && !showContactInfo && !showWorkExperience && !showEducation && !showSkills && !showJobTitles && !showSalary && !showLocation && !showQuestionnaire && !showAccountSettings && (
           <div className="w-[calc(100%-1rem)] max-w-5xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
             <h2 className="text-[28px] font-semibold mb-2">Let's set you up for success!</h2>
             <p className="text-[#a0a0a0] text-[15px] mb-8">Automate your job search in 3 simple steps.</p>
@@ -642,6 +1750,1035 @@ export default function Onboarding() {
           </div>
         )}
         
+        {/* Contact Info Section */}
+        {showContactInfo && (
+          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+            {/* Box header for visual consistency with skills section */}
+            <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
+              <h2 className="text-xl font-semibold text-white mb-1">Your Contact Information</h2>
+              <p className="text-gray-400 text-sm">Ensure your contact details are up to date — employers may reach out anytime.</p>
+            </div>
+            
+            <div className="w-full">
+              
+              <form className="text-left">
+                <div className="flex gap-4 mb-4">
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium text-white" htmlFor="firstName">First Name *</label>
+                    <input 
+                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      id="firstName" 
+                      type="text" 
+                      value={contactInfo.firstName} 
+                      onChange={(e) => handleContactInfoChange('firstName', e.target.value)} 
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium text-white" htmlFor="lastName">Last Name *</label>
+                    <input 
+                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      id="lastName" 
+                      type="text" 
+                      value={contactInfo.lastName} 
+                      onChange={(e) => handleContactInfoChange('lastName', e.target.value)} 
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 mb-4">
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium text-white" htmlFor="dob">Date of Birth *</label>
+                    <input 
+                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      id="dob" 
+                      type="date" 
+                      value={contactInfo.dob} 
+                      onChange={(e) => handleContactInfoChange('dob', e.target.value)} 
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium text-white" htmlFor="address">Address *</label>
+                    <input 
+                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      id="address" 
+                      type="text" 
+                      value={contactInfo.address} 
+                      onChange={(e) => handleContactInfoChange('address', e.target.value)} 
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 mb-4">
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium text-white" htmlFor="city">City *</label>
+                    <input 
+                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      id="city" 
+                      type="text" 
+                      value={contactInfo.city} 
+                      onChange={(e) => handleContactInfoChange('city', e.target.value)} 
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium text-white" htmlFor="state">State *</label>
+                    <input 
+                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      id="state" 
+                      type="text" 
+                      value={contactInfo.state} 
+                      onChange={(e) => handleContactInfoChange('state', e.target.value)} 
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block mb-1 font-medium text-white" htmlFor="postalCode">Postal Code *</label>
+                    <input 
+                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      id="postalCode" 
+                      type="text" 
+                      value={contactInfo.postalCode} 
+                      onChange={(e) => handleContactInfoChange('postalCode', e.target.value)} 
+                    />
+                  </div>
+                </div>
+
+                <label className="block mb-1 font-medium text-white" htmlFor="linkedin">LinkedIn Profile</label>
+                <input 
+                  className="w-full mb-4 p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                  id="linkedin" 
+                  type="url" 
+                  value={contactInfo.linkedin} 
+                  onChange={(e) => handleContactInfoChange('linkedin', e.target.value)} 
+                />
+
+                <label className="block mb-1 font-medium text-white" htmlFor="phone">Phone Number *</label>
+                <input 
+                  className="w-full mb-4 p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                  id="phone" 
+                  type="tel" 
+                  value={contactInfo.phone} 
+                  onChange={(e) => handleContactInfoChange('phone', e.target.value)} 
+                />
+
+                <label className="block mb-1 font-medium text-white" htmlFor="email">Email Address *</label>
+                <input 
+                  className="w-full mb-4 p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                  id="email" 
+                  type="email" 
+                  value={contactInfo.email} 
+                  onChange={(e) => handleContactInfoChange('email', e.target.value)} 
+                />
+
+                <div className="flex items-start gap-3 mb-4">
+                  <input 
+                    type="checkbox" 
+                    id="smsConsent" 
+                    className="mt-1" 
+                    checked={contactInfo.smsConsent} 
+                    onChange={(e) => handleContactInfoChange('smsConsent', e.target.checked)} 
+                  />
+                  <label htmlFor="smsConsent" className="text-sm text-gray-300 text-left block px-1">
+                    By providing your phone number and selecting the checkbox, you consent to receive new job alerts and account information via SMS text messages. Message frequency may vary based on your interactions with us. Message &amp; data rates may apply. You can opt-out at any time by replying "STOP" to unsubscribe or contacting Customer Service. For more information, please refer to our{' '}
+                    <a href="#" className="text-blue-400 underline inline">Privacy Policy</a> and <a href="#" className="text-blue-400 underline inline">Terms of Service</a>.
+                  </label>
+                </div>
+                
+                <div className="mt-8 flex justify-between">
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowContactInfo(false);
+                      setShowResumeUpload(true);
+                    }}
+                    className="w-24 px-3 py-2 text-sm border border-gray-600 rounded-lg text-white hover:bg-gray-800 transition-colors flex items-center justify-center"
+                  >
+                    Back
+                  </button>
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowContactInfo(false);
+                      setShowWorkExperience(true);
+                      // Save data to backend before proceeding
+                      saveContactInfoToBackend(contactInfo);
+                    }}
+                    className="w-24 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+                
+                {isSaving && <div className="text-xs text-gray-400 mt-2 text-center">Saving...</div>}
+              </form>
+            </div>
+          </div>
+        )}
+        
+        {/* Work Experience Section */}
+        {showWorkExperience && (
+          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+            {/* Box header for visual consistency with skills section */}
+            <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
+              <h2 className="text-xl font-semibold text-white mb-1">Your Work Experience</h2>
+              <p className="text-gray-400 text-sm">Review and edit your work history from your resume</p>
+            </div>
+            
+            <div className="w-full overflow-y-auto">
+              {isLoadingWorkExperience ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="w-12 h-12 rounded-full border-4 border-t-purple-500 border-r-purple-300 border-b-purple-200 border-l-purple-400 animate-spin mb-4"></div>
+                  <p className="text-white">Loading your work experience...</p>
+                </div>
+              ) : workExperienceError ? (
+                <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center mb-6">
+                  <FaExclamationTriangle className="text-red-400 text-2xl mx-auto mb-2" />
+                  <p className="text-red-200">{workExperienceError}</p>
+                  <button 
+                    className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white text-sm"
+                    onClick={() => {
+                      setIsLoadingWorkExperience(true);
+                      setWorkExperienceError(null);
+                      // Retry fetching work experience
+                      setTimeout(() => {
+                        setIsLoadingWorkExperience(false);
+                      }, 1500);
+                    }}
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : workExperience.length === 0 ? (
+                <div className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-6 text-center">
+                  <p className="text-gray-300 mb-4">No work experience found in your resume.</p>
+                  <button 
+                    className="w-full p-4 border border-dashed border-purple-500 rounded-lg text-purple-400 hover:bg-purple-900/20 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => {
+                      const newExperience: WorkExperience = {
+                        id: `exp-${Date.now()}`,
+                        jobTitle: '',
+                        company: '',
+                        location: '',
+                        startDate: '',
+                        endDate: '',
+                        responsibilities: ['', '', ''],
+                        isEditing: true,
+                        isExpanded: true
+                      };
+                      setWorkExperience([newExperience]);
+                    }}
+                  >
+                    <FaPlus /> Add Work Experience
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Work Experience Entries */}
+                  {workExperience.map((exp, index) => (
+                    <div key={exp.id} className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-4 text-left">
+                      {exp.isEditing ? (
+                        /* Edit Form */
+                        <div className="text-left">
+                          <h3 className="text-xl font-semibold text-white mb-4">Edit Work Experience</h3>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">Position Title</label>
+                              <input 
+                                type="text" 
+                                className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                value={exp.jobTitle || ''}
+                                onChange={(e) => {
+                                  setWorkExperience(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, jobTitle: e.target.value } : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">Company</label>
+                              <input 
+                                type="text" 
+                                className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                value={exp.company || ''}
+                                onChange={(e) => {
+                                  setWorkExperience(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, company: e.target.value } : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">Location</label>
+                              <input 
+                                type="text" 
+                                className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                value={exp.location || ''}
+                                onChange={(e) => {
+                                  setWorkExperience(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, location: e.target.value } : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                            
+                            <div className="flex gap-4">
+                              <div className="flex-1">
+                                <label className="block text-gray-300 mb-1 text-sm">Start Date</label>
+                                <input 
+                                  type="date" 
+                                  className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                  value={exp.startDate || ''}
+                                  onChange={(e) => {
+                                    setWorkExperience(prev => 
+                                      prev.map((item, i) => 
+                                        i === index ? { ...item, startDate: e.target.value } : item
+                                      )
+                                    );
+                                  }}
+                                />
+                              </div>
+                              
+                              <div className="flex-1">
+                                <label className="block text-gray-300 mb-1 text-sm">End Date</label>
+                                <input 
+                                  type="date" 
+                                  className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                  placeholder="Leave empty for 'Present'"
+                                  value={exp.endDate || ''}
+                                  onChange={(e) => {
+                                    setWorkExperience(prev => 
+                                      prev.map((item, i) => 
+                                        i === index ? { ...item, endDate: e.target.value } : item
+                                      )
+                                    );
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">Responsibilities</label>
+                              {exp.responsibilities.map((resp, respIndex) => (
+                                <div key={respIndex} className="mb-2">
+                                  <input 
+                                    type="text" 
+                                    className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                    value={resp}
+                                    onChange={(e) => {
+                                      const newResponsibilities = [...exp.responsibilities];
+                                      newResponsibilities[respIndex] = e.target.value;
+                                      setWorkExperience(prev => 
+                                        prev.map((item, i) => 
+                                          i === index ? { ...item, responsibilities: newResponsibilities } : item
+                                        )
+                                      );
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                              
+                              <button 
+                                className="mt-2 px-3 py-1 text-sm bg-[#2a292e] text-purple-400 hover:bg-purple-900/20 rounded-lg transition-colors flex items-center gap-1"
+                                onClick={() => {
+                                  const newResponsibilities = [...exp.responsibilities, ''];
+                                  setWorkExperience(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, responsibilities: newResponsibilities } : item
+                                    )
+                                  );
+                                }}
+                              >
+                                <FaPlus size={12} /> Add Responsibility
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-6 flex justify-between">
+                            <button 
+                              className="w-24 h-10 border border-gray-600 rounded-full text-white hover:bg-gray-800 transition-colors text-sm"
+                              onClick={() => {
+                                // Cancel editing - revert to previous state
+                                setWorkExperience(prev => 
+                                  prev.map((e, i) => 
+                                    i === index ? { ...e, isEditing: false } : e
+                                  )
+                                );
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              className="w-24 h-10 bg-purple-600 hover:bg-purple-700 rounded-full text-white transition-colors text-sm"
+                              onClick={() => {
+                                // Save changes, exit editing mode, and collapse the card
+                                setWorkExperience(prev => {
+                                  const updated = prev.map((e, i) => 
+                                    i === index ? { ...e, isEditing: false, isExpanded: false } : e
+                                  );
+                                  // Save to localStorage
+                                  try {
+                                    localStorage.setItem('resumeWorkExperience', JSON.stringify(updated));
+                                  } catch (error) {
+                                    console.error('Error saving work experience:', error);
+                                  }
+                                  return updated;
+                                });
+                              }}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Display Mode */
+                        <>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="text-xl font-semibold text-white">{exp.jobTitle || 'Position Title'}</h3>
+                              <div className="text-gray-300 mt-1">{exp.company || 'Company Name'}</div>
+                              <div className="flex items-center text-gray-400 text-sm mt-1">
+                                {exp.location && (
+                                  <span className="flex items-center mr-3">
+                                    <FaMapMarkerAlt className="mr-1" /> {exp.location}
+                                  </span>
+                                )}
+                                <span>
+                                  {exp.startDate} - {exp.endDate || 'Present'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button 
+                                className="p-2 text-gray-400 hover:text-white transition-colors"
+                                onClick={() => {
+                                  // Toggle expanded state
+                                  setWorkExperience(prev => 
+                                    prev.map((e, i) => 
+                                      i === index ? { ...e, isExpanded: !e.isExpanded } : e
+                                    )
+                                  );
+                                }}
+                                aria-label={exp.isExpanded ? 'Collapse' : 'Expand'}
+                              >
+                                {exp.isExpanded ? <FaChevronRight className="transform rotate-90" /> : <FaChevronRight />}
+                              </button>
+                              <button 
+                                className="p-2 text-gray-400 hover:text-white transition-colors"
+                                onClick={() => {
+                                  // Set editing state
+                                  setWorkExperience(prev => 
+                                    prev.map((e, i) => 
+                                      i === index ? { ...e, isEditing: true, isExpanded: true } : e
+                                    )
+                                  );
+                                }}
+                                aria-label="Edit"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button 
+                                className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                                onClick={() => {
+                                  // Remove this experience
+                                  setWorkExperience(prev => {
+                                    const updated = prev.filter((_, i) => i !== index);
+                                    // Save to localStorage after deletion
+                                    try {
+                                      localStorage.setItem('resumeWorkExperience', JSON.stringify(updated));
+                                    } catch (error) {
+                                      console.error('Error saving work experience after deletion:', error);
+                                    }
+                                    return updated;
+                                  });
+                                }}
+                                aria-label="Delete"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {exp.isExpanded && (
+                            <div className="mt-4">
+                              <h4 className="text-white font-medium mb-2">Responsibilities</h4>
+                              <ul className="text-gray-300 space-y-2 pl-5 list-disc">
+                                {exp.responsibilities.filter(Boolean).map((resp, respIndex) => (
+                                  <li key={respIndex}>{resp}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {/* Add Another Position Button */}
+                  <button 
+                    className="w-full p-4 border border-dashed border-purple-500 rounded-lg text-purple-400 hover:bg-purple-900/20 transition-colors mb-6 flex items-center justify-center gap-2"
+                    onClick={() => {
+                      const newExperience: WorkExperience = {
+                        id: `exp-${Date.now()}`,
+                        jobTitle: '',
+                        company: '',
+                        location: '',
+                        startDate: '',
+                        endDate: '',
+                        responsibilities: ['', '', ''],
+                        isEditing: true,
+                        isExpanded: true
+                      };
+                      setWorkExperience(prev => [newExperience, ...prev]);
+                    }}
+                  >
+                    <FaPlus /> Add Another Position
+                  </button>
+                </>
+              )}
+              
+              {/* Tips */}
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 text-left mb-4">
+                <h4 className="text-purple-300 font-medium mb-2">Tips for a Strong Work History</h4>
+                <ul className="text-purple-200 text-sm space-y-2">
+                  <li>• Include positions from the past 10 years that are relevant to your job search</li>
+                  <li>• Use action verbs and quantify achievements when possible</li>
+                  <li>• Focus on responsibilities that demonstrate skills for your target roles</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="mt-8 flex justify-between">
+              <button 
+                onClick={() => {
+                  setShowWorkExperience(false);
+                  setShowContactInfo(true);
+                }}
+                className="w-24 px-3 py-2 text-sm border border-gray-600 rounded-lg text-white hover:bg-gray-800 transition-colors flex items-center justify-center"
+              >
+                Back
+              </button>
+              
+              <button 
+                onClick={() => {
+                  setShowWorkExperience(false);
+                  setShowEducation(true);
+                  // Save work experience to localStorage before proceeding
+                  try {
+                    localStorage.setItem('resumeWorkExperience', JSON.stringify(workExperience));
+                  } catch (error) {
+                    console.error('Error saving work experience:', error);
+                  }
+                }}
+                className="w-24 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {/* Skills Section */}
+        {showSkills && !showEducation && !showWorkExperience && !showContactInfo && !showResumeUpload && !showJobTitles && !showSalary && !showLocation && (
+          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+            {/* Box header for visual consistency with other sections */}
+            <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
+              <h2 className="text-xl font-semibold text-white mb-1">Your Skills</h2>
+              <p className="text-gray-400 text-sm">Add or remove skills to highlight your expertise</p>
+            </div>
+
+            {isLoadingSkills ? (
+              <div className="flex justify-center items-center h-32">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+              </div>
+            ) : skillsError ? (
+              <div className="text-red-400 p-4 rounded-lg bg-red-900/20 mb-4 flex items-center">
+                <FaExclamationTriangle className="mr-2" />
+                {skillsError}
+              </div>
+            ) : (
+              <div className="bg-[#1a1625] border border-gray-700 rounded-b-xl p-6">
+                {/* Skills list */}
+                <div className="mb-6">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {skills.map((skill, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center bg-purple-900/30 border border-purple-500 text-purple-100 px-3 py-1.5 rounded-full text-sm"
+                      >
+                        {skill}
+                        <button
+                          onClick={() => {
+                            const updatedSkills = skills.filter((_, i) => i !== index);
+                            setSkills(updatedSkills);
+                            localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                          }}
+                          className="ml-2 text-purple-300 hover:text-white"
+                        >
+                          <FaTimes size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add new skill */}
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newSkill}
+                      onChange={(e) => setNewSkill(e.target.value)}
+                      placeholder="Add a new skill..."
+                      className="flex-1 bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && newSkill.trim()) {
+                          const updatedSkills = [...skills, newSkill.trim()];
+                          setSkills(updatedSkills);
+                          setNewSkill('');
+                          localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        if (newSkill.trim()) {
+                          const updatedSkills = [...skills, newSkill.trim()];
+                          setSkills(updatedSkills);
+                          setNewSkill('');
+                          localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                        }
+                      }}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+
+                {/* Skill categories from resume */}
+                {skills.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium text-white mb-3">Skill Suggestions</h3>
+                    <p className="text-gray-400 text-sm mb-4">Based on your resume and industry trends, you might want to add these skills:</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-[#1f1e22] rounded-lg p-4">
+                        <h4 className="text-white font-medium mb-2">Technical Skills</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {['Python', 'JavaScript', 'React', 'Node.js', 'SQL'].filter(skill => !skills.includes(skill)).map((skill, index) => (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                const updatedSkills = [...skills, skill];
+                                setSkills(updatedSkills);
+                                localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                              }}
+                              className="bg-[#2a292e] hover:bg-purple-900/30 text-gray-300 hover:text-purple-100 px-3 py-1.5 rounded-full text-sm transition-colors"
+                            >
+                              + {skill}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="bg-[#1f1e22] rounded-lg p-4">
+                        <h4 className="text-white font-medium mb-2">Soft Skills</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {['Communication', 'Leadership', 'Problem Solving', 'Teamwork', 'Time Management'].filter(skill => !skills.includes(skill)).map((skill, index) => (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                const updatedSkills = [...skills, skill];
+                                setSkills(updatedSkills);
+                                localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                              }}
+                              className="bg-[#2a292e] hover:bg-purple-900/30 text-gray-300 hover:text-purple-100 px-3 py-1.5 rounded-full text-sm transition-colors"
+                            >
+                              + {skill}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Navigation Buttons */}
+                <div className="mt-8 flex justify-between items-center w-full">
+                  <button
+                    onClick={() => {
+                      setShowSkills(false);
+                      setShowEducation(true);
+                    }}
+                    className="w-24 px-3 py-2 text-sm border border-gray-600 rounded-lg text-white hover:bg-gray-800 transition-colors flex items-center justify-center"
+                  >
+                    <FaArrowLeft className="mr-1 h-4 w-4" />
+                    Back
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      setShowSkills(false);
+                      setShowJobTitles(true);
+                    }}
+                    className="w-24 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        
+        {/* Education Section */}
+        {showEducation && !showSkills && !showWorkExperience && !showContactInfo && !showResumeUpload && !showJobTitles && !showSalary && !showLocation && (
+          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+            {/* Box header for visual consistency with skills section */}
+            <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
+              <h2 className="text-xl font-semibold text-white mb-1">Your Education</h2>
+              <p className="text-gray-400 text-sm">Review and edit your education history from your resume</p>
+            </div>
+            
+            <div className="w-full overflow-y-auto">
+              {isLoadingEducation ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="w-12 h-12 rounded-full border-4 border-t-purple-500 border-r-purple-300 border-b-purple-200 border-l-purple-400 animate-spin mb-4"></div>
+                  <p className="text-white">Loading your education...</p>
+                </div>
+              ) : educationError ? (
+                <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-6 text-center mb-6">
+                  <FaExclamationTriangle className="text-red-400 text-2xl mx-auto mb-2" />
+                  <p className="text-red-200">{educationError}</p>
+                  <button 
+                    className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white text-sm"
+                    onClick={() => {
+                      setIsLoadingEducation(true);
+                      setEducationError(null);
+                      // Retry fetching education
+                      setTimeout(() => {
+                        setIsLoadingEducation(false);
+                      }, 1500);
+                    }}
+                  >
+                    Try Again
+                  </button>
+                </div>
+              ) : education.length === 0 ? (
+                <div className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-6 text-center">
+                  <p className="text-gray-300 mb-4">No education found in your resume.</p>
+                  <button 
+                    className="w-full p-4 border border-dashed border-purple-500 rounded-lg text-purple-400 hover:bg-purple-900/20 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => {
+                      const newEducation: Education = {
+                        id: `edu-${Date.now()}`,
+                        school: '',
+                        degree: '',
+                        fieldOfStudy: '',
+                        startDate: '',
+                        endDate: '',
+                        description: '',
+                        isEditing: true,
+                        isExpanded: true
+                      };
+                      setEducation([newEducation]);
+                    }}
+                  >
+                    <FaPlus /> Add Education
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {/* Education Entries */}
+                  {education.map((edu, index) => (
+                    <div key={edu.id} className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-4 text-left">
+                      {edu.isEditing ? (
+                        /* Edit Form */
+                        <div className="text-left">
+                          <h3 className="text-xl font-semibold text-white mb-4">Edit Education</h3>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">School/Institution</label>
+                              <input 
+                                type="text" 
+                                className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                value={edu.school || ''}
+                                onChange={(e) => {
+                                  setEducation(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, school: e.target.value } : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">Degree</label>
+                              <input 
+                                type="text" 
+                                className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                value={edu.degree || ''}
+                                onChange={(e) => {
+                                  setEducation(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, degree: e.target.value } : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">Field of Study</label>
+                              <input 
+                                type="text" 
+                                className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                value={edu.fieldOfStudy || ''}
+                                onChange={(e) => {
+                                  setEducation(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, fieldOfStudy: e.target.value } : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                            
+                            <div className="flex gap-4">
+                              <div className="flex-1">
+                                <label className="block text-gray-300 mb-1 text-sm">Start Date</label>
+                                <input 
+                                  type="date" 
+                                  className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                  value={edu.startDate || ''}
+                                  onChange={(e) => {
+                                    setEducation(prev => 
+                                      prev.map((item, i) => 
+                                        i === index ? { ...item, startDate: e.target.value } : item
+                                      )
+                                    );
+                                  }}
+                                />
+                              </div>
+                              
+                              <div className="flex-1">
+                                <label className="block text-gray-300 mb-1 text-sm">End Date</label>
+                                <input 
+                                  type="date" 
+                                  className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white"
+                                  placeholder="Leave empty for 'Present'"
+                                  value={edu.endDate || ''}
+                                  onChange={(e) => {
+                                    setEducation(prev => 
+                                      prev.map((item, i) => 
+                                        i === index ? { ...item, endDate: e.target.value } : item
+                                      )
+                                    );
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-gray-300 mb-1 text-sm">Description</label>
+                              <textarea 
+                                className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white min-h-[100px]"
+                                value={edu.description || ''}
+                                onChange={(e) => {
+                                  setEducation(prev => 
+                                    prev.map((item, i) => 
+                                      i === index ? { ...item, description: e.target.value } : item
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="mt-6 flex justify-between">
+                            <button 
+                              className="w-24 h-10 border border-gray-600 rounded-full text-white hover:bg-gray-800 transition-colors text-sm"
+                              onClick={() => {
+                                // Cancel editing - revert to previous state
+                                setEducation(prev => 
+                                  prev.map((e, i) => 
+                                    i === index ? { ...e, isEditing: false } : e
+                                  )
+                                );
+                              }}
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              className="w-24 h-10 bg-purple-600 hover:bg-purple-700 rounded-full text-white transition-colors text-sm"
+                              onClick={() => {
+                                // Save changes, exit editing mode, and collapse the card
+                                setEducation(prev => {
+                                  const updated = prev.map((e, i) => 
+                                    i === index ? { ...e, isEditing: false, isExpanded: false } : e
+                                  );
+                                  // Save to localStorage
+                                  try {
+                                    localStorage.setItem('resumeEducation', JSON.stringify(updated));
+                                  } catch (error) {
+                                    console.error('Error saving education:', error);
+                                  }
+                                  return updated;
+                                });
+                              }}
+                            >
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Display Mode */
+                        <>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="text-xl font-semibold text-white">{edu.school || 'School/Institution'}</h3>
+                              <div className="text-gray-300 mt-1">{edu.degree} {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ''}</div>
+                              <div className="text-gray-400 text-sm mt-1">
+                                <span>
+                                  {edu.startDate} - {edu.endDate || 'Present'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button 
+                                className="p-2 text-gray-400 hover:text-white transition-colors"
+                                onClick={() => {
+                                  // Toggle expanded state
+                                  setEducation(prev => 
+                                    prev.map((e, i) => 
+                                      i === index ? { ...e, isExpanded: !e.isExpanded } : e
+                                    )
+                                  );
+                                }}
+                                aria-label={edu.isExpanded ? 'Collapse' : 'Expand'}
+                              >
+                                {edu.isExpanded ? <FaChevronRight className="transform rotate-90" /> : <FaChevronRight />}
+                              </button>
+                              <button 
+                                className="p-2 text-gray-400 hover:text-white transition-colors"
+                                onClick={() => {
+                                  // Set editing state
+                                  setEducation(prev => 
+                                    prev.map((e, i) => 
+                                      i === index ? { ...e, isEditing: true, isExpanded: true } : e
+                                    )
+                                  );
+                                }}
+                                aria-label="Edit"
+                              >
+                                <FaEdit />
+                              </button>
+                              <button 
+                                className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                                onClick={() => {
+                                  // Remove this education
+                                  setEducation(prev => {
+                                    const updated = prev.filter((_, i) => i !== index);
+                                    // Save to localStorage after deletion
+                                    try {
+                                      localStorage.setItem('resumeEducation', JSON.stringify(updated));
+                                    } catch (error) {
+                                      console.error('Error saving education after deletion:', error);
+                                    }
+                                    return updated;
+                                  });
+                                }}
+                                aria-label="Delete"
+                              >
+                                <FaTrash />
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {edu.isExpanded && edu.description && (
+                            <div className="mt-4">
+                              <h4 className="text-white font-medium mb-2">Description</h4>
+                              <p className="text-gray-300">{edu.description}</p>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {/* Add Another Education Button */}
+                  <button 
+                    className="w-full p-4 border border-dashed border-purple-500 rounded-lg text-purple-400 hover:bg-purple-900/20 transition-colors mb-6 flex items-center justify-center gap-2"
+                    onClick={() => {
+                      const newEducation: Education = {
+                        id: `edu-${Date.now()}`,
+                        school: '',
+                        degree: '',
+                        fieldOfStudy: '',
+                        startDate: '',
+                        endDate: '',
+                        description: '',
+                        isEditing: true,
+                        isExpanded: true
+                      };
+                      setEducation(prev => [newEducation, ...prev]);
+                    }}
+                  >
+                    <FaPlus /> Add Another Education
+                  </button>
+                </>
+              )}
+              
+              {/* Tips */}
+              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 text-left mb-4">
+                <h4 className="text-purple-300 font-medium mb-2">Tips for Education Section</h4>
+                <ul className="text-purple-200 text-sm space-y-2">
+                  <li>• Include your highest level of education and any relevant certifications</li>
+                  <li>• Add academic achievements, honors, or relevant coursework in the description</li>
+                  <li>• List education in reverse chronological order (most recent first)</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="mt-8 flex justify-between">
+              <button 
+                onClick={() => {
+                  setShowEducation(false);
+                  setShowWorkExperience(true);
+                }}
+                className="w-24 px-3 py-2 text-sm border border-gray-600 rounded-lg text-white hover:bg-gray-800 transition-colors flex items-center justify-center"
+              >
+                Back
+              </button>
+              
+              <button 
+                onClick={() => {
+                  setShowEducation(false);
+                  setShowSkills(true);
+                  // Save education to localStorage before proceeding
+                  try {
+                    localStorage.setItem('resumeEducation', JSON.stringify(education));
+                  } catch (error) {
+                    console.error('Error saving education:', error);
+                  }
+                }}
+                className="w-24 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {/* Resume Upload Section */}
         {showResumeUpload && !showJobTitles && !showSalary && (
           <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
             <div className="mb-6">
@@ -650,14 +2787,19 @@ export default function Onboarding() {
             
             <div 
               onClick={triggerFileInput}
-              className={`flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-lg cursor-pointer transition-all ${uploadStatus === 'success' ? 'border-green-500 bg-green-500/10' : 'border-gray-600 hover:border-purple-500 hover:bg-purple-500/5'}`}
+              className={`flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-lg cursor-pointer transition-all min-h-[300px] ${uploadStatus === 'success' ? 'border-green-500 bg-green-500/10' : 'border-gray-600 hover:border-purple-500 hover:bg-purple-500/5'}`}
             >
               <input
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
                 accept=".pdf,.doc,.docx"
-                onChange={handleUpload}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleFile(file);
+                  }
+                }}
               />
               
               {uploadStatus === 'success' ? (
@@ -704,7 +2846,7 @@ export default function Onboarding() {
                 onClick={() => {
                   if (uploadStatus === 'success') {
                     setShowResumeUpload(false);
-                    setShowJobTitles(true);
+                    setShowContactInfo(true);
                   } else {
                     triggerFileInput();
                   }
@@ -789,8 +2931,16 @@ export default function Onboarding() {
                 <button
                   onClick={() => {
                     if (selectedTitles.length > 0) {
+                      // Save selected titles to localStorage
+                      try {
+                        localStorage.setItem('selectedTitles', JSON.stringify(selectedTitles));
+                      } catch (error) {
+                        console.error('Error saving job titles:', error);
+                      }
+                      
+                      // Navigate to questionnaire section
                       setShowJobTitles(false);
-                      setShowSalary(true);
+                      setShowQuestionnaire(true);
                     }
                   }}
                   disabled={selectedTitles.length === 0}
@@ -803,60 +2953,79 @@ export default function Onboarding() {
           </div>
         )}
         
-        {/* Salary Section */}
-        {showSalary && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-8 mt-2">
-              {/* Headers */}
-              <div className="mb-8 text-center">
-                <h1 className="text-2xl font-bold text-white mb-2">
-                  How much would you like to earn?
-                </h1>
-                <p className="text-base text-gray-400">
-                  This helps us find jobs matching your compensation requirements.
-                </p>
-              </div>
-              
-              {/* Salary Slider */}
-              <div className="mb-16">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <label
-                      htmlFor="salary-range"
-                      className="block text-lg font-medium text-gray-300"
-                    >
-                      Minimum desired compensation
-                    </label>
-                    <span className="w-[120px] text-right text-lg font-medium text-white">
-                      {salary >= 1000 ? `$${(salary / 1000).toFixed(0)}M annually` : `$${salary}k annually`}
-                    </span>
-                  </div>
-                  <div className="mt-4">
-                    <div className="relative w-full">
-                      <input
-                        type="range"
-                        id="salary-range"
-                        min="30"
-                        max="500"
-                        value={salary}
-                        onChange={(e) => setSalary(Number(e.target.value))}
-                        className="w-full"
-                        style={{
-                          '--progress': `${((salary - 30) / (500 - 30)) * 100}%`
-                        } as React.CSSProperties}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* Questionnaire Section */}
+        {showQuestionnaire && !showJobTitles && !showSkills && !showEducation && !showWorkExperience && !showContactInfo && !showResumeUpload && (
+          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+            {/* Box header for visual consistency with other sections */}
+            <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
+              <h2 className="text-xl font-semibold text-white mb-1">Key Questions</h2>
+              <p className="text-gray-400 text-sm">These questions will help us best auto-fill your applications</p>
+              <p className="text-xs italic text-red-500 mt-2">* marks required fields</p>
             </div>
             
-            {/* Navigation Buttons */}
-            <div className="mt-8">
-              <div className="flex justify-between items-center w-full">
+            <div className="w-full">
+              <form className="space-y-5 mx-auto">
+                {questions.map((question) => (
+                  <div key={question.id} className="mb-4 text-left">
+                    <label
+                      htmlFor={question.id}
+                      className="block text-sm font-medium text-white mb-1"
+                    >
+                      {question.text}
+                      {question.required && (
+                        <span className="ml-1 text-red-500">*</span>
+                      )}
+                    </label>
+                    <div className="relative">
+                      <select
+                        id={question.id}
+                        value={questionnaireAnswers[question.id] || ''}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const newAnswers = {
+                            ...questionnaireAnswers,
+                            [question.id]: value,
+                          };
+                          setQuestionnaireAnswers(newAnswers);
+                          localStorage.setItem('questionnaireAnswers', JSON.stringify(newAnswers));
+                          if (questionnaireErrors[question.id]) {
+                            setQuestionnaireErrors((prev) => ({
+                              ...prev,
+                              [question.id]: false,
+                            }));
+                          }
+                        }}
+                        className={`mt-1 block w-full rounded-lg border ${
+                          questionnaireErrors[question.id] ? 'border-red-500' : 'border-gray-600'
+                        } bg-[#1a1625] pl-3 pr-8 py-2.5 text-white shadow-sm transition-colors hover:border-purple-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm appearance-none`}
+                      >
+                        <option value="">Select</option>
+                        {question.options.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <FaChevronDown className="h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                    {questionnaireErrors[question.id] && (
+                      <p className="mt-1 text-sm text-red-500">
+                        This field is required
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </form>
+              
+              {/* Navigation Buttons */}
+              <div className="mt-8 flex justify-between items-center w-full">
                 <button
-                  onClick={handleBackClick}
+                  onClick={() => {
+                    setShowQuestionnaire(false);
+                    setShowLocation(true);
+                  }}
                   className="w-24 px-3 py-2 text-sm border border-gray-600 rounded-lg text-white hover:bg-gray-800 transition-colors flex items-center justify-center"
                 >
                   <FaArrowLeft className="mr-1 h-4 w-4" />
@@ -864,125 +3033,38 @@ export default function Onboarding() {
                 </button>
                 <button
                   onClick={() => {
-                    setShowSalary(false);
-                    setShowLocation(true);
-                    setShowAccountSettings(false);
+                    // Validate required questions
+                    const newErrors: Record<string, boolean> = {};
+                    let hasErrors = false;
+                    
+                    questions.forEach((question) => {
+                      if (question.required && (!questionnaireAnswers[question.id] || questionnaireAnswers[question.id] === '')) {
+                        newErrors[question.id] = true;
+                        hasErrors = true;
+                      }
+                    });
+                    
+                    if (hasErrors) {
+                      setQuestionnaireErrors(newErrors);
+                      return;
+                    }
+                    
+                    // Save answers to localStorage
+                    try {
+                      localStorage.setItem('questionnaireAnswers', JSON.stringify(questionnaireAnswers));
+                    } catch (error) {
+                      console.error('Error saving questionnaire answers:', error);
+                    }
+                    
+                    // Navigate to the next section (this would be the final section in the flow)
+                    setShowQuestionnaire(false);
+                    // You can redirect to dashboard or show a completion screen here
+                    // For now, we'll just go back to the beginning
+                    setShowResumeUpload(true);
                   }}
                   className="w-24 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors"
                 >
-                  Next
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Location Section */}
-        {showLocation && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
-            {/* Main Content */}
-            <div className="container mx-auto px-4 py-8 mt-2">
-              {/* Headers */}
-              <div className="mb-8 text-center">
-                <h1 className="text-2xl font-bold text-white mb-2">
-                  Where do you want to work?
-                </h1>
-                <p className="text-base text-gray-400">
-                  Add multiple locations to cast a wider net.
-                </p>
-              </div>
-              
-              {/* Location Selection */}
-              <div className="mb-6">
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedLocations.map((location) => (
-                    <div
-                      key={location}
-                      className="flex items-center bg-purple-900/30 border border-purple-500 text-purple-100 px-3 py-1.5 rounded-full text-sm"
-                    >
-                      {location}
-                      <button
-                        onClick={() => handleRemoveLocation(location)}
-                        className="ml-2 text-purple-300 hover:text-white"
-                      >
-                        <FaTimes size={12} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Search Input */}
-                <div className="relative">
-                  <div className="relative flex items-center">
-                    <FaSearch className="absolute left-4 text-gray-500" size={16} />
-                    <input
-                      type="text"
-                      value={locationSearchTerm}
-                      onChange={(e) => setLocationSearchTerm(e.target.value)}
-                      placeholder="Search for a city or state..."
-                      className="w-full bg-[#1a1625] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    />
-                  </div>
-                  {locationSuggestions.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-[#1a1625] border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto">
-                      {locationSuggestions.map((location) => (
-                        <div
-                          key={location}
-                          onClick={() => handleSelectLocation(location)}
-                          className="px-4 py-2 text-white hover:bg-purple-900/50 cursor-pointer"
-                        >
-                          {location}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Remote Toggle */}
-              <div className="mt-8 mb-8">
-                <label className="relative inline-flex cursor-pointer items-center">
-                  <input
-                    type="checkbox"
-                    checked={includeRemote}
-                    onChange={(e) => setIncludeRemote(e.target.checked)}
-                    className="peer sr-only"
-                  />
-                  <div className="h-6 w-11 rounded-full bg-gray-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-600 after:bg-gray-500 after:transition-all after:content-[''] peer-checked:bg-purple-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-purple-600/10"></div>
-                  <span className="ml-3 text-sm font-medium text-gray-300">
-                    Include Remote Jobs
-                  </span>
-                </label>
-              </div>
-              
-              {/* Success Message */}
-              {selectedLocations.length > 0 && (
-                <div className="mb-8 rounded-lg bg-purple-900/20 border border-purple-500/30 p-4 text-center text-sm text-purple-300">
-                  Great! We've found jobs available in your selected locations.
-                </div>
-              )}
-            </div>
-            
-            {/* Navigation Buttons */}
-            <div className="mt-8">
-              <div className="flex justify-between items-center w-full">
-                <button
-                  onClick={handleBackClick}
-                  className="w-24 px-3 py-2 text-sm border border-gray-600 rounded-lg text-white hover:bg-gray-800 transition-colors flex items-center justify-center"
-                >
-                  <FaArrowLeft className="mr-1 h-4 w-4" />
-                  Back
-                </button>
-                <button
-                  onClick={() => {
-                    // Handle next step - would go to finish
-                    console.log('Selected locations:', selectedLocations);
-                    console.log('Include remote:', includeRemote);
-                  }}
-                  disabled={selectedLocations.length === 0 && !includeRemote}
-                  className={`w-24 px-3 py-2 text-sm rounded-lg text-white transition-colors ${selectedLocations.length > 0 || includeRemote ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-600 opacity-50 cursor-not-allowed'}`}
-                >
-                  Next
+                  Finish
                 </button>
               </div>
             </div>
@@ -1030,11 +3112,22 @@ export default function Onboarding() {
           padding-right: 4px;
         }
         .top-section::-webkit-scrollbar {
-          display: none;
+          width: 6px;
+        }
+        .top-section::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 10px;
+        }
+        .top-section::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 10px;
+        }
+        .top-section::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.5);
         }
         .top-section {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+          -ms-overflow-style: auto;
+          scrollbar-width: thin;
         }
         .menu-group {
           margin-top: 10px;

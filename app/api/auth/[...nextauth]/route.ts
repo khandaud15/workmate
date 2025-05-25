@@ -27,7 +27,8 @@ const getCurrentPort = () => {
   return port;
 };
 
-const handler = NextAuth({
+// Define auth options that will be exported and used by other routes
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
@@ -168,7 +169,12 @@ const handler = NextAuth({
       if (!token.sub) return token;
       return token;
     },
-  },
-});
+  }
+};
 
+// Create the NextAuth handler with our options
+const handler = NextAuth(authOptions);
+
+// Export the handler for API routes
 export { handler as GET, handler as POST };
+

@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["http://localhost:3000", "https://talexus-4339c.web.app", "https://talexus-4339c.firebaseapp.com"],
+    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "responseHeader": ["Content-Type", "Content-Length", "Content-Disposition", "Cache-Control"],
+    "maxAgeSeconds": 3600
+  }
+]

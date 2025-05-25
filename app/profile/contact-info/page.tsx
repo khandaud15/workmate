@@ -14,7 +14,7 @@ type ContactInfo = {
   city: string;
   postalCode: string;
   state: string;
-  linkedIn: string;
+  linkedin: string;
   phone: string;
   email: string;
   smsOptIn: boolean;
@@ -54,7 +54,7 @@ export default function ContactInfoForm() {
   const [city, setCity] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [state, setState] = useState('');
-  const [linkedIn, setLinkedIn] = useState('');
+  const [linkedin, setLinkedin] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [smsOptIn, setSmsOptIn] = useState(false);
@@ -70,7 +70,7 @@ export default function ContactInfoForm() {
     city: false,
     postalCode: false,
     state: false,
-    linkedIn: false,
+    linkedin: false,
     phone: false,
     email: false,
     smsOptIn: false,
@@ -85,7 +85,7 @@ export default function ContactInfoForm() {
     city: false,
     postalCode: false,
     state: false,
-    linkedIn: true, // Optional field
+    linkedin: true, // Optional field
     phone: false,
     email: false,
     smsOptIn: false,
@@ -103,7 +103,7 @@ export default function ContactInfoForm() {
         city: validateField('city', city, true),
         postalCode: validateField('postalCode', postalCode, true),
         state: validateField('state', state, true),
-        linkedIn: true, // Optional field
+        linkedin: true, // Optional field
         phone: validateField('phone', phone, true),
         email: validateField('email', email, true),
         smsOptIn: validateField('smsOptIn', smsOptIn, true),
@@ -131,7 +131,7 @@ export default function ContactInfoForm() {
           if (formData.city) setCity(formData.city);
           if (formData.postalCode) setPostalCode(formData.postalCode);
           if (formData.state) setState(formData.state);
-          if (formData.linkedIn) setLinkedIn(formData.linkedIn);
+          if (formData.linkedin) setLinkedin(formData.linkedin);
           if (formData.phone) setPhone(formData.phone);
           if (formData.email) setEmail(formData.email);
           if (formData.smsOptIn !== undefined) setSmsOptIn(formData.smsOptIn);
@@ -156,7 +156,7 @@ export default function ContactInfoForm() {
         city,
         postalCode,
         state,
-        linkedIn,
+        linkedin,
         phone,
         email,
         smsOptIn
@@ -168,7 +168,7 @@ export default function ContactInfoForm() {
         console.error('Error saving form data:', error);
       }
     }
-  }, [firstName, lastName, dateOfBirth, address, city, postalCode, state, linkedIn, phone, email, smsOptIn]);
+  }, [firstName, lastName, dateOfBirth, address, city, postalCode, state, linkedin, phone, email, smsOptIn]);
   
   // Handle component unmounting and window close
   useEffect(() => {
@@ -183,7 +183,7 @@ export default function ContactInfoForm() {
           city,
           postalCode,
           state,
-          linkedIn,
+          linkedin,
           phone,
           email,
           smsOptIn
@@ -214,7 +214,7 @@ export default function ContactInfoForm() {
           city,
           postalCode,
           state,
-          linkedIn,
+          linkedin,
           phone,
           email,
           smsOptIn
@@ -227,7 +227,7 @@ export default function ContactInfoForm() {
         }
       }
     };
-  }, [firstName, lastName, dateOfBirth, address, city, postalCode, state, linkedIn, phone, email, smsOptIn]);
+  }, [firstName, lastName, dateOfBirth, address, city, postalCode, state, linkedin, phone, email, smsOptIn]);
 
   // Load resume data on mount
   useEffect(() => {
@@ -259,7 +259,7 @@ export default function ContactInfoForm() {
               if (formData.city) setCity(formData.city);
               if (formData.postalCode) setPostalCode(formData.postalCode);
               if (formData.state) setState(formData.state);
-              if (formData.linkedIn) setLinkedIn(formData.linkedIn);
+              if (formData.linkedin) setLinkedin(formData.linkedin);
               if (formData.phone) setPhone(formData.phone);
               if (formData.email) setEmail(formData.email);
               if (formData.smsOptIn !== undefined) setSmsOptIn(formData.smsOptIn);
@@ -283,7 +283,7 @@ export default function ContactInfoForm() {
           setCity('');
           setState('');
           setPostalCode('');
-          setLinkedIn('');
+          setLinkedin('');
           setDateOfBirth('');
           setSelectedDate(null);
           
@@ -302,7 +302,7 @@ export default function ContactInfoForm() {
               if (resumeData.city) setCity(resumeData.city);
               if (resumeData.state) setState(resumeData.state);
               if (resumeData.postalCode) setPostalCode(resumeData.postalCode);
-              if (resumeData.linkedIn) setLinkedIn(resumeData.linkedIn);
+              if (resumeData.linkedin) setLinkedin(resumeData.linkedin);
               
               // Mark this resume as processed for contact info
               localStorage.setItem('lastProcessedContactTimestamp', resumeLastUploaded || '');
@@ -317,7 +317,7 @@ export default function ContactInfoForm() {
                 city: resumeData.city || '',
                 state: resumeData.state || '',
                 postalCode: resumeData.postalCode || '',
-                linkedIn: resumeData.linkedIn || '',
+                linkedin: resumeData.linkedin || '',
                 dateOfBirth: '', // Don't overwrite DOB from resume
                 smsOptIn: false // Reset opt-in
               };
@@ -585,95 +585,95 @@ export default function ContactInfoForm() {
               if (emailVal) setEmail(emailVal);
     
               // Extract LinkedIn URL with enhanced matching
-              let linkedInVal = '';
+              let linkedinVal = '';
               
               // First try direct LinkedIn URL fields
               if (data.data.linkedin_url) {
-                linkedInVal = data.data.linkedin_url;
-              } else if (data.data.linkedInUrl) {
-                linkedInVal = data.data.linkedInUrl;
+                linkedinVal = data.data.linkedin_url;
+              } else if (data.data.linkedinUrl) {
+                linkedinVal = data.data.linkedinUrl;
               } else if (data.data.linkedin) {
-                linkedInVal = data.data.linkedin;
+                linkedinVal = data.data.linkedin;
               } else {
                 // Look in websites array
                 if (data.data.websites) {
-                  const linkedInSite = data.data.websites.find((site: any) => 
+                  const linkedinSite = data.data.websites.find((site: any) => 
                     (typeof site === 'string' && site.toLowerCase().includes('linkedin.com')) ||
                     (site.url && site.url.toLowerCase().includes('linkedin.com')) ||
                     (site.name && site.name.toLowerCase().includes('linkedin'))
                   );
-                  if (linkedInSite) {
-                    linkedInVal = typeof linkedInSite === 'string' ? linkedInSite : linkedInSite.url;
+                  if (linkedinSite) {
+                    linkedinVal = typeof linkedinSite === 'string' ? linkedinSite : linkedinSite.url;
                   }
                 }
                 
                 // Look in social_links array
-                if (!linkedInVal && data.data.social_links) {
-                  const linkedInProfile = data.data.social_links.find((link: any) => 
+                if (!linkedinVal && data.data.social_links) {
+                  const linkedinProfile = data.data.social_links.find((link: any) => 
                     (typeof link === 'string' && link.toLowerCase().includes('linkedin.com')) ||
                     (link.url && link.url.toLowerCase().includes('linkedin.com')) ||
                     (link.type && link.type.toLowerCase() === 'linkedin') ||
                     (link.network && link.network.toLowerCase() === 'linkedin') ||
                     (link.name && link.name.toLowerCase().includes('linkedin'))
                   );
-                  if (linkedInProfile) {
-                    linkedInVal = typeof linkedInProfile === 'string' ? linkedInProfile : linkedInProfile.url;
+                  if (linkedinProfile) {
+                    linkedinVal = typeof linkedinProfile === 'string' ? linkedinProfile : linkedinProfile.url;
                   }
                 }
                 
                 // Look in profiles array
-                if (!linkedInVal && data.data.profiles) {
-                  const linkedInProfile = data.data.profiles.find((profile: any) => 
+                if (!linkedinVal && data.data.profiles) {
+                  const linkedinProfile = data.data.profiles.find((profile: any) => 
                     profile.network?.toLowerCase() === 'linkedin' || 
                     profile.url?.toLowerCase().includes('linkedin.com') ||
                     profile.name?.toLowerCase().includes('linkedin')
                   );
-                  if (linkedInProfile) {
-                    linkedInVal = profileToUrl(linkedInProfile);
+                  if (linkedinProfile) {
+                    linkedinVal = profileToUrl(linkedinProfile);
                   }
                 }
                 
                 // Look in raw URLs array
-                if (!linkedInVal && data.data.urls) {
-                  const linkedInUrl = data.data.urls.find((url: string) => 
+                if (!linkedinVal && data.data.urls) {
+                  const linkedinUrl = data.data.urls.find((url: string) => 
                     url.toLowerCase().includes('linkedin.com')
                   );
-                  if (linkedInUrl) {
-                    linkedInVal = linkedInUrl;
+                  if (linkedinUrl) {
+                    linkedinVal = linkedinUrl;
                   }
                 }
                 
                 // Look in social_media array
-                if (!linkedInVal && data.data.social_media) {
-                  const linkedInSocial = data.data.social_media.find((social: any) => 
+                if (!linkedinVal && data.data.social_media) {
+                  const linkedinSocial = data.data.social_media.find((social: any) => 
                     (typeof social === 'string' && social.toLowerCase().includes('linkedin.com')) ||
                     (social.url && social.url.toLowerCase().includes('linkedin.com')) ||
                     (social.type && social.type.toLowerCase() === 'linkedin') ||
                     (social.network && social.network.toLowerCase() === 'linkedin')
                   );
-                  if (linkedInSocial) {
-                    linkedInVal = typeof linkedInSocial === 'string' ? linkedInSocial : linkedInSocial.url || linkedInSocial.link || '';
+                  if (linkedinSocial) {
+                    linkedinVal = typeof linkedinSocial === 'string' ? linkedinSocial : linkedinSocial.url || linkedinSocial.link || '';
                   }
                 }
                 
                 // Try contact_info section
-                if (!linkedInVal && data.data.contact_info && typeof data.data.contact_info === 'object') {
+                if (!linkedinVal && data.data.contact_info && typeof data.data.contact_info === 'object') {
                   if (data.data.contact_info.linkedin) {
-                    linkedInVal = data.data.contact_info.linkedin;
+                    linkedinVal = data.data.contact_info.linkedin;
                   } else if (data.data.contact_info.linkedin_url) {
-                    linkedInVal = data.data.contact_info.linkedin_url;
-                  } else if (data.data.contact_info.linkedInUrl) {
-                    linkedInVal = data.data.contact_info.linkedInUrl;
+                    linkedinVal = data.data.contact_info.linkedin_url;
+                  } else if (data.data.contact_info.linkedinUrl) {
+                    linkedinVal = data.data.contact_info.linkedinUrl;
                   }
                 }
                 
                 // Try to extract from raw text if all else fails
-                if (!linkedInVal) {
+                if (!linkedinVal) {
                   const rawText = JSON.stringify(data.data);
-                  const linkedInRegex = /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/(?:in|profile)\/[\w\-]+/i;
-                  const matches = rawText.match(linkedInRegex);
+                  const linkedinRegex = /(?:https?:\/\/)?(?:www\.)?linkedin\.com\/(?:in|profile)\/[\w\-]+/i;
+                  const matches = rawText.match(linkedinRegex);
                   if (matches && matches.length > 0) {
-                    linkedInVal = matches[0];
+                    linkedinVal = matches[0];
                   }
                 }
               }
@@ -689,10 +689,10 @@ export default function ContactInfoForm() {
               }
               
               // Ensure LinkedIn URL starts with https://
-              if (linkedInVal && !linkedInVal.startsWith('http')) {
-                linkedInVal = 'https://' + linkedInVal;
+              if (linkedinVal && !linkedinVal.startsWith('http')) {
+                linkedinVal = 'https://' + linkedinVal;
               }
-              if (linkedInVal) setLinkedIn(linkedInVal);
+              if (linkedinVal) setLinkedin(linkedinVal);
     
               // Set address fields with enhanced matching
               if (location) {
@@ -873,7 +873,7 @@ export default function ContactInfoForm() {
         return !value || /^\+?[\d\s-()]{10,}$/.test(value);
       case 'postalCode':
         return !value || /^\d{5}(-\d{4})?$/.test(value);
-      case 'linkedIn':
+      case 'linkedin':
         return value === '' || !value || /^https?:\/\/(www\.)?linkedin\.com\/.*$/.test(value);
       case 'smsOptIn':
         return value === true || value === false;
@@ -899,7 +899,7 @@ export default function ContactInfoForm() {
       city,
       postalCode,
       state,
-      linkedIn,
+      linkedin,
       phone,
       email,
       smsOptIn
@@ -909,7 +909,7 @@ export default function ContactInfoForm() {
     
     // Check all required fields except LinkedIn (which is optional)
     Object.entries(allFields).forEach(([key, value]) => {
-      if (key !== 'linkedIn') {
+      if (key !== 'linkedin') {
         const fieldValid = validateField(key, value, true);
         if (!fieldValid) {
           formIsValid = false;
@@ -920,7 +920,7 @@ export default function ContactInfoForm() {
     return formIsValid;
   }, [
     firstName, lastName, dateOfBirth, address, city,
-    postalCode, state, linkedIn, phone, email, smsOptIn,
+    postalCode, state, linkedin, phone, email, smsOptIn,
     validateField
   ]);
 
@@ -937,7 +937,7 @@ export default function ContactInfoForm() {
       city: true,
       postalCode: true,
       state: true,
-      linkedIn: true,
+      linkedin: true,
       phone: true,
       email: true,
       smsOptIn: true,
@@ -953,7 +953,7 @@ export default function ContactInfoForm() {
       city: validateField('city', city),
       postalCode: validateField('postalCode', postalCode),
       state: validateField('state', state),
-      linkedIn: validateField('linkedIn', linkedIn),
+      linkedin: validateField('linkedin', linkedin),
       phone: validateField('phone', phone),
       email: validateField('email', email),
       smsOptIn: validateField('smsOptIn', smsOptIn),
@@ -962,13 +962,13 @@ export default function ContactInfoForm() {
     
     // Check if all required fields are valid
     const isFormCurrentlyValid = Object.entries(fieldValidations).every(([key, isValid]) => 
-      key === 'linkedIn' || isValid // LinkedIn is optional
+      key === 'linkedin' || isValid // LinkedIn is optional
     );
     
     if (!isFormCurrentlyValid) {
       // Find the first invalid field and scroll to it
       const firstInvalidField = Object.entries(fieldValidations).find(([key, isValid]) => 
-        key !== 'linkedIn' && !isValid
+        key !== 'linkedin' && !isValid
       );
       
       if (firstInvalidField) {
@@ -992,7 +992,7 @@ export default function ContactInfoForm() {
       city: city.trim(),
       postalCode: postalCode.trim(),
       state: state.trim(),
-      linkedIn: linkedIn.trim(),
+      linkedin: linkedin.trim(),
       phone: phone.trim().replace(/\D/g, ''), // Remove non-numeric characters
       email: email.trim().toLowerCase(),
       smsOptIn,
@@ -1040,7 +1040,7 @@ export default function ContactInfoForm() {
     else if (name === 'city') setCity(value);
     else if (name === 'state') setState(value);
     else if (name === 'postalCode') setPostalCode(value);
-    else if (name === 'linkedIn') setLinkedIn(value);
+    else if (name === 'linkedin') setLinkedin(value);
     else if (name === 'phone') setPhone(value);
     else if (name === 'email') setEmail(value);
     else if (name === 'smsOptIn') setSmsOptIn(checked);
@@ -1057,7 +1057,7 @@ export default function ContactInfoForm() {
     const fieldValue = type === 'checkbox' ? checked : value;
     
     // Skip validation for optional fields if empty
-    if (name === 'linkedIn' && !value) {
+    if (name === 'linkedin' && !value) {
       return true;
     }
     
@@ -1334,14 +1334,14 @@ export default function ContactInfoForm() {
           </div>
 
           <div className="relative mb-2">
-            <label htmlFor="linkedIn" className="block text-sm font-semibold text-gray-700 mb-0.5">
+            <label htmlFor="linkedin" className="block text-sm font-semibold text-gray-700 mb-0.5">
               LinkedIn Profile
             </label>
             <input
-              id="linkedIn"
-              name="linkedIn"
+              id="linkedin"
+              name="linkedin"
               type="text"
-              value={linkedIn}
+              value={linkedin}
               onChange={handleChange}
               onBlur={handleBlur}
               className="w-full px-3 py-1.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0e3a68]/20"

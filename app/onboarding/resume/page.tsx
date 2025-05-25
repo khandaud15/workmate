@@ -1,29 +1,176 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 export default function ResumeUpload() {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = React.useState<'idle' | 'uploading' | 'success'>('idle');
+  const [uploadError, setUploadError] = React.useState<string | null>(null);
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Improved file handler with better error handling and logging
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
-      setUploadStatus('uploading');
-      // Simulate upload process
-      setTimeout(() => {
-        setUploadStatus('success');
-      }, 1000);
+      console.log('File selected:', file.name, file.type, file.size);
+      handleFile(file);
     }
+  };
+
+  const handleFile = async (file: File) => {
+    setSelectedFile(file);
+    setUploadStatus('uploading');
+    setUploadError(null);
+    console.log('Starting upload process for file:', file.name);
+    
+    try {
+      // Create form data
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      console.log('Sending file to /api/resume/upload...');
+      
+      // Upload to API
+      const res = await fetch('/api/resume/upload', {
+        method: 'POST',
+        body: formData,
+        // Prevent browser from caching the request
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      console.log('Response received:', res.status, res.statusText);
+      
+      if (!res.ok) {
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = await res.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          // If response is not JSON
+        }
+        
+        console.error('Upload failed:', errorMessage);
+        setUploadStatus('idle');
+        setUploadError(errorMessage);
+        return;
+      }
+      
+      const data = await res.json();
+      console.log('Upload successful! Response:', data);
+      setUploadStatus('success');
+      
+      // Store the resumeIdentifier in localStorage
+      if (data.parsedResumeUrl) {
+        localStorage.setItem('resumeIdentifier', 'true');
+        console.log('Resume identifier stored in localStorage');
+        
+        // Fetch parsed resume data
+        try {
+          console.log('Fetching parsed resume data...');
+          const parseRes = await fetch('/api/resume/parse', {
+            method: 'GET',
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          });
+          
+          if (parseRes.ok) {
+            const parseData = await parseRes.json();
+            console.log('Parsed resume data fetched successfully:', parseData);
+            
+            if (parseData.success && parseData.data) {
+              // Store the parsed resume data in localStorage
+              localStorage.setItem('parsedResumeData', JSON.stringify(parseData.data));
+              console.log('Parsed resume data stored in localStorage');
+              
+              // Store raw resume data for debugging
+              localStorage.setItem('rawResumeData', JSON.stringify(parseData));
+            }
+          } else {
+            console.error('Failed to fetch parsed resume data:', parseRes.status, parseRes.statusText);
+          }
+        } catch (parseErr) {
+          console.error('Error fetching parsed resume data:', parseErr);
+        }
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      setUploadStatus('idle');
+      setUploadError(err instanceof Error ? err.message : 'Unknown error occurred');
+    }
+  };
+
+
+
+
+  // Debug: Add a button to test upload directly
+  const debugFakeUpload = () => {
+    const fakeFile = new File(["test content"], "debug.txt", { type: "text/plain" });
+    console.log('Debug: Creating fake file for testing');
+    handleFile(fakeFile);
   };
 
   return (
     <div className="min-h-screen bg-[#fefcf9] p-6 md:p-8 pb-28">
+      <div style={{color:'red',fontWeight:'bold',fontSize:'24px'}}>DEBUG MARKER - UPLOAD FIXED</div>
+
+      {/* Debug Button */}
+      <div className="mb-4">
+        <button 
+          onClick={() => {
+            console.log('Debug button clicked');
+            debugFakeUpload();
+          }} 
+          style={{ background: '#fbbf24', color: '#111', padding: '8px 16px', borderRadius: '6px' }}
+        >
+          Debug: Trigger Upload Handler
+        </button>
+      </div>
+
+      {/* Debug Visible File Upload */}
+      <div className="mb-4 flex items-center gap-2">
+        <input
+          type="file"
+          id="debug-upload-input"
+          accept=".pdf,.doc,.docx"
+          onChange={e => {
+            if (e.target.files && e.target.files[0]) {
+              setSelectedFile(e.target.files[0]);
+              console.log('File selected via debug input:', e.target.files[0].name);
+            }
+          }}
+        />
+        <button
+          style={{ background: '#fbbf24', color: '#111', padding: '8px 16px', borderRadius: '6px' }}
+          onClick={() => {
+            console.log('Debug upload button clicked');
+            if (selectedFile) {
+              console.log('Starting upload of selected file:', selectedFile.name);
+              handleFile(selectedFile);
+            } else {
+              console.log('No file selected');
+              alert('No file selected');
+            }
+          }}
+        >
+          Debug: Upload File
+        </button>
+      </div>
+      
+      {/* Error display */}
+      {uploadError && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+          Upload Error: {uploadError}
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="mx-auto max-w-3xl">
@@ -72,6 +219,9 @@ export default function ResumeUpload() {
                 : uploadStatus === 'uploading'
                 ? 'Uploading...'
                 : 'Upload your resume'}
+              {uploadStatus === 'success' && (
+                <span className="text-green-700 text-base font-semibold block mt-2">You can proceed to the next step.</span>
+              )}
             </h3>
             {selectedFile ? (
               <p className="text-gray-600">{selectedFile.name}</p>
@@ -83,7 +233,8 @@ export default function ResumeUpload() {
               id="resume-upload"
               className="hidden"
               accept=".pdf,.doc,.docx"
-              onChange={handleUpload}
+              onChange={handleFileInput}
+              disabled={uploadStatus === 'success'}
             />
           </label>
         </div>

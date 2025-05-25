@@ -251,10 +251,10 @@ export default function Header() {
                 ) : !isRestrictedPath && (
                   <div className="flex items-center space-x-4">
                     <Link 
-                      href="/signup" 
+                      href="/signin" 
                       className="bg-[#0e3a68] text-white px-4 py-[6px] rounded-[8px] hover:bg-[#0c3156] transition-colors font-medium text-[13px]"
                     >
-                      Log in
+                      Sign in
                     </Link>
                     <Link 
                       href="/signup" 
@@ -282,11 +282,19 @@ export default function Header() {
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                     className="p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
                   >
-                    <div className="h-6 w-6 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-xs font-medium overflow-hidden">
-                      {session.user?.image ? (
-                        <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
-                      ) : (
-                        session.user?.name?.charAt(0) || 'U'
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
+                        {session.user?.image ? (
+                          <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
+                        ) : (
+                          session.user?.name?.charAt(0) || 'U'
+                        )}
+                      </div>
+                      {/* Only show dropdown arrow if not on home page */}
+                      {pathname !== '/' && (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
                       )}
                     </div>
                   </button>
@@ -605,11 +613,11 @@ export default function Header() {
                 ) : (
                   <div className="flex flex-col space-y-2 mt-6">
                     <Link 
-                      href="/signup"
+                      href="/signin"
                       className="w-full bg-[#0e3a68] text-white px-4 py-2 rounded-lg text-base font-medium text-center hover:bg-[#0c3156] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Log in
+                      Sign in
                     </Link>
                     <Link 
                       href="/signup"
