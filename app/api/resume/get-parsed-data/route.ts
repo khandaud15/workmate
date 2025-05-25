@@ -33,9 +33,9 @@ export async function GET(request: NextRequest) {
     
     // Return the parsed resume data directly
     return NextResponse.json({
-      parsedResumeData: parsedResumeData.parsedResumeData || null,
-      parsedResumeUrl: parsedResumeData.parsedResumeUrl || null,
-      timestamp: parsedResumeData.parsedResumeTimestamp || null
+      parsedResumeData: parsedResumeData?.parsedResumeData || null,
+      parsedResumeUrl: parsedResumeData?.parsedResumeUrl || null,
+      timestamp: parsedResumeData?.parsedResumeTimestamp || null
     });
     
   } catch (error) {
