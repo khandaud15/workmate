@@ -230,11 +230,29 @@ export default function Onboarding() {
                 if (extractedSkills.length > 0) {
                   // Remove duplicates and sort alphabetically
                   const uniqueSkills = Array.from(new Set(extractedSkills)).sort();
-                  setSkills(uniqueSkills);
                   
-                  // Save to localStorage
+                  // Set the formatted skills to state
+                  // Important: completely replace old data, don't merge
+                  setSkills(uniqueSkills);
+                  setIsLoadingSkills(false);
+                  
+                  // Save to localStorage for persistence
                   try {
+                    // Clear any existing data first
+                    localStorage.removeItem('resumeSkills');
+                    // Then save the new data
                     localStorage.setItem('resumeSkills', JSON.stringify(uniqueSkills));
+                    
+                    // Also save to backend with replace flag to ensure old data is cleared
+                    fetch('/api/profile', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        section: 'skills',
+                        data: uniqueSkills,
+                        replace: true // Important: tell backend to replace, not merge
+                      })
+                    }).catch(err => console.error('Error saving skills to backend:', err));
                   } catch (error) {
                     console.error('Error saving skills to localStorage:', error);
                   }
@@ -374,11 +392,28 @@ export default function Onboarding() {
                     }
                   });
                   
+                  // Set the formatted education to state
+                  // Important: completely replace old data, don't merge
                   setEducation(formattedEducation);
+                  setIsLoadingEducation(false);
                   
-                  // Save to localStorage
+                  // Save to localStorage for persistence
                   try {
+                    // Clear any existing data first
+                    localStorage.removeItem('resumeEducation');
+                    // Then save the new data
                     localStorage.setItem('resumeEducation', JSON.stringify(formattedEducation));
+                    
+                    // Also save to backend with replace flag to ensure old data is cleared
+                    fetch('/api/profile', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        section: 'education',
+                        data: formattedEducation,
+                        replace: true // Important: tell backend to replace, not merge
+                      })
+                    }).catch(err => console.error('Error saving education to backend:', err));
                   } catch (error) {
                     console.error('Error saving education to localStorage:', error);
                   }
@@ -599,11 +634,27 @@ export default function Onboarding() {
                     }
                   });
                   
+                  // Set the formatted work experiences to state
                   setWorkExperience(formattedWorkExperiences);
+                  setIsLoadingWorkExperience(false);
                   
-                  // Save to localStorage
+                  // Save to localStorage for persistence
                   try {
+                    // Clear any existing data first
+                    localStorage.removeItem('resumeWorkExperience');
+                    // Then save the new data
                     localStorage.setItem('resumeWorkExperience', JSON.stringify(formattedWorkExperiences));
+                    
+                    // Also save to backend with replace flag to ensure old data is cleared
+                    fetch('/api/profile', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        section: 'workExperience',
+                        data: formattedWorkExperiences,
+                        replace: true // Important: tell backend to replace, not merge
+                      })
+                    }).catch(err => console.error('Error saving work experience to backend:', err));
                   } catch (error) {
                     console.error('Error saving work experience to localStorage:', error);
                   }
@@ -1168,22 +1219,54 @@ export default function Onboarding() {
           console.log('FULL PARSED RESUME:', parsed);
           setParsedResume(parsed);
           
+          // Reset all state variables to ensure we're starting fresh with the new resume
+          // This prevents concatenation of old and new data
+          setWorkExperience([]);
+          setEducation([]);
+          setSkills([]);
+          
           // Prefill contact info with parsed resume data
           const extractedInfo = extractContactInfoFromResume(parsed);
           console.log('Extracted contact info from resume:', extractedInfo);
-          setContactInfo(prev => ({
-            ...prev,
-            ...extractedInfo
-          }));
           
-          // Save the extracted info to backend
-          await saveContactInfoToBackend(extractedInfo);
+          // Completely replace the contact info with the new data from the resume
+          // instead of merging with previous data
+          // Ensure all required fields are present by providing defaults
+          setContactInfo({
+            firstName: extractedInfo.firstName || '',
+            lastName: extractedInfo.lastName || '',
+            dob: extractedInfo.dob || '',
+            address: extractedInfo.address || '',
+            city: extractedInfo.city || '',
+            state: extractedInfo.state || '',
+            postalCode: extractedInfo.postalCode || '',
+            linkedin: extractedInfo.linkedin || '',
+            phone: extractedInfo.phone || '',
+            email: extractedInfo.email || '',
+            smsConsent: false // Default value for smsConsent
+          });
           
-          // Clear localStorage data for work experience, education, and skills
+          // Save the extracted info to backend with a flag to replace existing data
+          // This will trigger the backend to clear all related sections
+          await saveContactInfoToBackend(extractedInfo, true);
+          
+          // Clear localStorage data for all sections
           // This ensures that when these sections are shown, they will fetch the new resume data
           localStorage.removeItem('resumeWorkExperience');
           localStorage.removeItem('resumeEducation');
           localStorage.removeItem('resumeSkills');
+          localStorage.removeItem('contactInfo');
+          localStorage.removeItem('selectedTitles');
+          localStorage.removeItem('selectedLocations');
+          localStorage.removeItem('questionnaireAnswers');
+          
+          // Also clear any cached data in the application state
+          setWorkExperienceError(null);
+          setEducationError(null);
+          setSkillsError(null);
+          setIsLoadingWorkExperience(false);
+          setIsLoadingEducation(false);
+          setIsLoadingSkills(false);
           
           // Navigate to the Contact Info section after successful parsing
           setShowResumeUpload(false);
@@ -1334,7 +1417,7 @@ export default function Onboarding() {
   };
   
   // Save contact info to backend
-  const saveContactInfoToBackend = async (data: any) => {
+  const saveContactInfoToBackend = async (data: any, replace: boolean = false) => {
     setIsSaving(true);
     try {
       const response = await fetch('/api/profile', {
@@ -1342,7 +1425,8 @@ export default function Onboarding() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           section: 'contactInfo', 
-          data: data 
+          data: data,
+          replace: replace // Add flag to indicate if this should replace existing data
         }),
       });
       

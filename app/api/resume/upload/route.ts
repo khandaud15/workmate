@@ -91,7 +91,24 @@ export async function POST(request: Request) {
       expires: Date.now() + 365 * 24 * 60 * 60 * 1000
     });
     // Store file URL in Firestore under user's doc
-    await db.collection('users').doc(userEmail).set({ resumeUrl: url }, { merge: true });
+    // First, check if the user already has a resume
+    const userDoc = await db.collection('users').doc(userEmail).get();
+    const userData = userDoc.exists ? userDoc.data() : null;
+    const hadPreviousResume = userData && userData.resumeUrl;
+    
+    // Store the new resume URL
+    await db.collection('users').doc(userEmail).set({ 
+      resumeUrl: url,
+      resumeUploadTimestamp: new Date().toISOString() 
+    }, { merge: true });
+    
+    // If user had a previous resume, mark that we need to clear old data
+    if (hadPreviousResume) {
+      console.log('[UPLOAD API] User had a previous resume, marking for data replacement');
+      await db.collection('users').doc(userEmail).set({ 
+        shouldReplaceProfileData: true 
+      }, { merge: true });
+    }
 
     // --- Parse PDF with GPT-4 after upload ---
     let parsedResumeUrl = null;
@@ -117,8 +134,35 @@ export async function POST(request: Request) {
         expires: Date.now() + 365 * 24 * 60 * 60 * 1000
       });
       parsedResumeUrl = parsedUrl;
-      // Store parsed resume URL in Firestore
-      await db.collection('users').doc(userEmail).set({ parsedResumeUrl }, { merge: true });
+      // Store parsed resume URL in Firestore and mark that profile data should be replaced
+      await db.collection('users').doc(userEmail).set({ 
+        parsedResumeUrl,
+        shouldReplaceProfileData: true, // Always mark for replacement when a new parsed resume is available
+        parsedResumeTimestamp: new Date().toISOString()
+      }, { merge: true });
+      
+      // Also clear any existing profile data in Firestore to ensure fresh start
+      const userDocRef = db.collection('users').doc(userEmail);
+      const userDoc = await userDocRef.get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        if (userData && userData.profile) {
+          // Create a new profile object without the sections we want to clear
+          const updatedProfile = { ...userData.profile };
+          // Clear sections that will be repopulated from the new resume
+          delete updatedProfile.contactInfo;
+          delete updatedProfile.workExperience;
+          delete updatedProfile.education;
+          delete updatedProfile.skills;
+          
+          // Update the profile with cleared sections
+          await userDocRef.set({
+            profile: updatedProfile
+          }, { merge: true });
+          
+          console.log('[UPLOAD API] Cleared existing profile sections for fresh resume data');
+        }
+      }
     } catch (parseError) {
       console.error('[UPLOAD API] Error parsing/saving resume with Python Cloud Run:', parseError);
       parsedResumeError = parseError instanceof Error ? parseError.message : String(parseError);
