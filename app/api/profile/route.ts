@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
     const userDocRef = db.collection('users').doc(userEmail);
     // Get the current profile data
     const userDoc = await userDocRef.get();
-    const currentProfile = userDoc.exists ? userDoc.data().profile || {} : {};
+    const userData = userDoc.exists ? userDoc.data() : null;
+    const currentProfile = userData?.profile || {};
     // Update only the specified section
     const updatedProfile = {
       ...currentProfile,
