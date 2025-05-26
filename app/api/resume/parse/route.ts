@@ -12,51 +12,72 @@ export async function GET() {
     
     if (!session || !session.user || !session.user.email) {
       console.error('[PARSE API] Authentication failed');
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json({ 
+        error: 'Authentication required', 
+        success: false,
+        clearCache: true 
+      }, { status: 401 });
     }
     
     const userEmail = session.user.email;
     console.log('[PARSE API] Authenticated as', userEmail);
     
-    // Get user document from Firestore
-    const userDoc = await db.collection('users').doc(userEmail).get();
+    // SINGLE SOURCE OF TRUTH: Get parsed resume data directly from parsedResumes collection
+    console.log('[PARSE API] Retrieving data from parsedResumes collection');
+    const parsedResumeDoc = await db.collection('parsedResumes').doc(userEmail).get();
     
-    if (!userDoc.exists) {
-      console.log('[PARSE API] User document not found');
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-    
-    const userData = userDoc.data();
-    
-    // Check if parsed resume URL exists
-    if (!userData?.parsedResumeUrl) {
-      console.log('[PARSE API] No parsed resume URL found for user');
-      return NextResponse.json({ error: 'No parsed resume found' }, { status: 404 });
-    }
-    
-    // Fetch the parsed resume data
-    try {
-      console.log('[PARSE API] Fetching parsed resume from:', userData.parsedResumeUrl);
-      const response = await fetch(userData.parsedResumeUrl);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch parsed resume: ${response.status} ${response.statusText}`);
-      }
-      
-      const parsedResumeData = await response.json();
-      console.log('[PARSE API] Successfully fetched parsed resume data');
-      
-      return NextResponse.json({
-        data: parsedResumeData,
-        success: true
+    if (!parsedResumeDoc.exists) {
+      console.log('[PARSE API] No parsed resume found for user');
+      return NextResponse.json({ 
+        error: 'No parsed resume found', 
+        success: false,
+        clearCache: true 
+      }, { 
+        status: 404,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
       });
-    } catch (fetchError) {
-      console.error('[PARSE API] Error fetching parsed resume:', fetchError);
-      return NextResponse.json(
-        { error: fetchError instanceof Error ? fetchError.message : 'Failed to fetch parsed resume' },
-        { status: 500 }
-      );
     }
+    
+    const parsedResumeData = parsedResumeDoc.data();
+    
+    // Verify data ownership
+    if (!parsedResumeData) {
+      console.error('[PARSE API] Empty data for user');
+      return NextResponse.json({ 
+        error: 'No resume data available', 
+        success: false,
+        clearCache: true 
+      }, { status: 404 });
+    }
+    
+    // Additional verification to ensure data belongs to the current user
+    if (parsedResumeData.userEmail && parsedResumeData.userEmail !== userEmail) {
+      console.error(`[PARSE API] Data ownership mismatch! Document belongs to ${parsedResumeData.userEmail} but request is from ${userEmail}`);
+      return NextResponse.json({ 
+        error: 'Data ownership verification failed', 
+        success: false,
+        clearCache: true 
+      }, { status: 403 });
+    }
+    
+    console.log('[PARSE API] Successfully retrieved parsed resume data');
+    
+    return NextResponse.json({
+      data: parsedResumeData.parsedResumeData || null,
+      success: true,
+      userEmail: userEmail, // Include user email for verification on client side
+      timestamp: parsedResumeData.parsedResumeTimestamp || new Date().toISOString()
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
   } catch (error) {
     console.error('[PARSE API] Error:', error);
     return NextResponse.json(

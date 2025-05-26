@@ -134,13 +134,20 @@ export async function POST(request: Request) {
         expires: Date.now() + 365 * 24 * 60 * 60 * 1000
       });
       parsedResumeUrl = parsedUrl;
-      // Save the parsed resume URL to the user's document in Firestore
+      // SINGLE SOURCE OF TRUTH: Store parsed resume data ONLY in the parsedResumes collection
       console.log('[UPLOAD API] Writing parsed resume for:', userEmail);
-      console.log('[UPLOAD API] ParsedResumeData:', JSON.stringify(result.parsed));
+      console.log('[UPLOAD API] Storing parsed resume data in parsedResumes collection');
+      
+      // Create a unique identifier for this resume upload
+      const resumeId = `${userEmail}_${Date.now()}`;
+      
+      // Store the complete parsed resume data in the parsedResumes collection only
       await db.collection('parsedResumes').doc(userEmail).set({
         parsedResumeUrl: parsedResumeUrl,
         parsedResumeData: result.parsed !== undefined ? result.parsed : null,
-        parsedResumeTimestamp: new Date().toISOString()
+        parsedResumeTimestamp: new Date().toISOString(),
+        resumeId: resumeId,
+        userEmail: userEmail // Store user email for verification
       }, { merge: false }); // Use merge: false to completely replace any existing data
       console.log('[UPLOAD API] Write to parsedResumes complete.');
       
@@ -148,31 +155,30 @@ export async function POST(request: Request) {
       const userDocRef = db.collection('users').doc(userEmail);
       const userDoc = await userDocRef.get();
       
+      // Update the user document with ONLY a reference to the parsed resume
+      // Do NOT duplicate the actual resume data here
       if (userDoc.exists) {
-        // CRITICAL: Completely delete and recreate the user document
-        // This ensures absolutely no old data persists
+        console.log('[UPLOAD API] Updating user document with reference to parsed resume');
         await userDocRef.set({
-          // Create a completely new profile object
-          profile: {
-            // Only keep a timestamp
-            lastUpdated: new Date().toISOString(),
-            // These empty arrays ensure we start fresh
-            workExperience: [],
-            education: [],
-            skills: [],
-            // This flag indicates we've completely reset the profile
-            completelyReset: true
+          // Store only essential user information
+          email: userEmail,
+          lastUpdated: new Date().toISOString(),
+          
+          // ONLY store a reference to the parsed resume, not the data itself
+          parsedResumeReference: {
+            collectionPath: 'parsedResumes',
+            documentId: userEmail,
+            resumeId: resumeId,
+            timestamp: new Date().toISOString()
           },
-          // Set the parsed resume URL and timestamp
-          parsedResumeUrl: parsedResumeUrl,
-          resumeUploadTimestamp: new Date().toISOString(),
-          // This is a critical flag that tells the frontend to ignore localStorage
+          
+          // Control flags for frontend
           ignoreLocalStorage: true,
-          // Add a flag specifically for Vercel deployments
-          forceRefreshData: true
+          forceRefreshData: true,
+          dataResetAt: new Date().toISOString()
         }, { merge: false }); // Use merge: false to completely replace the document
         
-        console.log('[UPLOAD API] COMPLETELY RESET user profile for new resume data');
+        console.log('[UPLOAD API] User document updated with reference to parsed resume');
       }
     } catch (parseError) {
       console.error('[UPLOAD API] Error parsing/saving resume with Python Cloud Run:', parseError);

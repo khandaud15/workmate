@@ -1,6 +1,7 @@
 /**
  * Custom hook to fetch resume data directly from the server
  * This bypasses localStorage completely and ensures we always get the latest data
+ * with strict user isolation to prevent data leakage between users
  */
 import { useState, useEffect } from 'react';
 
@@ -9,6 +10,28 @@ export function useResumeData() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [timestamp, setTimestamp] = useState(null);
+  const [userEmail, setUserEmail] = useState(null);
+
+  // Function to clear all resume-related data from localStorage
+  const clearLocalStorageData = () => {
+    console.log('Clearing all resume data from localStorage');
+    localStorage.removeItem('resumeIdentifier');
+    localStorage.removeItem('parsedResumeData');
+    localStorage.removeItem('rawResumeData');
+    localStorage.removeItem('resumeData');
+    localStorage.removeItem('workExperiences');
+    localStorage.removeItem('educationData');
+    localStorage.removeItem('skillsData');
+    // Clear any other potential resume-related items
+    const keysToCheck = Object.keys(localStorage);
+    keysToCheck.forEach(key => {
+      if (key.includes('resume') || key.includes('experience') || 
+          key.includes('education') || key.includes('skill') || 
+          key.includes('parsed')) {
+        localStorage.removeItem(key);
+      }
+    });
+  };
 
   // Function to fetch the resume data directly from the server
   const fetchResumeData = async (force = false) => {
@@ -16,21 +39,53 @@ export function useResumeData() {
       setIsLoading(true);
       setError(null);
 
+      // Always clear localStorage first for new users
+      if (force) {
+        clearLocalStorageData();
+      }
+
       // Add a cache-busting parameter to ensure we get fresh data
-      const cacheBuster = force ? `?force=${Date.now()}` : '';
+      const cacheBuster = `?nocache=${Date.now()}`;
       
-      // Call our new API endpoint that bypasses localStorage
-      const response = await fetch(`/api/resume/get-parsed-data${cacheBuster}`);
+      console.log('Fetching resume data from server with cache busting');
+      // Call our API endpoint with strict cache control
+      const response = await fetch(`/api/resume/get-parsed-data${cacheBuster}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        credentials: 'same-origin' // Ensure cookies are sent for authentication
+      });
       
       if (!response.ok) {
+        if (response.status === 404) {
+          // No resume found for this user - clear any localStorage data to prevent showing old data
+          clearLocalStorageData();
+          console.log('No resume data found for current user, cleared localStorage');
+          setResumeData(null);
+          return null;
+        }
         throw new Error('Failed to fetch resume data');
       }
       
       const data = await response.json();
       
       if (data.error) {
+        // If there's an error, clear localStorage to be safe
+        if (data.clearCache) {
+          clearLocalStorageData();
+        }
         throw new Error(data.error);
       }
+      
+      // If the API signals to clear localStorage, do it
+      if (data.clearLocalStorage) {
+        clearLocalStorageData();
+      }
+      
+      // Store the user email for verification
+      setUserEmail(data.userEmail);
       
       // Set the resume data and timestamp
       setResumeData(data.parsedResumeData);

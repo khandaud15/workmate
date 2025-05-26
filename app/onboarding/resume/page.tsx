@@ -12,6 +12,27 @@ export default function ResumeUpload() {
   const [uploadStatus, setUploadStatus] = React.useState<'idle' | 'uploading' | 'success'>('idle');
   const [uploadError, setUploadError] = React.useState<string | null>(null);
 
+  // Function to clear all resume-related data from localStorage
+  const clearLocalStorageData = () => {
+    console.log('Clearing all resume data from localStorage before new upload');
+    localStorage.removeItem('resumeIdentifier');
+    localStorage.removeItem('parsedResumeData');
+    localStorage.removeItem('rawResumeData');
+    localStorage.removeItem('resumeData');
+    localStorage.removeItem('workExperiences');
+    localStorage.removeItem('educationData');
+    localStorage.removeItem('skillsData');
+    // Clear any other potential resume-related items
+    const keysToCheck = Object.keys(localStorage);
+    keysToCheck.forEach(key => {
+      if (key.includes('resume') || key.includes('experience') || 
+          key.includes('education') || key.includes('skill') || 
+          key.includes('parsed')) {
+        localStorage.removeItem(key);
+      }
+    });
+  };
+
   // Improved file handler with better error handling and logging
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -22,6 +43,9 @@ export default function ResumeUpload() {
   };
 
   const handleFile = async (file: File) => {
+    // Clear localStorage before uploading a new resume
+    clearLocalStorageData();
+    
     setSelectedFile(file);
     setUploadStatus('uploading');
     setUploadError(null);
@@ -34,15 +58,17 @@ export default function ResumeUpload() {
       
       console.log('Sending file to /api/resume/upload...');
       
-      // Upload to API
-      const res = await fetch('/api/resume/upload', {
+      // Upload to API with cache busting
+      const res = await fetch(`/api/resume/upload?nocache=${Date.now()}`, {
         method: 'POST',
         body: formData,
         // Prevent browser from caching the request
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        credentials: 'same-origin' // Ensure cookies are sent for authentication
       });
       
       console.log('Response received:', res.status, res.statusText);
@@ -66,34 +92,33 @@ export default function ResumeUpload() {
       console.log('Upload successful! Response:', data);
       setUploadStatus('success');
       
-      // Store the resumeIdentifier in localStorage
+      // Verify the response contains user-specific data
       if (data.parsedResumeUrl) {
+        // Store minimal information in localStorage
         localStorage.setItem('resumeIdentifier', 'true');
+        localStorage.setItem('resumeUploadTimestamp', new Date().toISOString());
         console.log('Resume identifier stored in localStorage');
         
-        // Fetch parsed resume data
+        // Instead of storing the parsed data in localStorage, use the API
         try {
-          console.log('Fetching parsed resume data...');
-          const parseRes = await fetch('/api/resume/parse', {
+          console.log('Fetching fresh parsed resume data from server...');
+          // Use cache-busting to ensure we get fresh data
+          const parseRes = await fetch(`/api/resume/get-parsed-data?fresh=${Date.now()}`, {
             method: 'GET',
             headers: {
-              'Cache-Control': 'no-cache',
-              'Pragma': 'no-cache'
-            }
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            },
+            credentials: 'same-origin'
           });
           
           if (parseRes.ok) {
             const parseData = await parseRes.json();
-            console.log('Parsed resume data fetched successfully:', parseData);
+            console.log('Parsed resume data fetched successfully from server');
             
-            if (parseData.success && parseData.data) {
-              // Store the parsed resume data in localStorage
-              localStorage.setItem('parsedResumeData', JSON.stringify(parseData.data));
-              console.log('Parsed resume data stored in localStorage');
-              
-              // Store raw resume data for debugging
-              localStorage.setItem('rawResumeData', JSON.stringify(parseData));
-            }
+            // We don't need to store this in localStorage anymore
+            // The useResumeData hook will fetch it directly from the server
           } else {
             console.error('Failed to fetch parsed resume data:', parseRes.status, parseRes.statusText);
           }
@@ -101,6 +126,7 @@ export default function ResumeUpload() {
           console.error('Error fetching parsed resume data:', parseErr);
         }
       }
+    }
     } catch (err) {
       console.error('Upload error:', err);
       setUploadStatus('idle');

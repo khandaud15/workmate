@@ -149,6 +149,260 @@ export default function Onboarding() {
 
   // Fetch and parse work experience when the Work Experience section is shown
   // Fetch and parse education data when the Education section is shown
+  // Fetch all resume data on component mount
+  useEffect(() => {
+    const fetchAllResumeData = async () => {
+      try {
+        console.log('Fetching all resume data on component mount');
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.parsedResumeUrl) {
+            const resp = await fetch(data.parsedResumeUrl);
+            const parsed = await resp.json();
+            console.log('ONBOARDING: FULL PARSED RESUME (all sections):', parsed);
+            
+            // Extract and set work experience
+            if (parsed['Work Experience'] && Array.isArray(parsed['Work Experience'])) {
+              try {
+                const formattedWorkExperiences = parsed['Work Experience'].map((exp: any, index: number) => {
+                  // Safely extract fields with fallbacks
+                  const jobTitle = exp?.Position || exp?.Title || exp?.jobTitle || exp?.title || '';
+                  const company = exp?.Company || exp?.Employer || exp?.company || exp?.employer || '';
+                  const location = exp?.Location || exp?.location || '';
+                  
+                  // Safely handle dates
+                  let startDate = '';
+                  let endDate = '';
+                  if (exp?.Duration && typeof exp.Duration === 'string') {
+                    const parts = exp.Duration.split(' - ');
+                    startDate = parts[0] || '';
+                    endDate = parts.length > 1 ? parts[1] : 'Present';
+                  } else {
+                    startDate = exp?.startDate || exp?.['Start Date'] || '';
+                    endDate = exp?.endDate || exp?.['End Date'] || 'Present';
+                  }
+                  
+                  // Safely handle responsibilities
+                  let responsibilities: string[] = [];
+                  if (exp?.Description && typeof exp.Description === 'string') {
+                    responsibilities = exp.Description.split('\n')
+                      .map((item: string) => item.trim())
+                      .filter((item: string) => item.length > 0);
+                  } else if (exp?.responsibilities && Array.isArray(exp.responsibilities)) {
+                    responsibilities = exp.responsibilities;
+                  }
+                  
+                  return {
+                    id: `exp-${index}`,
+                    jobTitle,
+                    company,
+                    location,
+                    startDate,
+                    endDate,
+                    responsibilities,
+                    isEditing: false,
+                    isExpanded: false
+                  };
+                });
+                
+                console.log('Formatted work experiences:', formattedWorkExperiences);
+                setWorkExperience(formattedWorkExperiences);
+              } catch (error) {
+                console.error('Error formatting work experiences:', error);
+              }
+            }
+            
+            // Extract and set education
+            if (parsed['Education'] && Array.isArray(parsed['Education'])) {
+              try {
+                console.log('Raw Education data:', parsed['Education']);
+                const formattedEducation = parsed['Education'].map((edu: any, index: number) => {
+                  // Safely extract fields with fallbacks - expanded to handle more formats
+                  const school = edu?.Institution || edu?.School || edu?.school || edu?.institution || edu?.university || edu?.college || '';
+                  
+                  // Handle various degree formats
+                  let degree = '';
+                  if (edu?.degree) {
+                    degree = edu.degree;
+                  } else if (edu?.Degree) {
+                    degree = edu.Degree;
+                  } else if (edu?.qualification) {
+                    degree = edu.qualification;
+                  } else if (edu?.diploma) {
+                    degree = edu.diploma;
+                  } else if (edu?.certification) {
+                    degree = edu.certification;
+                  }
+                  
+                  const fieldOfStudy = edu?.['Field of Study'] || edu?.fieldOfStudy || edu?.major || edu?.program || edu?.course || '';
+                  
+                  // Safely handle dates with expanded options
+                  let startDate = '';
+                  let endDate = '';
+                  
+                  // Try different date formats
+                  if (edu?.year && typeof edu.year === 'string') {
+                    const yearStr = edu.year.trim();
+                    
+                    // Handle "Since [Month] [Year]" format
+                    if (yearStr.toLowerCase().startsWith('since')) {
+                      startDate = yearStr.substring(6).trim(); // Remove "Since " prefix
+                      endDate = 'Present';
+                    }
+                    // Handle "From [Month] [Year] to [Month] [Year]" format
+                    else if (yearStr.toLowerCase().startsWith('from') && yearStr.toLowerCase().includes('to')) {
+                      const fromToMatch = yearStr.match(/from\s+(.+?)\s+to\s+(.+)/i);
+                      if (fromToMatch && fromToMatch.length >= 3) {
+                        startDate = fromToMatch[1].trim();
+                        endDate = fromToMatch[2].trim();
+                      }
+                    }
+                    // Handle "[Year] to [Year]" format
+                    else if (yearStr.toLowerCase().includes('to')) {
+                      const parts = yearStr.split(/\s+to\s+/i).map((p: string) => p.trim());
+                      startDate = parts[0] || '';
+                      endDate = parts.length > 1 ? parts[1] : 'Present';
+                    }
+                    // Handle cases like "February 2023 – present"
+                    else if (yearStr.toLowerCase().includes('present')) {
+                      const parts = yearStr.toLowerCase().split('–').map((p: string) => p.trim());
+                      startDate = parts[0] || '';
+                      endDate = 'Present';
+                    } 
+                    // Handle hyphen or en dash separators
+                    else if (yearStr.includes('-') || yearStr.includes('–')) {
+                      const separator = yearStr.includes('-') ? '-' : '–';
+                      const parts = yearStr.split(separator).map((p: string) => p.trim());
+                      startDate = parts[0] || '';
+                      endDate = parts.length > 1 ? parts[1] : 'Present';
+                    } 
+                    // If no separator, assume it's just a graduation year
+                    else {
+                      endDate = yearStr;
+                    }
+                  } else if (edu?.Year && typeof edu.Year === 'string') {
+                    const yearStr = edu.Year.trim();
+                    
+                    // Handle "Since [Month] [Year]" format
+                    if (yearStr.toLowerCase().startsWith('since')) {
+                      startDate = yearStr.substring(6).trim(); // Remove "Since " prefix
+                      endDate = 'Present';
+                    }
+                    // Handle "From [Month] [Year] to [Month] [Year]" format
+                    else if (yearStr.toLowerCase().startsWith('from') && yearStr.toLowerCase().includes('to')) {
+                      const fromToMatch = yearStr.match(/from\s+(.+?)\s+to\s+(.+)/i);
+                      if (fromToMatch && fromToMatch.length >= 3) {
+                        startDate = fromToMatch[1].trim();
+                        endDate = fromToMatch[2].trim();
+                      }
+                    }
+                    // Handle "[Year] to [Year]" format
+                    else if (yearStr.toLowerCase().includes('to')) {
+                      const parts = yearStr.split(/\s+to\s+/i).map((p: string) => p.trim());
+                      startDate = parts[0] || '';
+                      endDate = parts.length > 1 ? parts[1] : 'Present';
+                    }
+                    // Handle cases with "present"
+                    else if (yearStr.toLowerCase().includes('present')) {
+                      const parts = yearStr.toLowerCase().split(/[-–]/).map((p: string) => p.trim());
+                      startDate = parts[0] || '';
+                      endDate = 'Present';
+                    } 
+                    // Handle hyphen or en dash separators
+                    else if (yearStr.includes('-') || yearStr.includes('–')) {
+                      const separator = yearStr.includes('-') ? '-' : '–';
+                      const parts = yearStr.split(separator).map((p: string) => p.trim());
+                      startDate = parts[0] || '';
+                      endDate = parts.length > 1 ? parts[1] : 'Present';
+                    } 
+                    // If no separator, assume it's just a graduation year
+                    else {
+                      endDate = yearStr;
+                    }
+                  } else {
+                    // Try individual date fields
+                    startDate = edu?.startDate || edu?.['Start Date'] || edu?.startYear || edu?.['Start Year'] || '';
+                    endDate = edu?.endDate || edu?.['End Date'] || edu?.endYear || edu?.['End Year'] || edu?.graduationYear || edu?.['Graduation Year'] || 'Present';
+                  }
+                  
+                  // For debugging
+                  console.log(`Education item ${index}:`, {
+                    school,
+                    degree,
+                    startDate,
+                    endDate
+                  });
+                  
+                  return {
+                    id: `edu-${index}`,
+                    school,
+                    degree,
+                    fieldOfStudy,
+                    startDate,
+                    endDate,
+                    description: edu?.description || '',
+                    isEditing: false,
+                    isExpanded: false
+                  };
+                });
+                
+                console.log('Formatted education:', formattedEducation);
+                setEducation(formattedEducation);
+              } catch (error) {
+                console.error('Error formatting education:', error);
+              }
+            }
+            
+            // Extract and set skills
+            try {
+              let skillsList: string[] = [];
+              
+              // Try different possible paths for skills
+              if (parsed['Skills'] && Array.isArray(parsed['Skills'])) {
+                skillsList = parsed['Skills'];
+              } else if (parsed.skills && Array.isArray(parsed.skills)) {
+                skillsList = parsed.skills;
+              } else if (parsed['Technical Skills']) {
+                // Handle nested technical skills
+                const technicalSkills = parsed['Technical Skills'];
+                if (typeof technicalSkills === 'object') {
+                  Object.keys(technicalSkills).forEach(category => {
+                    if (Array.isArray(technicalSkills[category])) {
+                      skillsList = [...skillsList, ...technicalSkills[category]];
+                    }
+                  });
+                }
+              }
+              
+              // Ensure all skills are strings and remove duplicates
+              const uniqueSkills = Array.from(new Set(
+                skillsList
+                  .map((skill: any) => {
+                    if (typeof skill === 'string') return skill;
+                    if (skill && typeof skill === 'object') {
+                      return skill.name || skill.value || skill.skill || '';
+                    }
+                    return '';
+                  })
+                  .filter((s: string) => s.length > 0)
+              ));
+              
+              console.log('Formatted skills:', uniqueSkills);
+              setSkills(uniqueSkills);
+            } catch (error) {
+              console.error('Error formatting skills:', error);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching all resume data:', error);
+      }
+    };
+    
+    fetchAllResumeData();
+  }, []);
+  
   // Fetch and parse skills data when the Skills section is shown
   useEffect(() => {
     if (showSkills) {
@@ -158,32 +412,7 @@ export default function Onboarding() {
           setSkillsError(null);
           
           // Check if we have a new parsed resume that should be prioritized
-          // This ensures we always use the most recent resume data
-          let shouldFetchFromResume = false;
-          
-          // Check if there's a flag in localStorage indicating a new resume was uploaded
-          const newResumeUploaded = localStorage.getItem('newResumeUploaded');
-          if (newResumeUploaded === 'true') {
-            console.log('New resume was uploaded, prioritizing parsed resume data for skills');
-            shouldFetchFromResume = true;
-          }
-          
-          // If no new resume was uploaded, check localStorage as usual
-          const savedSkills = localStorage.getItem('resumeSkills');
-          if (savedSkills && !shouldFetchFromResume) {
-            try {
-              const parsedSkills = JSON.parse(savedSkills);
-              if (Array.isArray(parsedSkills) && parsedSkills.length > 0) {
-                setSkills(parsedSkills);
-                setIsLoadingSkills(false);
-                return; // Use saved data if available
-              }
-            } catch (error) {
-              console.error('Failed to parse saved skills:', error);
-            }
-          }
-          
-          // If no saved data, try to get parsed resume data
+          // Always fetch fresh data from the backend
           const res = await fetch('/api/profile');
           if (res.ok) {
             const data = await res.json();
@@ -248,14 +477,8 @@ export default function Onboarding() {
                   setSkills(uniqueSkills);
                   setIsLoadingSkills(false);
                   
-                  // Save to localStorage for persistence
+                  // Save to backend with replace flag to ensure old data is cleared
                   try {
-                    // Clear any existing data first
-                    localStorage.removeItem('resumeSkills');
-                    // Then save the new data
-                    localStorage.setItem('resumeSkills', JSON.stringify(uniqueSkills));
-                    
-                    // Also save to backend with replace flag to ensure old data is cleared
                     fetch('/api/profile', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -266,7 +489,7 @@ export default function Onboarding() {
                       })
                     }).catch(err => console.error('Error saving skills to backend:', err));
                   } catch (error) {
-                    console.error('Error saving skills to localStorage:', error);
+                    console.error('Error saving skills to backend:', error);
                   }
                 }
               } catch (e) {
@@ -288,7 +511,8 @@ export default function Onboarding() {
   }, [showSkills]);
 
   useEffect(() => {
-    if (showEducation) {
+    // Always fetch on component mount or when section is shown
+    if (true) {
       const fetchEducation = async () => {
         try {
           setIsLoadingEducation(true);
@@ -460,7 +684,8 @@ export default function Onboarding() {
   }, [showEducation]);
 
   useEffect(() => {
-    if (showWorkExperience) {
+    // Always fetch on component mount or when section is shown
+    if (true) {
       const fetchWorkExperience = async () => {
         try {
           setIsLoadingWorkExperience(true);
@@ -468,34 +693,7 @@ export default function Onboarding() {
           
           // Check if we have a new parsed resume that should be prioritized
           // This ensures we always use the most recent resume data
-          let shouldFetchFromResume = false;
-          
-          // Check if there's a flag in localStorage indicating a new resume was uploaded
-          const newResumeUploaded = localStorage.getItem('newResumeUploaded');
-          if (newResumeUploaded === 'true') {
-            console.log('New resume was uploaded, prioritizing parsed resume data');
-            shouldFetchFromResume = true;
-            // Clear the flag after checking
-            localStorage.removeItem('newResumeUploaded');
-          }
-          
-          // If no new resume was uploaded, check localStorage as usual
-          const savedWorkExperience = localStorage.getItem('resumeWorkExperience');
-          if (savedWorkExperience && !shouldFetchFromResume) {
-            try {
-              const parsedExperience = JSON.parse(savedWorkExperience);
-              if (Array.isArray(parsedExperience) && parsedExperience.length > 0) {
-                setWorkExperience(parsedExperience);
-                setIsLoadingWorkExperience(false);
-                return; // Use saved data if available
-              }
-            } catch (error) {
-              console.error('Failed to parse saved work experience:', error);
-            }
-          }
-          
-          
-          // If no saved data, try to get parsed resume data
+          // Always fetch fresh data from the backend
           const res = await fetch('/api/profile');
           if (res.ok) {
             const data = await res.json();
@@ -676,12 +874,7 @@ export default function Onboarding() {
                   
                   // Save to localStorage for persistence
                   try {
-                    // Clear any existing data first
-                    localStorage.removeItem('resumeWorkExperience');
-                    // Then save the new data
-                    localStorage.setItem('resumeWorkExperience', JSON.stringify(formattedWorkExperiences));
-                    
-                    // Also save to backend with replace flag to ensure old data is cleared
+                    // Save to backend with replace flag to ensure old data is cleared
                     fetch('/api/profile', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
@@ -692,7 +885,7 @@ export default function Onboarding() {
                       })
                     }).catch(err => console.error('Error saving work experience to backend:', err));
                   } catch (error) {
-                    console.error('Error saving work experience to localStorage:', error);
+                    console.error('Error saving work experience to backend:', error);
                   }
                 }
               } catch (e) {
@@ -713,7 +906,7 @@ export default function Onboarding() {
     }
   }, [showWorkExperience]);
   
-  // Prefill Contact Info on section mount (fetch from backend, fallback to localStorage)
+  // Prefill Contact Info on section mount (fetch from backend only)
   useEffect(() => {
     if (showContactInfo) {
       const fetchContactInfo = async () => {
@@ -730,10 +923,6 @@ export default function Onboarding() {
                 const extractedInfo = extractContactInfoFromResume(parsed);
                 console.log('DEBUG: extracted LinkedIn:', extractedInfo.linkedin);
                 setContactInfo((prev) => ({ ...prev, ...extractedInfo }));
-                // Sync to localStorage
-                try {
-                  localStorage.setItem('contactFormData', JSON.stringify({ ...contactInfo, ...extractedInfo }));
-                } catch {}
                 return;
               } catch (e) {
                 console.error('Error fetching parsed resume from saved URL:', e);
@@ -742,23 +931,26 @@ export default function Onboarding() {
             // Otherwise, fallback to contactInfo in backend profile
             if (data && data.profile && data.profile.contactInfo) {
               setContactInfo((prev) => ({ ...prev, ...data.profile.contactInfo }));
-              // Sync to localStorage
-              try {
-                localStorage.setItem('contactFormData', JSON.stringify({ ...contactInfo, ...data.profile.contactInfo }));
-              } catch {}
               return;
             }
           }
         } catch (e) {
-          // Ignore fetch errors, fallback to localStorage
+          console.error('Error fetching contact info from backend:', e);
         }
-        // Fallback: load from localStorage
-        try {
-          const savedFormData = localStorage.getItem('contactFormData');
-          if (savedFormData) {
-            setContactInfo((prev) => ({ ...prev, ...JSON.parse(savedFormData) }));
-          }
-        } catch {}
+        // If all fetches fail, optionally clear contact info or set to empty
+        setContactInfo({
+  firstName: '',
+  lastName: '',
+  dob: '',
+  address: '',
+  city: '',
+  state: '',
+  postalCode: '',
+  linkedin: '',
+  phone: '',
+  email: '',
+  smsConsent: true
+});
       };
       fetchContactInfo();
     }
@@ -1334,6 +1526,185 @@ export default function Onboarding() {
           // Save the extracted info to backend with a flag to replace existing data
           // This will trigger the backend to clear all related sections
           await saveContactInfoToBackend(extractedInfo, true);
+          
+          // Extract and save all resume data sections (work experience, education, skills)
+          console.log('Extracting and saving all resume data sections');
+          try {
+            // Extract work experience (matches your parsed structure)
+            if (Array.isArray(parsed['Work Experience'])) {
+              const formattedWorkExperiences = parsed['Work Experience'].map((exp: any, index: number) => ({
+                id: `exp-${index}`,
+                jobTitle: exp['Job Title'] || '',
+                company: exp['Company'] || '',
+                location: exp['Location'] || '',
+                startDate: exp['Start/End Year'] ? exp['Start/End Year'].split('-')[0].trim() : '',
+                endDate: exp['Start/End Year'] ? (exp['Start/End Year'].split('-')[1]?.trim() || 'Present') : '',
+                responsibilities: Array.isArray(exp['Description']) ? exp['Description'] : [],
+                isEditing: false,
+                isExpanded: false
+              }));
+              console.log('Extracted work experience:', formattedWorkExperiences);
+              setWorkExperience(formattedWorkExperiences);
+              // Save to backend
+              await fetch('/api/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  section: 'workExperience',
+                  data: formattedWorkExperiences,
+                  replace: true
+                })
+              });
+            }
+            // Extract education (matches your parsed structure)
+            if (Array.isArray(parsed['Education'])) {
+              console.log('Raw Education data from direct upload:', parsed['Education']);
+              const formattedEducation = parsed['Education'].map((edu: any, index: number) => {
+                // Extract school/institution with multiple fallbacks
+                const school = edu['institution'] || edu['Institution'] || edu['school'] || edu['School'] || edu['university'] || edu['college'] || '';
+                
+                // Extract degree with multiple fallbacks
+                const degree = edu['degree'] || edu['Degree'] || edu['qualification'] || edu['diploma'] || edu['certification'] || '';
+                
+                // Extract field of study
+                const fieldOfStudy = edu['fieldOfStudy'] || edu['Field of Study'] || edu['major'] || edu['program'] || edu['course'] || '';
+                
+                // Extract dates with enhanced parsing for various formats
+                let startDate = '';
+                let endDate = '';
+                
+                // Handle various date formats
+                if (edu['year'] && typeof edu['year'] === 'string') {
+                  const yearStr = edu['year'].trim();
+                  
+                  // Handle "Since [Month] [Year]" format
+                  if (yearStr.toLowerCase().startsWith('since')) {
+                    startDate = yearStr.substring(6).trim(); // Remove "Since " prefix
+                    endDate = 'Present';
+                  }
+                  // Handle "From [Month] [Year] to [Month] [Year]" format
+                  else if (yearStr.toLowerCase().startsWith('from') && yearStr.toLowerCase().includes('to')) {
+                    const fromToMatch = yearStr.match(/from\s+(.+?)\s+to\s+(.+)/i);
+                    if (fromToMatch && fromToMatch.length >= 3) {
+                      startDate = fromToMatch[1].trim();
+                      endDate = fromToMatch[2].trim();
+                    }
+                  }
+                  // Handle "[Year] to [Year]" format
+                  else if (yearStr.toLowerCase().includes('to')) {
+                    const parts = yearStr.split(/\s+to\s+/i).map((p: string) => p.trim());
+                    startDate = parts[0] || '';
+                    endDate = parts.length > 1 ? parts[1] : 'Present';
+                  }
+                  // Handle cases with "present"
+                  else if (yearStr.toLowerCase().includes('present')) {
+                    const parts = yearStr.toLowerCase().split(/[-\u2013]/).map((p: string) => p.trim());
+                    startDate = parts[0] || '';
+                    endDate = 'Present';
+                  }
+                  // Handle hyphen or en dash separators
+                  else if (yearStr.includes('-') || yearStr.includes('\u2013')) {
+                    const separator = yearStr.includes('-') ? '-' : '\u2013';
+                    const parts = yearStr.split(separator).map((p: string) => p.trim());
+                    startDate = parts[0] || '';
+                    endDate = parts.length > 1 ? parts[1] : 'Present';
+                  }
+                  // If no separator, assume it's just a graduation year
+                  else {
+                    endDate = yearStr;
+                  }
+                } else if (edu['Year'] && typeof edu['Year'] === 'string') {
+                  // Same logic for capitalized "Year"
+                  const yearStr = edu['Year'].trim();
+                  
+                  if (yearStr.toLowerCase().startsWith('since')) {
+                    startDate = yearStr.substring(6).trim();
+                    endDate = 'Present';
+                  } else if (yearStr.toLowerCase().startsWith('from') && yearStr.toLowerCase().includes('to')) {
+                    const fromToMatch = yearStr.match(/from\s+(.+?)\s+to\s+(.+)/i);
+                    if (fromToMatch && fromToMatch.length >= 3) {
+                      startDate = fromToMatch[1].trim();
+                      endDate = fromToMatch[2].trim();
+                    }
+                  } else if (yearStr.toLowerCase().includes('to')) {
+                    const parts = yearStr.split(/\s+to\s+/i).map((p: string) => p.trim());
+                    startDate = parts[0] || '';
+                    endDate = parts.length > 1 ? parts[1] : 'Present';
+                  } else if (yearStr.toLowerCase().includes('present')) {
+                    const parts = yearStr.toLowerCase().split(/[-\u2013]/).map((p: string) => p.trim());
+                    startDate = parts[0] || '';
+                    endDate = 'Present';
+                  } else if (yearStr.includes('-') || yearStr.includes('\u2013')) {
+                    const separator = yearStr.includes('-') ? '-' : '\u2013';
+                    const parts = yearStr.split(separator).map((p: string) => p.trim());
+                    startDate = parts[0] || '';
+                    endDate = parts.length > 1 ? parts[1] : 'Present';
+                  } else {
+                    endDate = yearStr;
+                  }
+                }
+                
+                // For debugging
+                console.log(`Education item ${index} from direct upload:`, {
+                  school,
+                  degree,
+                  startDate,
+                  endDate
+                });
+                
+                return {
+                  id: `edu-${index}`,
+                  school,
+                  degree,
+                  fieldOfStudy,
+                  startDate,
+                  endDate,
+                  description: '',
+                  isEditing: false,
+                  isExpanded: false
+                };
+              });
+              
+              console.log('Extracted education:', formattedEducation);
+              setEducation(formattedEducation);
+              // Save to backend
+              await fetch('/api/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  section: 'education',
+                  data: formattedEducation,
+                  replace: true
+                })
+              });
+            }
+            // Extract skills (combine Skills and Technical Skills, deduped)
+            let skillsList: string[] = Array.isArray(parsed['Skills']) ? parsed['Skills'] : [];
+            if (parsed['Technical Skills'] && typeof parsed['Technical Skills'] === 'object') {
+              Object.values(parsed['Technical Skills']).forEach((arr: any) => {
+                if (Array.isArray(arr)) skillsList = skillsList.concat(arr);
+              });
+            }
+            const uniqueSkills = Array.from(new Set(skillsList.map(skill => skill.trim()).filter(Boolean)));
+            if (uniqueSkills.length > 0) {
+              console.log('Extracted skills:', uniqueSkills);
+              setSkills(uniqueSkills);
+              // Save to backend
+              await fetch('/api/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  section: 'skills',
+                  data: uniqueSkills,
+                  replace: true
+                })
+              });
+            }
+            
+            console.log('Successfully extracted and saved all resume data');
+          } catch (error) {
+            console.error('Error extracting and saving all resume data:', error);
+          }
           
           // Clear localStorage data for all sections
           // This ensures that when these sections are shown, they will fetch the new resume data
@@ -2302,11 +2673,19 @@ export default function Onboarding() {
                                   const updated = prev.map((e, i) => 
                                     i === index ? { ...e, isEditing: false, isExpanded: false } : e
                                   );
-                                  // Save to localStorage
+                                  // Save to backend
                                   try {
-                                    localStorage.setItem('resumeWorkExperience', JSON.stringify(updated));
+                                    fetch('/api/profile', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        section: 'workExperience',
+                                        data: updated,
+                                        replace: true
+                                      })
+                                    }).catch(err => console.error('Error saving work experience to backend:', err));
                                   } catch (error) {
-                                    console.error('Error saving work experience:', error);
+                                    console.error('Error saving work experience to backend:', error);
                                   }
                                   return updated;
                                 });
@@ -2371,7 +2750,16 @@ export default function Onboarding() {
                                     const updated = prev.filter((_, i) => i !== index);
                                     // Save to localStorage after deletion
                                     try {
-                                      localStorage.setItem('resumeWorkExperience', JSON.stringify(updated));
+                                      // Save to backend with replace flag
+                                      fetch('/api/profile', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                          section: 'workExperience',
+                                          data: updated,
+                                          replace: true
+                                        })
+                                      }).catch(err => console.error('Error saving updated work experience to backend:', err));
                                     } catch (error) {
                                       console.error('Error saving work experience after deletion:', error);
                                     }
@@ -2443,7 +2831,16 @@ export default function Onboarding() {
                   setShowEducation(true);
                   // Save work experience to localStorage before proceeding
                   try {
-                    localStorage.setItem('resumeWorkExperience', JSON.stringify(workExperience));
+                    // Save to backend with replace flag
+                    fetch('/api/profile', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        section: 'workExperience',
+                        data: workExperience,
+                        replace: true
+                      })
+                    }).catch(err => console.error('Error saving updated work experience to backend:', err));
                   } catch (error) {
                     console.error('Error saving work experience:', error);
                   }
@@ -2489,7 +2886,16 @@ export default function Onboarding() {
                           onClick={() => {
                             const updatedSkills = skills.filter((_, i) => i !== index);
                             setSkills(updatedSkills);
-                            localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                            // Save to backend with replace flag
+                            fetch('/api/profile', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                section: 'skills',
+                                data: updatedSkills,
+                                replace: true
+                              })
+                            }).catch(err => console.error('Error saving updated skills to backend:', err));
                           }}
                           className="ml-2 text-purple-300 hover:text-white"
                         >

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import DataCleaner from "./components/DataCleaner";
 import "./globals.css";
 import { Providers } from "./providers";
 // Metadata is automatically picked up by Next.js from metadata.ts
@@ -71,6 +72,8 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`} suppressHydrationWarning>
         <Providers>
+          {/* DataCleaner runs on every page to ensure proper data isolation between users */}
+          <DataCleaner />
           {!hideHeader && <Header />}
           <div className={`flex-grow ${!hideHeader ? 'pt-24 bg-[#fefcf9]' : ''}`}>
             {children}
