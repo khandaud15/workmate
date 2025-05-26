@@ -61,7 +61,12 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
     setIsVerifying(true);
     try {
       const otpString = otp.join('');
-      const response = await fetch('/api/auth/email-verification', {
+      
+      // Determine which endpoint to use based on the current URL path
+      const isPasswordReset = window.location.pathname.includes('forgot-password');
+      const endpoint = isPasswordReset ? '/api/auth/reset-password' : '/api/auth/email-verification';
+      
+      const response = await fetch(endpoint, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpString }),

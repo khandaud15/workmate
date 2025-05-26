@@ -101,10 +101,11 @@ export const authOptions: AuthOptions = {
       console.log('Redirect URL:', url);
       console.log('Base URL:', baseUrl);
       
-      // Use talexus.ai for production, localhost for development
-      const productionDomain = process.env.NODE_ENV === 'production' 
-        ? 'https://www.talexus.ai' 
-        : 'http://localhost:3000';
+      // Determine if we're running locally or in production
+      const isLocalhost = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+      
+      // Use the current domain for redirects
+      const currentDomain = isLocalhost ? baseUrl : 'https://www.talexus.ai';
       
       // Always redirect to onboarding after successful auth
       const isAuthCallback = [
@@ -118,7 +119,7 @@ export const authOptions: AuthOptions = {
       ].some(path => url.includes(path));
 
       if (isAuthCallback) {
-        return `${productionDomain}/onboarding`;
+        return `${currentDomain}/onboarding`;
       }
 
       // Allow other redirects to proceed as normal

@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
 
   // Public paths that don't require authentication
-  const publicPaths = ['/', '/signup', '/signin', '/pricing', '/copilot', '/cover-letter']
+  const publicPaths = ['/', '/signup', '/signin', '/pricing', '/copilot', '/cover-letter', '/forgot-password']
 
   // Root path and public paths should always be accessible
   if (path === '/' || publicPaths.includes(path)) {

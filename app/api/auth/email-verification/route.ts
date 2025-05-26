@@ -29,23 +29,19 @@ export async function POST(request: NextRequest) {
       createdAt: new Date().toISOString(),
       verified: false,
     });
-    // Send email
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const verificationLink = `${baseUrl}/api/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`;
+    // Send email with OTP
     // Debug logging for email sending
     console.log('[EMAIL-VERIFICATION] Attempting to send verification email:', {
       RESEND_API_KEY: process.env.RESEND_API_KEY ? 'SET' : 'MISSING',
       RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
       email,
-      verificationLink,
     });
-    const sent = await sendVerificationEmail(email, otp, verificationLink);
+    const sent = await sendVerificationEmail(email, otp, 'verification');
     if (!sent) {
       console.error('[EMAIL-VERIFICATION] Failed to send verification email:', {
         RESEND_API_KEY: process.env.RESEND_API_KEY ? 'SET' : 'MISSING',
         RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
         email,
-        verificationLink,
       });
       return NextResponse.json({ success: false, message: 'Failed to send verification email.' }, { status: 500 });
     }

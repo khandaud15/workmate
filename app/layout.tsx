@@ -35,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
-  const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin');
+  const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin') || pathname?.startsWith('/forgot-password');
   const isDashboard = pathname?.startsWith('/dashboard');
 
   useEffect(() => {
