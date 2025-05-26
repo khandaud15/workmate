@@ -126,7 +126,6 @@ export default function ResumeUpload() {
           console.error('Error fetching parsed resume data:', parseErr);
         }
       }
-    }
     } catch (err) {
       console.error('Upload error:', err);
       setUploadStatus('idle');

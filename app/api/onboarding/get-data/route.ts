@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../auth/[...nextauth]/route';
-import { db } from '@/app/firebase';
+import { db } from '@/lib/firebase';
 
 export async function GET() {
   try {
@@ -35,8 +35,8 @@ export async function GET() {
         parsedResumeData = parsedResumeDoc.data();
         
         // Verify this resume belongs to the current user
-        if (parsedResumeData.userEmail !== userEmail) {
-          console.error('Security issue: Attempted to access resume data belonging to another user');
+        if (!parsedResumeData || parsedResumeData.userEmail !== userEmail) {
+          console.error('Security issue: Attempted to access resume data belonging to another user or resume data is missing');
           parsedResumeData = null;
         }
       }
