@@ -53,17 +53,16 @@ export const metadata: Metadata = {
   // Keep the existing favicon and theme settings
   icons: {
     icon: [
-      { url: '/favicon/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
-      { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon/favicon.svg', type: 'image/svg+xml' }
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' }
     ],
-    shortcut: ['/favicon/favicon.ico'],
+    shortcut: ['/favicon.ico'],
     apple: [
-      { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/favicon.ico', sizes: '180x180', type: 'image/x-icon' },
     ],
   },
-  manifest: '/favicon/site.webmanifest',
+  manifest: '/site.webmanifest',
   themeColor: '#0e3a68',
   appleWebApp: {
     title: 'Talexus',
