@@ -135,11 +135,14 @@ export async function POST(request: Request) {
       });
       parsedResumeUrl = parsedUrl;
       // Save the parsed resume URL to the user's document in Firestore
+      console.log('[UPLOAD API] Writing parsed resume for:', userEmail);
+      console.log('[UPLOAD API] ParsedResumeData:', JSON.stringify(result.parsed));
       await db.collection('parsedResumes').doc(userEmail).set({
         parsedResumeUrl: parsedResumeUrl,
         parsedResumeData: result.parsed !== undefined ? result.parsed : null,
         parsedResumeTimestamp: new Date().toISOString()
       }, { merge: false }); // Use merge: false to completely replace any existing data
+      console.log('[UPLOAD API] Write to parsedResumes complete.');
       
       // Get user document reference
       const userDocRef = db.collection('users').doc(userEmail);

@@ -1,8 +1,8 @@
 [
   {
-    "origin": ["http://localhost:3000", "https://talexus-4339c.web.app", "https://talexus-4339c.firebaseapp.com"],
-    "method": ["GET", "HEAD", "PUT", "POST", "DELETE"],
-    "responseHeader": ["Content-Type", "Content-Length", "Content-Disposition", "Cache-Control"],
+    "origin": ["http://localhost:3000", "https://talexus-4339c.web.app", "https://talexus-4339c.firebaseapp.com", "https://www.talexus.ai"],
+    "method": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "DELETE"],
+    "responseHeader": ["Content-Type", "Content-Length", "Content-Disposition", "Cache-Control", "Access-Control-Allow-Origin"],
     "maxAgeSeconds": 3600
   }
 ]

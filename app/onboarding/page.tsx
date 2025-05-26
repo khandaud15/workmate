@@ -1597,6 +1597,11 @@ export default function Onboarding() {
               setShowSalary(false);
               setShowJobTitles(false);
               setShowResumeUpload(false);
+              setShowQuestionnaire(false);
+              setShowWorkExperience(false);
+              setShowEducation(false);
+              setShowSkills(false);
+              setShowContactInfo(false);
             }}
           >
             <div className="flex items-center gap-3">
@@ -1775,16 +1780,17 @@ export default function Onboarding() {
       <main className="h-screen overflow-y-auto flex-1 bg-[#0e0c12] text-white">
         {/* Hide the main UI when Education section is shown */}
         {showAccountSettings ? (
-          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-[2px]">
-            <div className="flex justify-between items-start mb-8">
-              <div>
-                <h1 className="text-2xl font-bold text-white mb-2">Account</h1>
-                <p className="text-gray-400 text-sm">Manage billing and account settings</p>
-              </div>
+          <div className="w-full max-w-full md:max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
+            {/* Box header for visual consistency with other sections */}
+            <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
+              <h2 className="text-xl font-semibold text-white mb-1">Account</h2>
+              <p className="text-gray-400 text-sm">Manage billing and account settings</p>
+            </div>
+            <div className="flex justify-between items-start">
               {/* Cross button removed as requested */}
             </div>
 
-            <div className="bg-[#1f1e22] rounded-xl p-4 mb-4">
+            <div className="bg-[#1a1625] border border-[#2e2a3d] p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <img 
@@ -1806,10 +1812,10 @@ export default function Onboarding() {
               </div>
             </div>
 
-            <div className="bg-[#1f1e22] rounded-xl p-4 mb-6">
+            <div className="bg-[#1a1625] border border-[#2e2a3d] p-4 mb-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-[#2a2830] rounded-lg">
+                  <div className="p-2 bg-[#2a2830] border border-[#2e2a3d]">
                     <FaCreditCard className="h-4 w-4 text-gray-400" />
                   </div>
                   <div>
@@ -1824,12 +1830,11 @@ export default function Onboarding() {
             </div>
 
             <div className="mb-6">
-              <h2 className="text-xl font-bold text-white mb-4">Current Plan</h2>
-              <p className="text-gray-400 mb-6">Free Plan</p>
+              <h2 className="text-xl font-bold text-white flex items-center mb-2 text-left">Current Plan <span className="ml-3 text-gray-400 font-normal text-lg">(Free Plan)</span></h2>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Trial Access Card */}
-                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
+                <div className="bg-[#1a1625] border border-[#2e2a3d] p-6 transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
                   <div className="text-lg font-semibold mb-1">Trial Access</div>
                   <div className="text-2xl font-bold mb-2">$2.95</div>
                   <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
@@ -1841,7 +1846,7 @@ export default function Onboarding() {
                 </div>
 
                 {/* 3 Month Full Access Card */}
-                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] focus-within:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
+                <div className="bg-[#1a1625] border border-[#2e2a3d] p-6 transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] focus-within:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
                   <div className="text-lg font-semibold mb-1 flex items-center">3 Month Full Access <span className="ml-2 bg-[#2ecc71] text-black text-[11px] px-2 py-0.5 rounded-full">RECOMMENDED</span></div>
                   <div className="text-2xl font-bold mb-2">$13.95<span className="text-base font-normal">/mo</span></div>
                   <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
@@ -1853,7 +1858,7 @@ export default function Onboarding() {
                 </div>
 
                 {/* 6 Month Full Access Card */}
-                <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
+                <div className="bg-[#1a1625] border border-[#2e2a3d] p-6 transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] mt-2">
                   <div className="text-lg font-semibold mb-1">6 Month Full Access</div>
                   <div className="text-2xl font-bold mb-2">$10.95<span className="text-base font-normal">/mo</span></div>
                   <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
@@ -1867,7 +1872,7 @@ export default function Onboarding() {
             </div>
           </div>
         ) : !showResumeUpload && !showContactInfo && !showWorkExperience && !showEducation && !showSkills && !showJobTitles && !showSalary && !showLocation && !showQuestionnaire && !showAccountSettings && (
-          <div className="w-[calc(100%-1rem)] max-w-5xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-5xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             <h2 className="text-[28px] font-semibold mb-2">Let's set you up for success!</h2>
             <p className="text-[#a0a0a0] text-[15px] mb-8">Automate your job search in 3 simple steps.</p>
 
@@ -1926,7 +1931,7 @@ export default function Onboarding() {
         
         {/* Contact Info Section */}
         {showContactInfo && (
-          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Box header for visual consistency with skills section */}
             <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
               <h2 className="text-xl font-semibold text-white mb-1">Your Contact Information</h2>
@@ -1940,7 +1945,7 @@ export default function Onboarding() {
                   <div className="flex-1">
                     <label className="block mb-1 font-medium text-white" htmlFor="firstName">First Name *</label>
                     <input 
-                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="firstName" 
                       type="text" 
                       value={contactInfo.firstName} 
@@ -1950,7 +1955,7 @@ export default function Onboarding() {
                   <div className="flex-1">
                     <label className="block mb-1 font-medium text-white" htmlFor="lastName">Last Name *</label>
                     <input 
-                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="lastName" 
                       type="text" 
                       value={contactInfo.lastName} 
@@ -1963,7 +1968,7 @@ export default function Onboarding() {
                   <div className="flex-1">
                     <label className="block mb-1 font-medium text-white" htmlFor="dob">Date of Birth *</label>
                     <input 
-                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="dob" 
                       type="date" 
                       value={contactInfo.dob} 
@@ -1973,7 +1978,7 @@ export default function Onboarding() {
                   <div className="flex-1">
                     <label className="block mb-1 font-medium text-white" htmlFor="address">Address *</label>
                     <input 
-                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="address" 
                       type="text" 
                       value={contactInfo.address} 
@@ -1986,7 +1991,7 @@ export default function Onboarding() {
                   <div className="flex-1">
                     <label className="block mb-1 font-medium text-white" htmlFor="city">City *</label>
                     <input 
-                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="city" 
                       type="text" 
                       value={contactInfo.city} 
@@ -1996,7 +2001,7 @@ export default function Onboarding() {
                   <div className="flex-1">
                     <label className="block mb-1 font-medium text-white" htmlFor="state">State *</label>
                     <input 
-                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="state" 
                       type="text" 
                       value={contactInfo.state} 
@@ -2006,7 +2011,7 @@ export default function Onboarding() {
                   <div className="flex-1">
                     <label className="block mb-1 font-medium text-white" htmlFor="postalCode">Postal Code *</label>
                     <input 
-                      className="w-full p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="postalCode" 
                       type="text" 
                       value={contactInfo.postalCode} 
@@ -2017,7 +2022,7 @@ export default function Onboarding() {
 
                 <label className="block mb-1 font-medium text-white" htmlFor="linkedin">LinkedIn Profile</label>
                 <input 
-                  className="w-full mb-4 p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                  className="w-full mb-4 p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                   id="linkedin" 
                   type="url" 
                   value={contactInfo.linkedin} 
@@ -2026,7 +2031,7 @@ export default function Onboarding() {
 
                 <label className="block mb-1 font-medium text-white" htmlFor="phone">Phone Number *</label>
                 <input 
-                  className="w-full mb-4 p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                  className="w-full mb-4 p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                   id="phone" 
                   type="tel" 
                   value={contactInfo.phone} 
@@ -2035,7 +2040,7 @@ export default function Onboarding() {
 
                 <label className="block mb-1 font-medium text-white" htmlFor="email">Email Address *</label>
                 <input 
-                  className="w-full mb-4 p-3 rounded bg-[#1a1625] border border-gray-700 text-white" 
+                  className="w-full mb-4 p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                   id="email" 
                   type="email" 
                   value={contactInfo.email} 
@@ -2090,7 +2095,7 @@ export default function Onboarding() {
         
         {/* Work Experience Section */}
         {showWorkExperience && (
-          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Box header for visual consistency with skills section */}
             <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
               <h2 className="text-xl font-semibold text-white mb-1">Your Work Experience</h2>
@@ -2122,7 +2127,7 @@ export default function Onboarding() {
                   </button>
                 </div>
               ) : workExperience.length === 0 ? (
-                <div className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-6 text-center">
+                <div className="bg-[#1a1625] border border-[#2e2a3d] p-6 mb-6 text-center">
                   <p className="text-gray-300 mb-4">No work experience found in your resume.</p>
                   <button 
                     className="w-full p-4 border border-dashed border-purple-500 rounded-lg text-purple-400 hover:bg-purple-900/20 transition-colors flex items-center justify-center gap-2"
@@ -2148,7 +2153,7 @@ export default function Onboarding() {
                 <>
                   {/* Work Experience Entries */}
                   {workExperience.map((exp, index) => (
-                    <div key={exp.id} className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-4 text-left">
+                    <div key={exp.id} className="bg-[#1a1625] border border-[#2e2a3d] p-6 mb-4 text-left">
                       {exp.isEditing ? (
                         /* Edit Form */
                         <div className="text-left">
@@ -2418,15 +2423,7 @@ export default function Onboarding() {
                 </>
               )}
               
-              {/* Tips */}
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 text-left mb-4">
-                <h4 className="text-purple-300 font-medium mb-2">Tips for a Strong Work History</h4>
-                <ul className="text-purple-200 text-sm space-y-2">
-                  <li>• Include positions from the past 10 years that are relevant to your job search</li>
-                  <li>• Use action verbs and quantify achievements when possible</li>
-                  <li>• Focus on responsibilities that demonstrate skills for your target roles</li>
-                </ul>
-              </div>
+
             </div>
             
             <div className="mt-8 flex justify-between">
@@ -2461,7 +2458,7 @@ export default function Onboarding() {
         
         {/* Skills Section */}
         {showSkills && !showEducation && !showWorkExperience && !showContactInfo && !showResumeUpload && !showJobTitles && !showSalary && !showLocation && (
-          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Box header for visual consistency with other sections */}
             <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
               <h2 className="text-xl font-semibold text-white mb-1">Your Skills</h2>
@@ -2535,53 +2532,7 @@ export default function Onboarding() {
                   </div>
                 </div>
 
-                {/* Skill categories from resume */}
-                {skills.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-lg font-medium text-white mb-3">Skill Suggestions</h3>
-                    <p className="text-gray-400 text-sm mb-4">Based on your resume and industry trends, you might want to add these skills:</p>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-[#1f1e22] rounded-lg p-4">
-                        <h4 className="text-white font-medium mb-2">Technical Skills</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {['Python', 'JavaScript', 'React', 'Node.js', 'SQL'].filter(skill => !skills.includes(skill)).map((skill, index) => (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                const updatedSkills = [...skills, skill];
-                                setSkills(updatedSkills);
-                                localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
-                              }}
-                              className="bg-[#2a292e] hover:bg-purple-900/30 text-gray-300 hover:text-purple-100 px-3 py-1.5 rounded-full text-sm transition-colors"
-                            >
-                              + {skill}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="bg-[#1f1e22] rounded-lg p-4">
-                        <h4 className="text-white font-medium mb-2">Soft Skills</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {['Communication', 'Leadership', 'Problem Solving', 'Teamwork', 'Time Management'].filter(skill => !skills.includes(skill)).map((skill, index) => (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                const updatedSkills = [...skills, skill];
-                                setSkills(updatedSkills);
-                                localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
-                              }}
-                              className="bg-[#2a292e] hover:bg-purple-900/30 text-gray-300 hover:text-purple-100 px-3 py-1.5 rounded-full text-sm transition-colors"
-                            >
-                              + {skill}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+
                 
                 {/* Navigation Buttons */}
                 <div className="mt-8 flex justify-between items-center w-full">
@@ -2613,7 +2564,7 @@ export default function Onboarding() {
         
         {/* Education Section */}
         {showEducation && !showSkills && !showWorkExperience && !showContactInfo && !showResumeUpload && !showJobTitles && !showSalary && !showLocation && (
-          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Box header for visual consistency with skills section */}
             <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
               <h2 className="text-xl font-semibold text-white mb-1">Your Education</h2>
@@ -2645,7 +2596,7 @@ export default function Onboarding() {
                   </button>
                 </div>
               ) : education.length === 0 ? (
-                <div className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-6 text-center">
+                <div className="bg-[#1a1625] border border-[#2e2a3d] p-6 mb-6 text-center">
                   <p className="text-gray-300 mb-4">No education found in your resume.</p>
                   <button 
                     className="w-full p-4 border border-dashed border-purple-500 rounded-lg text-purple-400 hover:bg-purple-900/20 transition-colors flex items-center justify-center gap-2"
@@ -2671,7 +2622,7 @@ export default function Onboarding() {
                 <>
                   {/* Education Entries */}
                   {education.map((edu, index) => (
-                    <div key={edu.id} className="bg-[#1a1625] border border-gray-700 rounded-xl p-6 mb-4 text-left">
+                    <div key={edu.id} className="bg-[#1a1625] border border-[#2e2a3d] p-6 mb-4 text-left">
                       {edu.isEditing ? (
                         /* Edit Form */
                         <div className="text-left">
@@ -2911,15 +2862,7 @@ export default function Onboarding() {
                 </>
               )}
               
-              {/* Tips */}
-              <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4 text-left mb-4">
-                <h4 className="text-purple-300 font-medium mb-2">Tips for Education Section</h4>
-                <ul className="text-purple-200 text-sm space-y-2">
-                  <li>• Include your highest level of education and any relevant certifications</li>
-                  <li>• Add academic achievements, honors, or relevant coursework in the description</li>
-                  <li>• List education in reverse chronological order (most recent first)</li>
-                </ul>
-              </div>
+
             </div>
             
             <div className="mt-8 flex justify-between">
@@ -2954,7 +2897,7 @@ export default function Onboarding() {
         
         {/* Resume Upload Section */}
         {showResumeUpload && !showJobTitles && !showSalary && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             <div className="mb-6">
               {/* Back button removed as requested */}
             </div>
@@ -2986,7 +2929,7 @@ export default function Onboarding() {
                 </div>
               ) : uploadStatus === 'uploading' ? (
                 <div className="text-center">
-                  <div className="w-16 h-16 rounded-full border-4 border-t-purple-500 border-r-purple-300 border-b-purple-200 border-l-purple-400 animate-spin mb-4"></div>
+                  <div className="w-16 h-16 rounded-full border-4 border-t-purple-500 border-r-purple-300 border-b-purple-200 border-l-purple-400 animate-spin mb-4 mx-auto"></div>
                   <h3 className="text-xl font-semibold text-white mb-2">Uploading...</h3>
                   <p className="text-gray-400">{selectedFile?.name}</p>
                 </div>
@@ -3034,7 +2977,7 @@ export default function Onboarding() {
         )}
         
         {showJobTitles && !showSalary && (
-          <div className="w-[calc(100%-1rem)] max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-2xl text-center mt-24 border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Main Content */}
             <div className="container mx-auto px-4 py-8 mt-2">
               {/* Headers */}
@@ -3129,7 +3072,7 @@ export default function Onboarding() {
         
         {/* Questionnaire Section */}
         {showQuestionnaire && !showJobTitles && !showSkills && !showEducation && !showWorkExperience && !showContactInfo && !showResumeUpload && (
-          <div className="w-[calc(100%-1rem)] max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-6 bg-[#12101a]/50 mx-auto mt-2">
+          <div className="w-full max-w-full md:max-w-4xl text-center border border-gray-700 rounded-xl pt-8 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
             {/* Box header for visual consistency with other sections */}
             <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mb-6">
               <h2 className="text-xl font-semibold text-white mb-1">Key Questions</h2>
@@ -3169,8 +3112,8 @@ export default function Onboarding() {
                             }));
                           }
                         }}
-                        className={`mt-1 block w-full rounded-lg border ${
-                          questionnaireErrors[question.id] ? 'border-red-500' : 'border-gray-600'
+                        className={`mt-1 block w-full border ${
+                          questionnaireErrors[question.id] ? 'border-red-500' : 'border-[#2e2a3d]'
                         } bg-[#1a1625] pl-3 pr-8 py-2.5 text-white shadow-sm transition-colors hover:border-purple-500 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 sm:text-sm appearance-none`}
                       >
                         <option value="">Select</option>
@@ -3248,25 +3191,39 @@ export default function Onboarding() {
       
       <style jsx global>{`
         .sidebar {
-          width: 280px;
-          height: 100vh;
-          background: linear-gradient(to bottom, #141019, #7a64c2);
-          color: white;
-          padding: 24px 20px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
-          position: fixed;
-          top: 0;
-          left: 0;
-          z-index: 50;
-          transform: translateX(-100%);
-          transition: transform 0.3s ease-in-out;
-        }
+  width: 280px;
+  height: 100vh;
+  background: linear-gradient(to bottom, #141019, #7a64c2);
+  color: white;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+}
+@media (min-width: 1024px) {
+  .sidebar {
+    position: sticky;
+    left: 0;
+    top: 0;
+    transform: none;
+    box-shadow: none;
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+  main {
+    margin-left: 280px;
+  }
+}
         .sidebar.open {
-          transform: translateX(0);
-        }
+  transform: translateX(0);
+}
         @media (min-width: 1024px) {
           .sidebar {
             position: static;

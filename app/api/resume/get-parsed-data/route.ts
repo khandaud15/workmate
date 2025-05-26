@@ -31,7 +31,8 @@ export async function GET(request: NextRequest) {
     
     const parsedResumeData = parsedResumeDoc.data();
     
-    // Return the parsed resume data directly
+    console.log('[FETCH API] Returning parsed resume for:', userEmail);
+    console.log('[FETCH API] Firestore document:', JSON.stringify(parsedResumeData));
     return NextResponse.json({
       parsedResumeData: parsedResumeData?.parsedResumeData || null,
       parsedResumeUrl: parsedResumeData?.parsedResumeUrl || null,
