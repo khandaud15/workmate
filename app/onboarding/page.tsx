@@ -65,7 +65,144 @@ type ResumeExperience = {
   bbox?: number[];
 }
 
+// Helper function to clear all localStorage data
+const clearAllLocalStorage = () => {
+  // List of all keys that should be cleared when a user logs in/out
+  const keysToRemove = [
+    'contactInfo',
+    'workExperience',
+    'education',
+    'skills',
+    'resumeData',
+    'resumeEducation',
+    'resumeExperience',
+    'resumeSkills',
+    'resumeContactInfo',
+    'resumeIdentifier',
+    'parsedResumeData',
+    'rawResumeData',
+    'selectedTitles',
+    'selectedLocations',
+    'questionnaireAnswers',
+    'newResumeUploaded',
+    'userEmail'
+  ];
+  
+  // Remove all keys
+  keysToRemove.forEach(key => {
+    try {
+      localStorage.removeItem(key);
+    } catch (e) {
+      console.error(`Error removing ${key} from localStorage:`, e);
+    }
+  });
+  
+  console.log('Cleared all localStorage data');
+};
+
 export default function Onboarding() {
+  // Get session data for authentication
+  const { data: session } = useSession();
+  
+  // Function to force clear profile data on the server
+  const forceProfileClear = async () => {
+    try {
+      console.log('Forcing profile clear on server...');
+      const res = await fetch('/api/profile/clear', {
+        method: 'POST',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (res.ok) {
+        console.log('Successfully cleared profile data on server');
+        // Also clear local storage
+        clearAllLocalStorage();
+        
+        // Reset all state variables to default values
+        setContactInfo({
+          firstName: '',
+          lastName: '',
+          dob: '',
+          address: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          linkedin: '',
+          phone: '',
+          email: '',
+          smsConsent: true
+        });
+        setWorkExperience([]);
+        setEducation([]);
+        setSkills([]);
+      } else {
+        console.error('Failed to clear profile data on server');
+      }
+    } catch (error) {
+      console.error('Error clearing profile data:', error);
+    }
+  };
+
+  // Effect to handle session changes (login/logout)
+  useEffect(() => {
+    // Only run this effect on the client side
+    if (typeof window === 'undefined') return;
+    
+    // Store current user email in localStorage for verification
+    if (session?.user?.email) {
+      const storedEmail = localStorage.getItem('userEmail');
+      
+      // If the stored email is different from the current user, clear all data
+      if (storedEmail && storedEmail !== session.user.email) {
+        console.log('User changed, clearing all data');
+        // Force clear profile data on the server
+        forceProfileClear();
+      }
+      
+      // Store current user email
+      localStorage.setItem('userEmail', session.user.email);
+
+      // --- NEW LOGIC: Auto-clear backend contact info if no resume and no contact info ---
+      fetch('/api/profile')
+        .then(res => res.json())
+        .then(data => {
+          const hasResume = data.parsedResumeData || data.resumeUrl || data.parsedResumeUrl;
+          const hasContactInfo = data.profile && data.profile.contactInfo && Object.values(data.profile.contactInfo).some(val => val);
+          if (!hasResume && !hasContactInfo) {
+            // No resume and no contact info, force clear contact info on backend
+            fetch('/api/profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                section: 'contactInfo',
+                data: {
+                  firstName: '',
+                  lastName: '',
+                  dob: '',
+                  address: '',
+                  city: '',
+                  state: '',
+                  postalCode: '',
+                  linkedin: '',
+                  phone: '',
+                  email: '',
+                  smsConsent: true
+                },
+                replace: true
+              })
+            });
+          }
+        });
+      // --- END NEW LOGIC ---
+    } else {
+      // No active session, clear all localStorage
+      clearAllLocalStorage();
+    }
+  }, [session]);
+  
   // State variables for UI components
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showResumeUpload, setShowResumeUpload] = useState(false);
@@ -281,8 +418,8 @@ export default function Onboarding() {
                     else {
                       endDate = yearStr;
                     }
-                  } else if (edu?.Year && typeof edu.Year === 'string') {
-                    const yearStr = edu.Year.trim();
+                  } else if (edu['Year'] && typeof edu['Year'] === 'string') {
+                    const yearStr = edu['Year'].trim();
                     
                     // Handle "Since [Month] [Year]" format
                     if (yearStr.toLowerCase().startsWith('since')) {
@@ -909,52 +1046,140 @@ export default function Onboarding() {
   // Prefill Contact Info on section mount (fetch from backend only)
   useEffect(() => {
     if (showContactInfo) {
+      console.log('Fetching contact info for current user:', session?.user?.email);
       const fetchContactInfo = async () => {
+        // Clear any existing contact info first to avoid showing stale data
+        setContactInfo({
+          firstName: '',
+          lastName: '',
+          dob: '',
+          address: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          linkedin: '',
+          phone: '',
+          email: '',
+          smsConsent: true
+        });
+        
+        // Only proceed if we have an active session
+        if (!session || !session.user) {
+          console.log('No active session, using empty contact info');
+          return;
+        }
+        
         try {
-          const res = await fetch('/api/profile');
+          // Add a cache-busting parameter to ensure we get fresh data
+          const timestamp = new Date().getTime();
+          const res = await fetch(`/api/profile?t=${timestamp}`, {
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          });
+          
           if (res.ok) {
             const data = await res.json();
-            // If parsedResumeUrl exists, fetch and extract contact info from parsed resume
-            if (data && data.parsedResumeUrl) {
-              try {
-                const resp = await fetch(data.parsedResumeUrl);
-                const parsed = await resp.json();
-                console.log('ONBOARDING: FULL PARSED RESUME (from saved):', parsed);
-                const extractedInfo = extractContactInfoFromResume(parsed);
-                console.log('DEBUG: extracted LinkedIn:', extractedInfo.linkedin);
-                setContactInfo((prev) => ({ ...prev, ...extractedInfo }));
-                return;
-              } catch (e) {
-                console.error('Error fetching parsed resume from saved URL:', e);
+            console.log('DEBUG: API response data:', {
+              userEmail: data.userEmail,
+              sessionEmail: session?.user?.email,
+              hasContactInfo: data?.profile?.contactInfo ? true : false
+            });
+            
+            // STRICT VERIFICATION: Only proceed if emails match exactly
+            if (data && data.userEmail && session?.user?.email && 
+                data.userEmail.toLowerCase().trim() === session.user.email.toLowerCase().trim()) {
+              
+              console.log('Found profile data for current user:', data.userEmail);
+              
+              // RESET: Force clear any existing contact info in state
+              setContactInfo({
+                firstName: '',
+                lastName: '',
+                dob: '',
+                address: '',
+                city: '',
+                state: '',
+                postalCode: '',
+                linkedin: '',
+                phone: '',
+                email: '',
+                smsConsent: true
+              });
+              
+              // If parsedResumeUrl exists, fetch and extract contact info from parsed resume
+              if (data && data.parsedResumeUrl) {
+                try {
+                  const resp = await fetch(data.parsedResumeUrl, {
+                    headers: {
+                      'Cache-Control': 'no-cache',
+                      'Pragma': 'no-cache'
+                    }
+                  });
+                  const parsed = await resp.json();
+                  console.log('ONBOARDING: Parsed resume found, extracting contact info');
+                  const extractedInfo = extractContactInfoFromResume(parsed);
+                  
+                  // Only use extracted info if it has actual content
+                  if (extractedInfo && Object.values(extractedInfo).some(val => val && typeof val === 'string' && val.trim() !== '')) {
+                    console.log('DEBUG: Using contact info from parsed resume');
+                    // Ensure smsConsent is always set to avoid TypeScript errors
+                    const safeExtractedInfo = {
+                      ...extractedInfo,
+                      smsConsent: extractedInfo.smsConsent === undefined ? true : extractedInfo.smsConsent
+                    };
+                    setContactInfo(safeExtractedInfo); // Replace completely, don't merge
+                    return;
+                  } else {
+                    console.log('DEBUG: Parsed resume had no usable contact info');
+                  }
+                } catch (e) {
+                  console.error('Error fetching parsed resume from saved URL:', e);
+                }
               }
-            }
-            // Otherwise, fallback to contactInfo in backend profile
-            if (data && data.profile && data.profile.contactInfo) {
-              setContactInfo((prev) => ({ ...prev, ...data.profile.contactInfo }));
-              return;
+              
+              // Otherwise, fallback to contactInfo in backend profile
+              if (data?.profile?.contactInfo) {
+                // Only use profile contact info if it has actual content
+                const profileContactInfo = data.profile.contactInfo;
+                if (profileContactInfo && Object.values(profileContactInfo).some(val => val && typeof val === 'string' && val.trim() !== '')) {
+                  console.log('DEBUG: Using contact info from profile');
+                  // Ensure smsConsent is always set to avoid TypeScript errors
+                  const safeProfileContactInfo = {
+                    ...profileContactInfo,
+                    smsConsent: profileContactInfo.smsConsent === undefined ? true : profileContactInfo.smsConsent
+                  };
+                  setContactInfo(safeProfileContactInfo); // Replace completely, don't merge
+                  return;
+                }
+              }
+            } else {
+              console.warn('⚠️ SECURITY WARNING: Profile data does not match current user, using empty contact info');
+              // Force reset contact info to empty
+              setContactInfo({
+                firstName: '',
+                lastName: '',
+                dob: '',
+                address: '',
+                city: '',
+                state: '',
+                postalCode: '',
+                linkedin: '',
+                phone: '',
+                email: '',
+                smsConsent: true
+              });
             }
           }
         } catch (e) {
           console.error('Error fetching contact info from backend:', e);
         }
-        // If all fetches fail, optionally clear contact info or set to empty
-        setContactInfo({
-  firstName: '',
-  lastName: '',
-  dob: '',
-  address: '',
-  city: '',
-  state: '',
-  postalCode: '',
-  linkedin: '',
-  phone: '',
-  email: '',
-  smsConsent: true
-});
       };
+      
       fetchContactInfo();
     }
-  }, [showContactInfo]);
+  }, [showContactInfo, session]);
   const [isSaving, setIsSaving] = useState(false);
   const [parsedResume, setParsedResume] = useState<any>(null);
   const [salary, setSalary] = useState(50); // Starting at $50k
@@ -1067,7 +1292,6 @@ export default function Onboarding() {
   ];
   
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { data: session } = useSession();
   
   // Sample locations data
   const sampleLocations = [
@@ -1598,13 +1822,13 @@ export default function Onboarding() {
                   }
                   // Handle cases with "present"
                   else if (yearStr.toLowerCase().includes('present')) {
-                    const parts = yearStr.toLowerCase().split(/[-\u2013]/).map((p: string) => p.trim());
+                    const parts = yearStr.toLowerCase().split(/[--]/).map((p: string) => p.trim());
                     startDate = parts[0] || '';
                     endDate = 'Present';
                   }
                   // Handle hyphen or en dash separators
-                  else if (yearStr.includes('-') || yearStr.includes('\u2013')) {
-                    const separator = yearStr.includes('-') ? '-' : '\u2013';
+                  else if (yearStr.includes('-') || yearStr.includes('-')) {
+                    const separator = yearStr.includes('-') ? '-' : '-';
                     const parts = yearStr.split(separator).map((p: string) => p.trim());
                     startDate = parts[0] || '';
                     endDate = parts.length > 1 ? parts[1] : 'Present';
@@ -1631,11 +1855,11 @@ export default function Onboarding() {
                     startDate = parts[0] || '';
                     endDate = parts.length > 1 ? parts[1] : 'Present';
                   } else if (yearStr.toLowerCase().includes('present')) {
-                    const parts = yearStr.toLowerCase().split(/[-\u2013]/).map((p: string) => p.trim());
+                    const parts = yearStr.toLowerCase().split(/[--]/).map((p: string) => p.trim());
                     startDate = parts[0] || '';
                     endDate = 'Present';
-                  } else if (yearStr.includes('-') || yearStr.includes('\u2013')) {
-                    const separator = yearStr.includes('-') ? '-' : '\u2013';
+                  } else if (yearStr.includes('-') || yearStr.includes('-')) {
+                    const separator = yearStr.includes('-') ? '-' : '-';
                     const parts = yearStr.split(separator).map((p: string) => p.trim());
                     startDate = parts[0] || '';
                     endDate = parts.length > 1 ? parts[1] : 'Present';

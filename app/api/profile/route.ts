@@ -131,7 +131,8 @@ export async function GET(request: NextRequest) {
       parsedResumeUrl: userData?.parsedResumeUrl || null,
       resumeUrl: userData?.resumeUrl || null,
       newResumeAvailable: newResumeAvailable,
-      parsedResumeData: parsedResumeData
+      parsedResumeData: parsedResumeData,
+      userEmail: userEmail // Include the user's email for verification on frontend
     });
     
   } catch (error) {
