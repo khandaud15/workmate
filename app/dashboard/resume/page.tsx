@@ -90,7 +90,7 @@ export default function ResumePage() {
     <div className="min-h-screen bg-[#0e0c12] text-white p-4 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Your Resume</h1>
+          
           <div className="flex gap-3">
             <Link 
               href="/profile/resume-upload" 

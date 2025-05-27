@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Logo from './Logo';
 import { useState, useId, useEffect } from 'react';
+import DashboardIcon from './DashboardIcon';
+import { FaTachometerAlt } from 'react-icons/fa';
 
 interface Country {
   code: string;
@@ -121,7 +123,7 @@ export default function Header() {
                 >
                   Copilot
                 </Link>
-                <div className="relative">
+                <div className="relative hidden md:flex">
                   <div 
                     className="fixed inset-0 z-40"
                     onClick={() => setIsCountryDropdownOpen(false)}
@@ -189,65 +191,69 @@ export default function Header() {
               {/* Auth Buttons */}
               <div className="hidden md:flex items-center space-x-4 ml-auto">
                 {session ? (
-                  <div className="relative">
-                    {isProfileDropdownOpen && (
-                      <div 
-                        className="fixed inset-0 z-40"
-                        onClick={() => setIsProfileDropdownOpen(false)}
-                      />
-                    )}
-                    <button 
-                      onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                      className="flex items-center space-x-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
-                    >
-                      <div className="flex items-center">
-                        <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
-                          {session.user?.image ? (
-                            <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
-                          ) : (
-                            session.user?.name?.charAt(0) || 'U'
-                          )}
-                        </div>
-                        {/* Only show name if not on home page */}
-                        {pathname !== '/' && <span className="ml-2 text-base">{session.user?.name}</span>}
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </button>
-                    
-                    {isProfileDropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
-                        <div className="px-4 py-2 border-b border-gray-100">
-                          <p className="text-sm font-medium text-gray-900">{session.user?.name}</p>
-                          <p className="text-xs text-gray-500 truncate">{session.user?.email}</p>
-                        </div>
-                        <Link 
-                          href="/profile/settings" 
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center"
-                          onClick={() => setIsProfileDropdownOpen(false)}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                          Settings
-                        </Link>
-                        <button
-                          onClick={() => {
-                            setIsProfileDropdownOpen(false);
-                            signOut({ callbackUrl: '/' });
-                          }}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                          </svg>
-                          Log out
-                        </button>
-                      </div>
-                    )}
-                  </div>
+  <div className="relative flex items-center gap-3">
+    <DashboardIcon className="mr-2" />
+    <div>
+      {isProfileDropdownOpen && (
+        <div 
+          className="fixed inset-0 z-40"
+          onClick={() => setIsProfileDropdownOpen(false)}
+        />
+      )}
+      <button 
+        onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+        className="flex items-center space-x-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
+      >
+        <div className="flex items-center">
+          <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
+            {session.user?.image ? (
+              <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
+            ) : (
+              session.user?.name?.charAt(0) || 'U'
+            )}
+          </div>
+          {/* Only show name if not on home page */}
+          {pathname !== '/' && <span className="ml-2 text-base">{session.user?.name}</span>}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+      
+      {isProfileDropdownOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
+          <div className="px-4 py-2 border-b border-gray-100">
+            <p className="text-sm font-medium text-gray-900">{session.user?.name}</p>
+            <p className="text-xs text-gray-500 truncate">{session.user?.email}</p>
+          </div>
+          <Link 
+            href="/profile/settings" 
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center"
+            onClick={() => setIsProfileDropdownOpen(false)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
+          </Link>
+          <button
+            onClick={() => {
+              setIsProfileDropdownOpen(false);
+              signOut({ callbackUrl: '/' });
+            }}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left flex items-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Log out
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+
                 ) : !isRestrictedPath && (
                   <div className="flex items-center space-x-4">
                     <Link 
@@ -269,6 +275,7 @@ export default function Header() {
 
             {/* Mobile icons */}
             <div className="md:hidden flex items-center -mr-2 space-x-1">
+  {/* Remove/hide country selector in mobile icon row */}
               {/* Show user avatar when logged in - only show if not in restricted path to avoid duplicate */}
               {session && !isRestrictedPath && (
                 <div className="relative">
@@ -343,51 +350,7 @@ export default function Header() {
               )}
               {!isRestrictedPath && (
                 <>
-                  <div className="relative inline-block">
-                    <button
-                      type="button"
-                      className="p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors flex items-center justify-center"
-                      aria-label="Select country"
-                      aria-expanded={isMobileDropdownOpen}
-                      onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
-                    >
-                      {!selectedCountry || selectedCountry.code === 'NONE' ? (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                          />
-                        </svg>
-                      ) : (
-                        <span className="text-lg">{selectedCountry.flag}</span>
-                      )}
-                    </button>
-                    {isMobileDropdownOpen && (
-                      <div 
-                        className="absolute top-full right-0 mt-1 bg-[#fefcf9] rounded-lg shadow-lg py-2 z-50 w-48"
-                      >
-                        {countries.map((country) => (
-                          <button
-                            type="button"
-                            key={country.code}
-                            onClick={() => handleCountrySelect(country)}
-                            className="flex items-center w-full px-4 py-2 text-[15px] font-medium text-[#0e3a68] hover:bg-[#0e3a68] hover:text-white transition-colors whitespace-nowrap"
-                          >
-                            <span className="mr-2 text-base">{country.flag}</span>
-                            {country.name}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  
                   <button
                     type="button"
                     className="md:hidden p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors"
@@ -519,6 +482,16 @@ export default function Header() {
                 </button>
               </div>
               <nav className="flex flex-col space-y-6">
+  {/* Dashboard link for mobile menu */}
+  {session && (
+    <Link
+      href="/dashboard"
+      className="block text-[#0e3a68] text-base font-medium hover:text-[#0c3156] transition-colors mt-2 mb-2"
+      onClick={() => setIsMobileMenuOpen(false)}
+    >
+      Dashboard
+    </Link>
+  )}
                 {/* Mobile Core Features Dropdown */}
                 <div>
                   <button

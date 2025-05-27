@@ -2242,12 +2242,12 @@ export default function OnboardingPage() {
           </button>
         )}
         <div className="top-section">
-          <div className="flex items-center gap-2.5 pl-2">
+          <Link href="/" className="flex items-center gap-2.5 pl-2 hover:opacity-80 transition-opacity">
             <div className="w-5 h-5 bg-gradient-to-br from-[#d8f1eb] to-[#9bd6c4] rounded transform rotate-45"
               style={{ boxShadow: '2px 2px 5px rgba(0,0,0,0.2), -1px -1px 3px rgba(255,255,255,0.4)' }}
             />
             <div className="text-lg font-semibold text-white">Talexus AI</div>
-          </div>
+          </Link>
           {/* User avatar/info section (matches dashboard) */}
           <div 
             className="user hover:bg-white/5 rounded-lg transition-colors duration-200 p-2 -mx-2 cursor-pointer"

@@ -14,8 +14,8 @@ html, body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  background: white;
-  color: black;
+  background: #0f0e15;
+  color: #F5F6FA;
 }
 
 /* Safari-specific auth page fixes */

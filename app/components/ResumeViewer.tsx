@@ -200,7 +200,7 @@ export default function ResumeViewer({ className = '' }: ResumeViewerProps) {
   return (
     <div className={`flex flex-col h-full ${className}`}>
       <div className="flex justify-between items-center mb-6 px-4">
-        <h3 className="text-xl font-semibold text-white">Your Resume</h3>
+        
         {isValidUrl(resumeUrl) && (
           <a 
             href={resumeUrl || '#'} 

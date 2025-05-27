@@ -297,7 +297,7 @@ export default function DashboardPage() {
             </button>
           )}
           <div className="top-section">
-            <div className="flex items-center gap-2.5 pl-2">
+            <Link href="/" className="flex items-center gap-2.5 pl-2 hover:opacity-80 transition-opacity">
               <div 
                 className="w-5 h-5 bg-gradient-to-br from-[#d8f1eb] to-[#9bd6c4] rounded transform rotate-45"
                 style={{
@@ -305,7 +305,7 @@ export default function DashboardPage() {
                 }}
               />
               <div className="text-lg font-semibold text-white">Talexus AI</div>
-            </div>
+            </Link>
 
             <div 
               className="user hover:bg-white/5 rounded-lg transition-colors duration-200 p-2 -mx-2 cursor-pointer"
@@ -1262,7 +1262,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-violet-500 flex items-center justify-center">
@@ -1273,7 +1273,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">My Profile</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Manage your personal information and career preferences.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-purple-500/50 transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#FFD700]/50 transition-all text-center">
                     Edit Profile
                   </div>
                 </div>
@@ -1288,7 +1288,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center">
@@ -1299,7 +1299,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Resume</h3>
                   </div>
                   <p className="text-gray-400 text-sm">View and update your professional resume.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-purple-500/50 transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#FFD700]/50 transition-all text-center">
                     View Resume
                   </div>
                 </div>
@@ -1314,7 +1314,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
@@ -1325,7 +1325,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Jobs</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Discover job opportunities tailored to your skills and preferences.</p>
-                  <button className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-purple-500/50 transition-all">
+                  <button className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#FFD700]/50 transition-all">
                     Browse Jobs
                   </button>
                 </div>
@@ -1343,7 +1343,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center">
@@ -1354,7 +1354,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Applications</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Track your job applications and manage your application process.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-purple-500/50 transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#FFD700]/50 transition-all text-center">
                     View Applications
                   </div>
                 </div>
@@ -1368,7 +1368,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 flex items-center justify-center">
@@ -1379,7 +1379,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Networking Copilot</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Build and manage your professional network with AI assistance.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-purple-500/50 transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#FFD700]/50 transition-all text-center">
                     Open Copilot
                   </div>
                 </div>
@@ -1394,7 +1394,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowCopilot(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-400 flex items-center justify-center">
@@ -1405,7 +1405,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">SmartPrep</h3>
                   </div>
                   <p className="text-gray-400 text-sm">AI-powered interview preparation and skill assessment tools.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-purple-500/50 transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#FFD700]/50 transition-all text-center">
                     Start Prep
                   </div>
                 </div>
