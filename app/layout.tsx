@@ -2,10 +2,11 @@
 
 import { Inter } from "next/font/google";
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import DataCleaner from "./components/DataCleaner";
+import LayoutStabilizer from "./components/LayoutStabilizer";
 import "./globals.css";
 import { Providers } from "./providers";
 // Metadata is automatically picked up by Next.js from metadata.ts
@@ -38,12 +39,35 @@ export default function RootLayout({
   const pathname = usePathname();
   const isAuth = pathname?.startsWith('/signup') || pathname?.startsWith('/signin') || pathname?.startsWith('/forgot-password');
   const isDashboard = pathname?.startsWith('/dashboard');
+  
+  // Add state for page loading
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   useEffect(() => {
     // Always use white theme color for the status bar
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
     document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
+    
+    // Set loading to false after a very short time
+    if (document.readyState === 'complete') {
+      setIsPageLoading(false);
+    } else {
+      window.addEventListener('load', () => setIsPageLoading(false));
+      // Shorter fallback timeout - only show loader briefly
+      setTimeout(() => setIsPageLoading(false), 300);
+      
+      return () => window.removeEventListener('load', () => setIsPageLoading(false));
+    }
   }, []);
+  
+  // Reset loading state on route changes with a much shorter display time
+  useEffect(() => {
+    // For route changes, only show loader for very short time (100ms)
+    // This gives just enough visual feedback without causing delay
+    setIsPageLoading(true);
+    const timer = setTimeout(() => setIsPageLoading(false), 100);
+    return () => clearTimeout(timer);
+  }, [pathname]);
   
   const hideFooter = isAuth || pathname?.startsWith('/onboarding') || pathname?.startsWith('/profile') || isDashboard;
   const hideHeader = isAuth || isDashboard || pathname?.startsWith('/onboarding');
@@ -72,12 +96,17 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-[#fefcf9]`} suppressHydrationWarning>
         <Providers>
+          {/* Hidden div that helps manage page transitions without visible loading indicator */}
+          <div className={isPageLoading ? 'preload' : 'fade-in'} style={{ display: 'none' }}></div>
+          
           {/* DataCleaner runs on every page to ensure proper data isolation between users */}
           <DataCleaner />
           {!hideHeader && <Header />}
-          <div className={`flex-grow ${!hideHeader ? 'pt-24 bg-[#fefcf9]' : ''}`}>
-            {children}
-          </div>
+          <LayoutStabilizer>
+            <div className={`flex-grow ${!hideHeader ? 'pt-24 bg-[#fefcf9]' : ''}`}>
+              {children}
+            </div>
+          </LayoutStabilizer>
           {!hideFooter && <Footer />}
         </Providers>
       </body>

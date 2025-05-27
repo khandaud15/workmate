@@ -2,7 +2,7 @@ import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
 import bcrypt from 'bcryptjs';
 
 // Function to get the actual running port, regardless of NEXTAUTH_URL setting
@@ -55,7 +55,7 @@ export const authOptions: AuthOptions = {
         console.log('Login attempt for email:', credentials?.email);
         if (!credentials?.email || !credentials?.password) {
           console.log('Missing email or password');
-          return null;
+          throw new Error('Email and password are required');
         }
 
         try {
@@ -64,7 +64,7 @@ export const authOptions: AuthOptions = {
           const userDoc = await db.collection('users').doc(credentials.email).get();
           if (!userDoc.exists) {
             console.log('User not found in database:', credentials.email);
-            return null;
+            throw new Error('Invalid email or password');
           }
           const user = userDoc.data();
           console.log('User found:', user?.email);
@@ -72,7 +72,33 @@ export const authOptions: AuthOptions = {
           // Compare hashed password
           if (!user || !user.hashedPassword) {
             console.log('User has no hashed password stored');
-            return null;
+            
+            // Try to recover the account by checking Firebase Auth
+            try {
+              // If we can't find the password in Firestore, attempt to update it from Firebase Auth
+              const firebaseUser = await auth.getUserByEmail(credentials.email);
+              if (firebaseUser) {
+                // User exists in Firebase Auth but not properly in Firestore
+                // Hash the provided password and update Firestore
+                const hashedPassword = await bcrypt.hash(credentials.password, 10);
+                await db.collection('users').doc(credentials.email).update({
+                  hashedPassword: hashedPassword
+                });
+                console.log('Updated missing password hash in Firestore');
+                
+                // Return user for session
+                return {
+                  id: firebaseUser.uid,
+                  email: credentials.email,
+                  name: user?.name || credentials.email.split('@')[0] || 'User',
+                  emailVerified: true
+                };
+              }
+            } catch (firebaseError) {
+              console.error('Firebase auth error:', firebaseError);
+            }
+            
+            throw new Error('Account requires password reset');
           }
           
           console.log('Comparing password...');
@@ -81,7 +107,7 @@ export const authOptions: AuthOptions = {
           
           if (!passwordMatch) {
             console.log('Password does not match');
-            return null;
+            throw new Error('Invalid email or password');
           }
           
           // Return user object for session
@@ -92,9 +118,13 @@ export const authOptions: AuthOptions = {
             name: user.name || user.email.split('@')[0] || 'User',
             emailVerified: true
           };
-        } catch (error) {
+        } catch (error: any) {
           console.error('Auth error:', error);
-          return null;
+          // Throw specific error messages to be displayed to the user
+          if (error.message) {
+            throw new Error(error.message);
+          }
+          throw new Error('Authentication failed');
         }
       }
     })

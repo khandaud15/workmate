@@ -77,6 +77,15 @@ export async function PUT(request: NextRequest) {
     if (new Date(data.expiresAt) < new Date()) {
       return NextResponse.json({ success: false, message: 'OTP expired.' }, { status: 400 });
     }
+    // Check if user already exists in Firestore
+    const existingUser = await db.collection('users').doc(email).get();
+    if (existingUser.exists) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'This email is already registered. Please sign in instead.' 
+      }, { status: 400 });
+    }
+    
     // Create user in Firebase Auth
     try {
       await auth.createUser({
@@ -85,7 +94,13 @@ export async function PUT(request: NextRequest) {
         emailVerified: true,
       });
     } catch (error: any) {
-      if (error.code !== 'auth/email-already-exists') throw error;
+      if (error.code === 'auth/email-already-exists') {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'This email is already registered. Please sign in instead.' 
+        }, { status: 400 });
+      }
+      throw error;
     }
     // Create user in Firestore 'users' collection for NextAuth
     await db.collection('users').doc(email).set({

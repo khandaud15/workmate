@@ -29,12 +29,24 @@ export default function SignIn() {
         password,
         redirect: false,
       });
+      
       if (result && result.ok && !result.error) {
         router.push("/onboarding");
       } else {
-        setError("Invalid email or password.");
+        // Handle specific error messages from NextAuth
+        if (result?.error) {
+          if (result.error.includes('Account requires password reset')) {
+            setError("Your account needs a password reset. Please use the 'Forgot password' option below.");
+          } else {
+            // Use the error message from the server if available
+            setError(result.error || "Invalid email or password.");
+          }
+        } else {
+          setError("Invalid email or password.");
+        }
       }
     } catch (err) {
+      console.error('Sign in error:', err);
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
