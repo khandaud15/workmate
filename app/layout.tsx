@@ -43,14 +43,36 @@ export default function RootLayout({
   // Add state for page loading
   const [isPageLoading, setIsPageLoading] = useState(true);
 
+  // Effect for theme color - runs on pathname changes
   useEffect(() => {
     // Set theme color based on the current page
     // White only for main homepage, dark for all other pages including dashboard
     const isMainPage = pathname === '/';
     const themeColor = isMainPage ? '#ffffff' : '#0f0e15';
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
-    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', isMainPage ? 'default' : 'black');
     
+    // Create or update the theme-color meta tag
+    let themeMetaTag = document.querySelector('meta[name="theme-color"]');
+    if (!themeMetaTag) {
+      themeMetaTag = document.createElement('meta');
+      themeMetaTag.setAttribute('name', 'theme-color');
+      document.head.appendChild(themeMetaTag);
+    }
+    themeMetaTag.setAttribute('content', themeColor);
+    
+    // Create or update the apple-mobile-web-app-status-bar-style meta tag
+    let statusBarMetaTag = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+    if (!statusBarMetaTag) {
+      statusBarMetaTag = document.createElement('meta');
+      statusBarMetaTag.setAttribute('name', 'apple-mobile-web-app-status-bar-style');
+      document.head.appendChild(statusBarMetaTag);
+    }
+    statusBarMetaTag.setAttribute('content', isMainPage ? 'default' : 'black');
+    
+    console.log(`Set theme color to ${themeColor} for path: ${pathname}`);
+  }, [pathname]);
+  
+  // Effect for loading state
+  useEffect(() => {
     // Set loading to false after a very short time
     if (document.readyState === 'complete') {
       setIsPageLoading(false);
@@ -80,9 +102,6 @@ export default function RootLayout({
       <head>
         {/* Viewport and theme meta tags are handled by Next.js metadata API */}
         <meta name="viewport" content={`width=${viewportConfig.width}, initial-scale=${viewportConfig.initialScale}, maximum-scale=${viewportConfig.maximumScale}, user-scalable=${viewportConfig.userScalable ? 'yes' : 'no'}`} />
-        {viewportConfig.themeColor.map((color, index) => (
-          <meta key={index} name="theme-color" media={color.media} content={color.color} />
-        ))}
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
