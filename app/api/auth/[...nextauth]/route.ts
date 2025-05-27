@@ -67,7 +67,7 @@ export const authOptions: AuthOptions = {
             return null;
           }
           const user = userDoc.data();
-          console.log('User found:', user.email);
+          console.log('User found:', user?.email);
           
           // Compare hashed password
           if (!user || !user.hashedPassword) {

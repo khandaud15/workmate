@@ -36,14 +36,26 @@ if (!getApps().length) {
   app = initializeApp({
     credential: cert(serviceAccount as any),
     storageBucket: bucketName,
-  });
+  }, 'storage-app'); // Use a unique name for this app instance
 } else {
   console.log('[Firebase Storage] Using existing Firebase Admin app');
-  app = getApp();
+  try {
+    app = getApp('storage-app'); // Try to get the specific app instance
+  } catch (error) {
+    // If the specific app doesn't exist, initialize it
+    console.log('[Firebase Storage] Creating new app instance for storage');
+    app = initializeApp({
+      credential: cert(serviceAccount as any),
+      storageBucket: bucketName,
+    }, 'storage-app');
+  }
 }
 
 // Get storage with explicit bucket name
 const storage = getStorage(app);
+
+// Explicitly set the bucket if needed
+const bucket = storage.bucket(bucketName);
 
 // Verify bucket is properly configured
 try {
