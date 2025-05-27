@@ -52,26 +52,40 @@ export const authOptions: AuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        console.log('Login attempt for email:', credentials?.email);
         if (!credentials?.email || !credentials?.password) {
+          console.log('Missing email or password');
           return null;
         }
 
         try {
           // Look up user by email in Firestore
+          console.log('Looking up user in Firestore:', credentials.email);
           const userDoc = await db.collection('users').doc(credentials.email).get();
           if (!userDoc.exists) {
+            console.log('User not found in database:', credentials.email);
             return null;
           }
           const user = userDoc.data();
+          console.log('User found:', user.email);
+          
           // Compare hashed password
           if (!user || !user.hashedPassword) {
+            console.log('User has no hashed password stored');
             return null;
           }
+          
+          console.log('Comparing password...');
           const passwordMatch = await bcrypt.compare(credentials.password, user.hashedPassword);
+          console.log('Password match result:', passwordMatch);
+          
           if (!passwordMatch) {
+            console.log('Password does not match');
             return null;
           }
+          
           // Return user object for session
+          console.log('Login successful for:', user.email);
           return {
             id: user.id || userDoc.id,
             email: user.email,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/firebase';
+import { storage } from '@/lib/firebase-storage';
 // Removed client SDK imports. Use admin SDK methods directly.
 
 // API route for saving and retrieving user profile data
@@ -90,6 +91,28 @@ export async function POST(request: NextRequest) {
   }
 }
 
+async function getSignedUrlIfGsUri(uri: string | null): Promise<string | null> {
+  if (!uri || !uri.startsWith('gs://')) return uri;
+  try {
+    // Extract bucket and file path
+    const match = uri.match(/^gs:\/\/([^\/]+)\/(.+)$/);
+    if (!match) return null;
+    const bucketName = match[1];
+    const filePath = match[2];
+    const bucket = storage.bucket(bucketName);
+    const file = bucket.file(filePath);
+    // Generate a signed URL valid for 1 hour
+    const [signedUrl] = await file.getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 60 * 60 * 1000
+    });
+    return signedUrl;
+  } catch (err) {
+    console.error('[PROFILE API] Failed to generate signed URL for', uri, err);
+    return null;
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Get the authenticated user session
@@ -125,11 +148,99 @@ export async function GET(request: NextRequest) {
       });
     }
     
+    // Log what we found for debugging
+    console.log(`[PROFILE API] User data for ${userEmail}:`, {
+      hasProfile: !!userData?.profile,
+      hasParsedResumeUrl: !!userData?.parsedResumeUrl,
+      hasResumeUrl: !!userData?.resumeUrl,
+      hasRawResumeUrl: !!userData?.rawResumeUrl,
+      newResumeAvailable: newResumeAvailable,
+      hasParsedResumeData: !!parsedResumeData
+    });
+
+    // Check if we need to look in other collections for resume data
+    let resumeUrl = userData?.resumeUrl || userData?.rawResumeUrl || null;
+    let rawResumeUrl = userData?.rawResumeUrl || null;
+    let uploadsResumeUrl = null;
+    let directStorageUrl = null;
+
+    // If we still don't have a resume URL, check the uploads collection
+    if (!resumeUrl) {
+      try {
+        console.log(`[PROFILE API] Looking for resume in uploads collection for ${userEmail}`);
+        const uploadsDoc = await db.collection('uploads').doc(userEmail).get();
+        if (uploadsDoc.exists) {
+          const uploadsData = uploadsDoc.data();
+          uploadsResumeUrl = uploadsData?.resumeUrl || uploadsData?.rawResumeUrl || uploadsData?.url || null;
+          if (uploadsResumeUrl) {
+            resumeUrl = uploadsResumeUrl;
+          }
+          console.log(`[PROFILE API] Found resume URL in uploads collection: ${!!resumeUrl}`);
+        }
+      } catch (error) {
+        console.error('[PROFILE API] Error checking uploads collection:', error);
+      }
+    }
+    
+    // If still no resume, check Firebase Storage directly
+    if (!resumeUrl) {
+      try {
+        console.log(`[PROFILE API] Checking Firebase Storage directly for ${userEmail}`);
+        const bucketName = process.env.FIREBASE_STORAGE_BUCKET;
+        console.log(`[PROFILE API] Using bucket name: ${bucketName}`);
+        const bucket = storage.bucket(bucketName);
+        console.log(`[PROFILE API] Bucket reference obtained: ${bucket.name}`);
+        
+        // Check multiple possible locations
+        const possiblePaths = [
+          `raw_resume/${userEmail}`, // Direct path
+          `resumes/${userEmail}`,
+          `uploads/${userEmail}/resume.pdf`,
+        ];
+        
+        try {
+          // Try both encoded and unencoded email formats
+          const [files] = await bucket.getFiles({ prefix: `raw_resume/${userEmail}/` });
+          console.log(`[PROFILE API] Files in raw_resume/${userEmail}/: ${files?.length || 0}`);
+          if (files && files.length > 0) {
+            console.log('[PROFILE API] Found files in user folder:', files.map(f => f.name));
+            files.forEach(f => console.log(`[PROFILE API] File: ${f.name}, Created: ${f.metadata?.timeCreated}`));
+            // Sort by creation time (newest first)
+            files.sort((a, b) => {
+              const aCreated = a.metadata?.timeCreated ? new Date(a.metadata.timeCreated).getTime() : 0;
+              const bCreated = b.metadata?.timeCreated ? new Date(b.metadata.timeCreated).getTime() : 0;
+              return bCreated - aCreated;
+            });
+            // Get the most recent file
+            const mostRecentFile = files[0];
+            console.log(`[PROFILE API] Found most recent resume: ${mostRecentFile.name}`);
+            try {
+              const [signedUrl] = await mostRecentFile.getSignedUrl({
+                action: 'read',
+                expires: Date.now() + 60 * 60 * 1000 // 1 hour
+              });
+              console.log(`[PROFILE API] Signed URL generated: ${signedUrl}`);
+              directStorageUrl = signedUrl;
+              resumeUrl = signedUrl;
+            } catch (err) {
+              console.error('[PROFILE API] Error generating signed URL:', err);
+            }
+          } else {
+            console.log(`[PROFILE API] No files found in raw_resume/${userEmail}/`);
+          }
+        } catch (error) {
+          console.error('[PROFILE API] Error checking raw_resume folder:', error);
+        }
+      } catch (error) {
+        console.error('[PROFILE API] Error checking Firebase Storage directly:', error);
+      }
+    }
+
     // Return profile data, parsed resume data, and flags
     return NextResponse.json({ 
       profile: userData?.profile || {},
       parsedResumeUrl: userData?.parsedResumeUrl || null,
-      resumeUrl: userData?.resumeUrl || null,
+      resumeUrl: resumeUrl, // This will be a signed URL if a file exists
       newResumeAvailable: newResumeAvailable,
       parsedResumeData: parsedResumeData,
       userEmail: userEmail // Include the user's email for verification on frontend

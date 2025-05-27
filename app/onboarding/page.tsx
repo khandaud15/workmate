@@ -4,7 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import { clientDb } from '@/lib/firebase-client';
+import { doc, setDoc } from 'firebase/firestore';
 import { FaBars, FaTimes, FaChevronRight, FaFileAlt, FaBriefcase, FaDollarSign, FaMapMarkerAlt, FaCheckCircle, FaArrowLeft, FaUpload, FaCheck, FaSearch, FaCreditCard, FaAddressBook, FaPlus, FaExclamationTriangle, FaEdit, FaTrash, FaGraduationCap, FaClipboardList, FaChevronDown } from 'react-icons/fa';
 import { useResumeData } from '../hooks/useResumeData.js';
 
@@ -100,9 +103,42 @@ const clearAllLocalStorage = () => {
   console.log('Cleared all localStorage data');
 };
 
-export default function Onboarding() {
-  // Get session data for authentication
-  const { data: session } = useSession();
+export default function OnboardingPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  
+  // Helper function to get data from localStorage with user-specific prefix fallback
+  const getFromLocalStorage = (key: string) => {
+    // Try to get user-specific data first
+    if (session?.user?.email) {
+      const userEmail = session.user.email;
+      const userPrefix = `user_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}_`;
+      const userSpecificData = localStorage.getItem(`${userPrefix}${key}`);
+      
+      if (userSpecificData) {
+        console.log(`Found user-specific data for ${key}`);
+        return userSpecificData;
+      }
+    }
+    
+    // Fall back to the old key
+    return localStorage.getItem(key);
+  };
+  
+  // Helper function to save data to localStorage with user-specific prefix
+  const saveToLocalStorage = (key: string, value: any) => {
+    const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+    
+    // Always save to the regular key for backward compatibility
+    localStorage.setItem(key, stringValue);
+    
+    // Also save with user-specific prefix if user is logged in
+    if (session?.user?.email) {
+      const userEmail = session.user.email;
+      const userPrefix = `user_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}_`;
+      localStorage.setItem(`${userPrefix}${key}`, stringValue);
+    }
+  };
   
   // Function to force clear profile data on the server
   const forceProfileClear = async () => {
@@ -655,26 +691,41 @@ export default function Onboarding() {
           setIsLoadingEducation(true);
           setEducationError(null);
           
-          // Check if we have a new parsed resume that should be prioritized
-          // This ensures we always use the most recent resume data
-          let shouldFetchFromResume = false;
+          // Helper function to get data from localStorage with user-specific prefix fallback
+          const getFromLocalStorage = (key: string) => {
+            // Try to get user-specific data first
+            if (session?.user?.email) {
+              const userEmail = session.user.email;
+              const userPrefix = `user_${userEmail.replace(/[^a-zA-Z0-9]/g, '_')}_`;
+              const userSpecificData = localStorage.getItem(`${userPrefix}${key}`);
+              
+              if (userSpecificData) {
+                console.log(`Found user-specific data for ${key}`);
+                return userSpecificData;
+              }
+            }
+            
+            // Fall back to the old key
+            return localStorage.getItem(key);
+          };
+
+          // Check if a new resume was uploaded
+          const newResumeUploaded = getFromLocalStorage('newResumeUploaded');
+          const shouldFetchFromResume = newResumeUploaded === 'true';
           
-          // Check if there's a flag in localStorage indicating a new resume was uploaded
-          const newResumeUploaded = localStorage.getItem('newResumeUploaded');
-          if (newResumeUploaded === 'true') {
+          if (shouldFetchFromResume) {
             console.log('New resume was uploaded, prioritizing parsed resume data for education');
-            shouldFetchFromResume = true;
           }
           
-          // If no new resume was uploaded, check localStorage as usual
-          const savedEducation = localStorage.getItem('resumeEducation');
+          // Try to load from localStorage first if no new resume was uploaded
+          const savedEducation = getFromLocalStorage('resumeEducation');
           if (savedEducation && !shouldFetchFromResume) {
             try {
               const parsedEducation = JSON.parse(savedEducation);
               if (Array.isArray(parsedEducation) && parsedEducation.length > 0) {
                 setEducation(parsedEducation);
                 setIsLoadingEducation(false);
-                return; // Use saved data if available
+                return;
               }
             } catch (error) {
               console.error('Failed to parse saved education:', error);
@@ -1711,6 +1762,20 @@ export default function Onboarding() {
         setUploadError(null);
       }
       setUploadStatus('success');
+      
+      // Save resume URL to localStorage with user-specific prefix
+      if (data.resumeUrl || data.rawResumeUrl) {
+        const resumeUrl = data.resumeUrl || data.rawResumeUrl;
+        
+        console.log('[ONBOARDING] Saving resume URL to localStorage:', resumeUrl);
+        
+        // Save using our helper function
+        saveToLocalStorage('resumeUrl', resumeUrl);
+        saveToLocalStorage('lastUploadedResumeUrl', resumeUrl);
+        
+        // Debug: List all localStorage keys after saving
+        console.log('[ONBOARDING] All localStorage keys after saving:', Object.keys(localStorage));
+      }
       
       // If parsedResumeUrl is returned, fetch the parsed resume JSON
       if (data.parsedResumeUrl) {
@@ -3803,11 +3868,64 @@ export default function Onboarding() {
                       console.error('Error saving questionnaire answers:', error);
                     }
                     
-                    // Navigate to the next section (this would be the final section in the flow)
-                    setShowQuestionnaire(false);
-                    // You can redirect to dashboard or show a completion screen here
-                    // For now, we'll just go back to the beginning
-                    setShowResumeUpload(true);
+                    // Save all onboarding data to ensure it's available on the dashboard
+                    try {
+                      if (!session?.user?.email) {
+                        console.error('No user session found, cannot save data');
+                        return;
+                      }
+                      
+                      const userId = session.user.email;
+                      
+                      // Create a complete user data object
+                      const userData = {
+                        workExperience: workExperience.length > 0 ? workExperience : [],
+                        education: education.length > 0 ? education : [],
+                        skills: skills.length > 0 ? skills : [],
+                        jobTitles: selectedTitles.length > 0 ? selectedTitles : [],
+                        salary: salary || null,
+                        locations: selectedLocations.length > 0 ? selectedLocations : [],
+                        questionnaireAnswers: questionnaireAnswers || {},
+                        lastUpdated: new Date().toISOString()
+                      };
+                      
+                      // Save all data using our helper function
+                      saveToLocalStorage('resumeWorkExperience', userData.workExperience);
+                      saveToLocalStorage('resumeEducation', userData.education);
+                      saveToLocalStorage('resumeSkills', userData.skills);
+                      saveToLocalStorage('selectedJobTitles', userData.jobTitles);
+                      saveToLocalStorage('salaryPreference', userData.salary);
+                      saveToLocalStorage('selectedLocations', userData.locations);
+                      saveToLocalStorage('questionnaireAnswers', userData.questionnaireAnswers);
+                      
+                      // Save to Firebase for persistence across devices and sessions
+                      // This ensures data is tied to the user account, not just the browser
+                      const saveToFirebase = async () => {
+                        try {
+                          // Save to Firestore under the user's document using client-side SDK
+                          const userDocRef = doc(clientDb, 'users', userId);
+                          await setDoc(userDocRef, {
+                            userData: userData,
+                            // Don't overwrite other user data like authentication info
+                          }, { merge: true });
+                          
+                          console.log('User data successfully saved to Firebase');
+                        } catch (fbError) {
+                          console.error('Error saving to Firebase:', fbError);
+                          // Still continue to dashboard even if Firebase save fails
+                        }
+                      };
+                      
+                      // Start the Firebase save operation
+                      saveToFirebase();
+                      
+                      console.log('All onboarding data saved successfully before redirecting to dashboard');
+                    } catch (error) {
+                      console.error('Error saving complete onboarding data:', error);
+                    }
+                    
+                    // Redirect to dashboard
+                    router.push('/dashboard');
                   }}
                   className="w-24 px-3 py-2 text-sm rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors"
                 >
