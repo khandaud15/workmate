@@ -128,6 +128,7 @@ export default function DashboardPage() {
   // Skills state
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
+  const [isSkillsExpanded, setIsSkillsExpanded] = useState(true);
   
   // Education state
   const [education, setEducation] = useState<Education[]>([]);
@@ -1158,49 +1159,9 @@ export default function DashboardPage() {
                 <div className="w-full bg-[#1a1625] p-6 border border-[#2e2a3d] mb-6 text-left">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-white">Skills</h3>
-                    <button className="text-blue-400 hover:text-blue-300 transition-colors">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                    </button>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap gap-2">
-                      {skills.map((skill, index) => (
-                        <div key={index} className="group relative bg-purple-900/30 border border-purple-500 px-3 py-1.5 rounded-full text-purple-100 text-sm flex items-center gap-2">
-                          <span>{skill}</span>
-                          <button 
-                            className="text-gray-500 hover:text-red-400 transition-colors"
-                            onClick={() => {
-                              setSkills(prev => prev.filter((_, i) => i !== index));
-                            }}
-                            aria-label="Remove skill"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="mt-4 flex items-center gap-2">
-                      <input
-                        type="text"
-                        className="flex-1 bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
-                        placeholder="Add a new skill"
-                        value={newSkill}
-                        onChange={(e) => setNewSkill(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && newSkill.trim()) {
-                            setSkills(prev => [...prev, newSkill.trim()]);
-                            setNewSkill('');
-                          }
-                        }}
-                      />
-                      <button
-                        className="px-4 py-2 bg-purple-900/30 border border-purple-500 text-purple-100 hover:bg-purple-800/40 transition-colors text-sm"
+                    <div className="flex space-x-2">
+                      <button 
+                        className="text-blue-400 hover:text-blue-300 transition-colors"
                         onClick={() => {
                           if (newSkill.trim()) {
                             setSkills(prev => [...prev, newSkill.trim()]);
@@ -1208,10 +1169,77 @@ export default function DashboardPage() {
                           }
                         }}
                       >
-                        Add
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </button>
+                      <button 
+                        className="text-blue-400 hover:text-blue-300 transition-colors"
+                        onClick={() => setIsSkillsExpanded(!isSkillsExpanded)}
+                        aria-label={isSkillsExpanded ? "Collapse skills" : "Expand skills"}
+                      >
+                        {isSkillsExpanded ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        )}
                       </button>
                     </div>
                   </div>
+                  
+                  {isSkillsExpanded && (
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap gap-2">
+                        {skills.map((skill, index) => (
+                          <div key={index} className="group relative bg-purple-900/30 border border-purple-500 px-3 py-1.5 rounded-full text-purple-100 text-sm flex items-center gap-2">
+                            <span>{skill}</span>
+                            <button 
+                              className="text-gray-500 hover:text-red-400 transition-colors"
+                              onClick={() => {
+                                setSkills(prev => prev.filter((_, i) => i !== index));
+                              }}
+                              aria-label="Remove skill"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="mt-4 flex items-center gap-2">
+                        <input
+                          type="text"
+                          className="flex-1 bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                          placeholder="Add a new skill"
+                          value={newSkill}
+                          onChange={(e) => setNewSkill(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && newSkill.trim()) {
+                              setSkills(prev => [...prev, newSkill.trim()]);
+                              setNewSkill('');
+                            }
+                          }}
+                        />
+                        <button
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 transition-colors"
+                          onClick={() => {
+                            if (newSkill.trim()) {
+                              setSkills(prev => [...prev, newSkill.trim()]);
+                              setNewSkill('');
+                            }
+                          }}
+                        >
+                          Add
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
