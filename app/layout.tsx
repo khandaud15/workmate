@@ -44,9 +44,12 @@ export default function RootLayout({
   const [isPageLoading, setIsPageLoading] = useState(true);
 
   useEffect(() => {
-    // Always use white theme color for the status bar
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
-    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', 'default');
+    // Set theme color based on the current page
+    // White only for main homepage, dark for all other pages including dashboard
+    const isMainPage = pathname === '/';
+    const themeColor = isMainPage ? '#ffffff' : '#0f0e15';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
+    document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')?.setAttribute('content', isMainPage ? 'default' : 'black');
     
     // Set loading to false after a very short time
     if (document.readyState === 'complete') {

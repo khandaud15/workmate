@@ -8,6 +8,7 @@ import Logo from './Logo';
 import { useState, useId, useEffect } from 'react';
 import DashboardIcon from './DashboardIcon';
 import { FaTachometerAlt } from 'react-icons/fa';
+import ProfileAvatar from './ProfileAvatar';
 
 interface Country {
   code: string;
@@ -205,18 +206,9 @@ export default function Header() {
         className="flex items-center space-x-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
       >
         <div className="flex items-center">
-          <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
-            {session.user?.image ? (
-              <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
-            ) : (
-              session.user?.name?.charAt(0) || 'U'
-            )}
-          </div>
-          {/* Only show name if not on home page */}
-          {pathname !== '/' && <span className="ml-2 text-base">{session.user?.name}</span>}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
+          <ProfileAvatar src={session.user?.image} alt={session.user?.name || 'User'} size={36} />
+{/* Only show name if not on home page */}
+{pathname !== '/' && <span className="ml-2 text-base">{session.user?.name}</span>}
         </div>
       </button>
       
@@ -289,21 +281,7 @@ export default function Header() {
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                     className="p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
                   >
-                    <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
-                        {session.user?.image ? (
-                          <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
-                        ) : (
-                          session.user?.name?.charAt(0) || 'U'
-                        )}
-                      </div>
-                      {/* Only show dropdown arrow if not on home page */}
-                      {pathname !== '/' && (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      )}
-                    </div>
+                    <ProfileAvatar src={session.user?.image} alt={session.user?.name || 'User'} size={36} />
                   </button>
                   
                   {isProfileDropdownOpen && (
@@ -396,21 +374,7 @@ export default function Header() {
                     onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                     className="p-2 text-[#0e3a68] hover:text-[#0c3156] transition-colors relative z-50"
                   >
-                    <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full bg-[#0e3a68] text-white flex items-center justify-center text-sm font-medium overflow-hidden">
-                        {session.user?.image ? (
-                          <img src={session.user.image} alt={session.user.name || 'User'} className="h-full w-full object-cover" />
-                        ) : (
-                          session.user?.name?.charAt(0) || 'U'
-                        )}
-                      </div>
-                      {/* Only show dropdown arrow if not on home page */}
-                      {pathname !== '/' && (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      )}
-                    </div>
+                    <ProfileAvatar src={session.user?.image} alt={session.user?.name || 'User'} size={36} />
                   </button>
                   
                   {isProfileDropdownOpen && (

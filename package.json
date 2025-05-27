@@ -11,6 +11,8 @@
   "dependencies": {
     "@builder.io/react": "^8.2.0",
     "@heroicons/react": "^2.2.0",
+    "@react-pdf-viewer/core": "^3.12.0",
+    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@sendgrid/mail": "^8.1.5",
     "@types/react-datepicker": "^6.2.0",
     "bcryptjs": "^3.0.2",
