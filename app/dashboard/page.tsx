@@ -260,7 +260,7 @@ export default function DashboardPage() {
         <title>Dashboard | Talexus</title>
         <meta name="description" content="Your personal dashboard" />
       </Head>
-      <div className="flex h-screen bg-[#f0f2f5] relative">
+      <div className="flex h-screen bg-[#f0f2f5] relative overflow-x-hidden">
         {/* Mobile Toggle Button - Vertical Tab */}
         {!isSidebarOpen && (
           <button 
@@ -1244,8 +1244,8 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="w-full max-w-full md:max-w-4xl mx-auto mt-6">
-              <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mx-4 md:mx-0">
+            <div className="w-full max-w-full md:max-w-4xl mx-auto mt-6 px-4 md:px-6 overflow-visible">
+              <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-4 md:p-6 rounded-xl border border-[#2e2a3d] mx-auto">
                 <h2 className="text-xl font-semibold text-white mb-1 text-center">Welcome back, {session.user?.name?.split(' ')[0] || 'User'}!</h2>
                 <p className="text-gray-400 text-sm text-center">Your next opportunity starts here. Create, optimize, apply — all in one intelligent workspace.</p>
               </div>
