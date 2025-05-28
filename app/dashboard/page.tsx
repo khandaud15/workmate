@@ -1244,14 +1244,14 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            <div className="w-full max-w-full md:max-w-4xl mx-auto mt-6 px-4 md:px-6 overflow-visible">
-              <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-4 md:p-6 rounded-xl border border-[#2e2a3d] mx-auto">
+            <div className="w-full max-w-full md:max-w-4xl mx-auto mt-6 overflow-hidden px-4 md:px-0">
+              <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d]">
                 <h2 className="text-xl font-semibold text-white mb-1 text-center">Welcome back, {session.user?.name?.split(' ')[0] || 'User'}!</h2>
                 <p className="text-gray-400 text-sm text-center">Your next opportunity starts here. Create, optimize, apply — all in one intelligent workspace.</p>
               </div>
               
               {/* First row of boxes */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 px-4 md:px-0">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 {/* Box 1: My Profile */}
                 <div 
                   onClick={() => {
@@ -1332,7 +1332,7 @@ export default function DashboardPage() {
               </div>
               
               {/* Second row of boxes */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-8 px-4 md:px-0">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-8">
                 {/* Box 4: Applications */}
                 <div 
                   onClick={() => {
