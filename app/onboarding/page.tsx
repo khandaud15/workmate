@@ -3198,35 +3198,39 @@ export default function OnboardingPage() {
                   </div>
 
                   {/* Add new skill */}
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newSkill}
-                      onChange={(e) => setNewSkill(e.target.value)}
-                      placeholder="Add a new skill..."
-                      className="flex-1 bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && newSkill.trim()) {
-                          const updatedSkills = [...skills, newSkill.trim()];
-                          setSkills(updatedSkills);
-                          setNewSkill('');
-                          localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
-                        }
-                      }}
-                    />
-                    <button
-                      onClick={() => {
-                        if (newSkill.trim()) {
-                          const updatedSkills = [...skills, newSkill.trim()];
-                          setSkills(updatedSkills);
-                          setNewSkill('');
-                          localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
-                        }
-                      }}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
-                    >
-                      Add
-                    </button>
+                  <div className="flex w-full pr-4">
+                    <div className="flex-grow mr-2">
+                      <input
+                        type="text"
+                        value={newSkill}
+                        onChange={(e) => setNewSkill(e.target.value)}
+                        placeholder="Add a new skill..."
+                        className="w-full bg-[#2a292e] border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && newSkill.trim()) {
+                            const updatedSkills = [...skills, newSkill.trim()];
+                            setSkills(updatedSkills);
+                            setNewSkill('');
+                            localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                          }
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => {
+                          if (newSkill.trim()) {
+                            const updatedSkills = [...skills, newSkill.trim()];
+                            setSkills(updatedSkills);
+                            setNewSkill('');
+                            localStorage.setItem('resumeSkills', JSON.stringify(updatedSkills));
+                          }
+                        }}
+                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                      >
+                        Add
+                      </button>
+                    </div>
                   </div>
                 </div>
 
