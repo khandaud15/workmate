@@ -4,6 +4,9 @@ import { db } from '@/lib/firebase';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 const AFFINDA_API_KEY = process.env.AFFINDA_API_KEY;
 const AFFINDA_BASE_URL = 'https://api.affinda.com/v2';
 

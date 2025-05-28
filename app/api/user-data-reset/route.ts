@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/firebase';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 /**
  * API endpoint to reset user data and ensure proper isolation between users
  * This is called when a user signs up or logs in to ensure they don't see other users' data

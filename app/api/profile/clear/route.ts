@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/firebase';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 /**
  * API endpoint to completely clear a user's profile data
  * This is useful when a new resume is uploaded and we want to ensure

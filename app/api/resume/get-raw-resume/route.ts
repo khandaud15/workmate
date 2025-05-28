@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/firebase';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 /**
  * API endpoint to get the raw resume URL
  * This provides access to the original uploaded resume file

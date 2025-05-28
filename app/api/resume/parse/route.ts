@@ -3,6 +3,9 @@ import { db } from '@/lib/firebase';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   console.log('[PARSE API] Called /api/resume/parse');
   

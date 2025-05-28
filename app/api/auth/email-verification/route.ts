@@ -4,6 +4,9 @@ import { generateOTP, sendVerificationEmail } from '@/lib/emailService';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 // Helper to generate a random verification token
 const generateVerificationToken = (): string => crypto.randomBytes(32).toString('hex');
 

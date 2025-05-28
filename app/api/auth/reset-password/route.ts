@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import bcrypt from 'bcryptjs';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 // Verify OTP for password reset
 export async function PUT(req: NextRequest) {
   try {

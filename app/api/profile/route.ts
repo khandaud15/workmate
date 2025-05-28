@@ -5,6 +5,9 @@ import { db } from '@/lib/firebase';
 import { storage } from '@/lib/firebase-storage';
 // Removed client SDK imports. Use admin SDK methods directly.
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 // API route for saving and retrieving user profile data
 export async function POST(request: NextRequest) {
   try {

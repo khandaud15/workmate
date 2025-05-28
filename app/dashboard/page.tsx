@@ -1245,13 +1245,13 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="w-full max-w-full md:max-w-4xl mx-auto mt-6">
-              <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d]">
+              <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d] mx-4 md:mx-0">
                 <h2 className="text-xl font-semibold text-white mb-1 text-center">Welcome back, {session.user?.name?.split(' ')[0] || 'User'}!</h2>
                 <p className="text-gray-400 text-sm text-center">Your next opportunity starts here. Create, optimize, apply — all in one intelligent workspace.</p>
               </div>
               
               {/* First row of boxes */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 px-4 md:px-0">
                 {/* Box 1: My Profile */}
                 <div 
                   onClick={() => {
@@ -1262,7 +1262,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-violet-500 flex items-center justify-center">
@@ -1288,7 +1288,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center">
@@ -1314,7 +1314,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
@@ -1332,7 +1332,7 @@ export default function DashboardPage() {
               </div>
               
               {/* Second row of boxes */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 mb-8 px-4 md:px-0">
                 {/* Box 4: Applications */}
                 <div 
                   onClick={() => {
@@ -1343,7 +1343,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center">
@@ -1368,7 +1368,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 flex items-center justify-center">
@@ -1394,7 +1394,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowCopilot(false);
                   }}
-                  className="bg-[#12101a]/50 border border-gray-700 rounded-xl p-5 transition-all hover:border-[#FFD700]/50 hover:shadow-lg hover:shadow-[#FFD700]/10 cursor-pointer"
+                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-400 flex items-center justify-center">

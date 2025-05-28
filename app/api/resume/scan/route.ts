@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 const AFFINDA_API_KEY = process.env.AFFINDA_API_KEY;
 const AFFINDA_BASE_URL = 'https://api.affinda.com/v2';
 

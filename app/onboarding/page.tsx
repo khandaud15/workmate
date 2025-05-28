@@ -2625,24 +2625,27 @@ export default function OnboardingPage() {
                 </div>
 
                 <div className="flex gap-4 mb-4">
-                  <div className="flex-1">
+                  <div style={{ width: '50%' }}>
                     <label className="block mb-1 font-medium text-white" htmlFor="dob">Date of Birth *</label>
                     <input 
-                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
+                      className="p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="dob" 
                       type="date" 
                       value={contactInfo.dob} 
                       onChange={(e) => handleContactInfoChange('dob', e.target.value)} 
+                      style={{ width: '100%', height: '48px', boxSizing: 'border-box' }}
                     />
                   </div>
-                  <div className="flex-1">
+                  <div style={{ width: '50%' }}>
                     <label className="block mb-1 font-medium text-white" htmlFor="address">Address *</label>
                     <input 
-                      className="w-full p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
+                      className="p-3 bg-[#1a1625] border border-[#2e2a3d] text-white" 
                       id="address" 
                       type="text" 
                       value={contactInfo.address} 
                       onChange={(e) => handleContactInfoChange('address', e.target.value)} 
+                      style={{ width: '100%', height: '48px', boxSizing: 'border-box', WebkitAppearance: 'none' }}
+                      autoComplete="off"
                     />
                   </div>
                 </div>
@@ -4136,6 +4139,56 @@ export default function OnboardingPage() {
           border-radius: 4px;
           height: 8px;
           width: var(--progress, 0%);
+        }
+      `}</style>
+
+      {/* Custom styles for date inputs */}
+      <style jsx global>{`
+        /* Reset both date and text inputs to have the same width */
+        input[type="date"],
+        input[type="text"] {
+          width: 100% !important;
+          box-sizing: border-box !important;
+          min-width: 0 !important;
+          max-width: 100% !important;
+          flex: 0 0 auto !important;
+        }
+        
+        /* Specific styles for date inputs */
+        input[type="date"] {
+          appearance: textfield !important;
+          -webkit-appearance: textfield !important;
+          -moz-appearance: textfield !important;
+        }
+        
+        /* Hide the calendar icon in date inputs */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          width: 15px !important;
+          height: 15px !important;
+          position: absolute !important;
+          right: 10px !important;
+        }
+        
+        /* Hide the clear button in text inputs */
+        input[type="text"]::-webkit-search-cancel-button,
+        input[type="text"]::-webkit-clear-button,
+        input[type="text"]::-ms-clear {
+          display: none !important;
+          -webkit-appearance: none !important;
+          appearance: none !important;
+        }
+        
+        /* Ensure grid cells are exactly 50% width */
+        .grid.grid-cols-2 > div {
+          width: 50% !important;
+          max-width: 50% !important;
+        }
+        
+        /* Make sure the input containers are the same size */
+        .grid.grid-cols-2 > div > div,
+        .grid.grid-cols-2 > div > input {
+          height: 48px !important;
+          line-height: normal !important;
         }
       `}</style>
     </div>

@@ -5,6 +5,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { db, auth } from '@/lib/firebase';
 import bcrypt from 'bcryptjs';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 // Function to get the actual running port, regardless of NEXTAUTH_URL setting
 const getCurrentPort = () => {
   // First try to get the port from the request headers (most accurate)

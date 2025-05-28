@@ -3,6 +3,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/firebase';
 
+// Force dynamic rendering for this route
+export const dynamic = "force-dynamic";
+
 /**
  * API endpoint to check if a new resume has been uploaded
  * This helps the frontend know when to prioritize resume data over localStorage
