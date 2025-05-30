@@ -31,15 +31,15 @@ export default function DashboardPage() {
   const [showAccountSettings, setShowAccountSettings] = useState(false);
   
   // State for tooltip position and content
-  const [tooltipStyle, setTooltipStyle] = useState({ top: 0, display: 'none' });
+  const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({ top: 0, left: 0, display: 'none', position: 'fixed' });
   const [tooltipContent, setTooltipContent] = useState('');
   // DRY helper for sidebar tooltips
   const handleSidebarTooltip = (e: React.MouseEvent, label: string) => {
     if (isSidebarCollapsed) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       setTooltipStyle({
-        top: rect.top + (rect.height / 2) - 22, // 22px is half the tooltip height
-        left: rect.right + 8, // 8px gap after the icon
+        top: rect.top + (rect.height / 2) - 22,
+        left: rect.right + 8,
         display: 'flex',
         position: 'fixed'
       });
@@ -47,7 +47,7 @@ export default function DashboardPage() {
     }
   };
   const handleSidebarTooltipLeave = () => {
-    setTooltipStyle(style => ({ ...style, display: 'none' }));
+    setTooltipStyle({ top: 0, left: 0, display: 'none', position: 'fixed' });
   };
   
   // Section visibility states
@@ -351,7 +351,9 @@ export default function DashboardPage() {
                       const rect = e.currentTarget.getBoundingClientRect();
                       setTooltipStyle({
                         top: rect.top + (rect.height / 2) - 20,
-                        display: 'flex'
+                        left: rect.right + 8,
+                        display: 'flex',
+                        position: 'fixed'
                       });
                       setTooltipContent(session.user?.name || 'User');
                     }
