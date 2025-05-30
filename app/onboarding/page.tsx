@@ -190,55 +190,74 @@ export default function OnboardingPage() {
     // Store current user email in localStorage for verification
     if (session?.user?.email) {
       const storedEmail = localStorage.getItem('userEmail');
-      
       // If the stored email is different from the current user, clear all data
       if (storedEmail && storedEmail !== session.user.email) {
         console.log('User changed, clearing all data');
-        // Force clear profile data on the server
         forceProfileClear();
       }
-      
       // Store current user email
       localStorage.setItem('userEmail', session.user.email);
-
-      // --- NEW LOGIC: Auto-clear backend contact info if no resume and no contact info ---
-      fetch('/api/profile')
-        .then(res => res.json())
-        .then(data => {
-          const hasResume = data.parsedResumeData || data.resumeUrl || data.parsedResumeUrl;
-          const hasContactInfo = data.profile && data.profile.contactInfo && Object.values(data.profile.contactInfo).some(val => val);
-          if (!hasResume && !hasContactInfo) {
-            // No resume and no contact info, force clear contact info on backend
-            fetch('/api/profile', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                section: 'contactInfo',
-                data: {
-                  firstName: '',
-                  lastName: '',
-                  dob: '',
-                  address: '',
-                  city: '',
-                  state: '',
-                  postalCode: '',
-                  linkedin: '',
-                  phone: '',
-                  email: '',
-                  smsConsent: true
-                },
-                replace: true
-              })
-            });
-          }
-        });
-      // --- END NEW LOGIC ---
     } else {
       // No active session, clear all localStorage
       clearAllLocalStorage();
     }
   }, [session]);
-  
+
+  // Onboarding state restoration logic
+  useEffect(() => {
+    if (typeof window === 'undefined' || !session?.user?.email) return;
+    // Try to fetch onboarding progress from backend first
+    const fetchUserProfile = async () => {
+      try {
+        const res = await fetch('/api/profile');
+        if (res.ok) {
+          const data = await res.json();
+          // If user has resume or profile data, restore onboarding state
+          const hasResume = data.parsedResumeData || data.resumeUrl || data.parsedResumeUrl;
+          const hasContactInfo = data.profile && data.profile.contactInfo && Object.values(data.profile.contactInfo).some(val => val);
+          if (hasResume || hasContactInfo) {
+            // Show the next incomplete section instead of forcing resume upload
+            setShowResumeUpload(false);
+            setShowContactInfo(!!hasContactInfo);
+            setShowWorkExperience(false);
+            setShowSkills(false);
+            setShowJobTitles(false);
+            setShowSalary(false);
+            setShowLocation(false);
+            setShowQuestionnaire(false);
+          } else {
+            // No data found, show resume upload
+            setShowResumeUpload(true);
+          }
+        } else {
+          // If backend fails, fallback to localStorage
+          const resume = getFromLocalStorage('resumeData');
+          const contact = getFromLocalStorage('contactInfo');
+          if (resume || contact) {
+            setShowResumeUpload(false);
+            setShowContactInfo(!!contact);
+          } else {
+            setShowResumeUpload(true);
+          }
+        }
+      } catch (error) {
+        // Fallback to localStorage if API fails
+        const resume = getFromLocalStorage('resumeData');
+        const contact = getFromLocalStorage('contactInfo');
+        if (resume || contact) {
+          setShowResumeUpload(false);
+          setShowContactInfo(!!contact);
+        } else {
+          setShowResumeUpload(true);
+        }
+      }
+    };
+    fetchUserProfile();
+  }, [session]);
+
+  // Only clear/reset data on explicit resume upload (inside handleFile) -- already implemented in handleFile.
+  // Remove any other logic that resets onboarding data except on explicit user action.
+
   // State variables for UI components
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showResumeUpload, setShowResumeUpload] = useState(false);
@@ -3721,12 +3740,12 @@ export default function OnboardingPage() {
                     className="w-full bg-[#1a1625] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
                   {suggestions.length > 0 && (
-                    <div className="absolute z-10 w-full mt-1 bg-[#1a1625] border border-gray-700 rounded-lg shadow-lg">
+                    <div className="absolute z-10 w-full mt-1 bg-[#1a1625] border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto text-left">
                       {suggestions.map((title) => (
                         <div
                           key={title}
                           onClick={() => handleSelectTitle(title)}
-                          className="px-4 py-2 text-white hover:bg-purple-900/50 cursor-pointer"
+                          className="px-4 py-2 text-white hover:bg-purple-900/50 cursor-pointer text-left"
                         >
                           {title}
                         </div>
