@@ -46,7 +46,8 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    console.log('[UPLOAD API] Got form data');
+    const resumeName = formData.get('resumeName') as string | null;
+    console.log('[UPLOAD API] Got form data', { resumeName });
 
     if (!file) {
       console.error('[UPLOAD API] No file provided');
@@ -100,9 +101,13 @@ export async function POST(request: Request) {
     const hadPreviousResume = userData && userData.resumeUrl;
     
     // Store the new resume URL
+    // Save custom resume name keyed by file name
+    const fileKey = file.name;
+    const resumeNamesUpdate = resumeName ? { [`resumeNames.${fileKey}`]: resumeName } : {};
     await db.collection('users').doc(userEmail).set({ 
       resumeUrl: url,
-      resumeUploadTimestamp: new Date().toISOString() 
+      resumeUploadTimestamp: new Date().toISOString(),
+      ...resumeNamesUpdate
     }, { merge: true });
     
     // If user had a previous resume, mark that we need to clear old data

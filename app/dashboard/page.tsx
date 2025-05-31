@@ -19,6 +19,7 @@ import {
 } from 'react-icons/fa';
 import AccountSettings from '../components/AccountSettings';
 import ResumeViewer from '../components/ResumeViewer';
+import ResumeList from '../components/ResumeList';
 
 import SideDrawer from '../components/SideDrawer';
 
@@ -38,8 +39,8 @@ export default function DashboardPage() {
     if (isSidebarCollapsed) {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
       setTooltipStyle({
-        top: rect.top + (rect.height / 2) - 22,
-        left: rect.right + 8,
+        top: rect.top + (rect.height / 2) - 10,
+        left: rect.right + 12,
         display: 'flex',
         position: 'fixed'
       });
@@ -47,7 +48,7 @@ export default function DashboardPage() {
     }
   };
   const handleSidebarTooltipLeave = () => {
-    setTooltipStyle({ top: 0, left: 0, display: 'none', position: 'fixed' });
+    setTooltipStyle({ ...tooltipStyle, display: 'none' });
   };
   
   // Section visibility states
@@ -317,18 +318,14 @@ export default function DashboardPage() {
 
           <div className="top-section">
             {/* Logo at the top */}
-            <div className="sidebar-logo flex items-center gap-3 mb-2 mt-2 ml-3 sidebar-logo">
+            <div className={`sidebar-logo flex ${isSidebarCollapsed ? 'flex-col items-center justify-center mb-2.5' : 'items-center gap-3 mb-2 ml-3'} mt-2 sidebar-logo`}>
               <div 
-                className="w-7 h-7 bg-gradient-to-br from-[#d8f1eb] to-[#9bd6c4] rounded transform rotate-45 relative logo-icon"
+                className={`bg-gradient-to-br from-[#d8f1eb] to-[#9bd6c4] rounded transform rotate-45 relative logo-icon ${isSidebarCollapsed ? 'w-5 h-5' : 'w-7 h-7'}`}
                 style={{
                   boxShadow: '2px 2px 5px rgba(0,0,0,0.2), -1px -1px 3px rgba(255,255,255,0.4)'
                 }}
-                onMouseEnter={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.add('show-tooltip');
-                }}
-                onMouseLeave={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.remove('show-tooltip');
-                }}
+                onMouseEnter={e => handleSidebarTooltip(e, 'Talexus AI')}
+                onMouseLeave={handleSidebarTooltipLeave}
               >
                 
               </div>
@@ -336,7 +333,7 @@ export default function DashboardPage() {
             </div>
             
             <div 
-              className={`user hover:bg-white/5 rounded-lg transition-colors duration-200 p-2 -mx-2 cursor-pointer${isSidebarCollapsed ? ' relative' : ''}`}
+              className={`user hover:bg-white/5 rounded-lg transition-colors duration-200 p-2 cursor-pointer ${isSidebarCollapsed ? 'mb-2.5 relative flex flex-col items-center justify-center' : '-mx-2'} `}
               onClick={() => setShowAccountSettings(true)}
               style={{ marginTop: '-10px' }}
             >
@@ -344,25 +341,10 @@ export default function DashboardPage() {
                 <img 
                   src={session.user?.image || 'https://randomuser.me/api/portraits/men/75.jpg'} 
                   alt="User Avatar" 
-                  className="w-11 h-11 rounded-full object-cover flex-shrink-0 avatar-img"
+                  className={`rounded-full object-cover flex-shrink-0 avatar-img ${isSidebarCollapsed ? 'w-8 h-8' : 'w-11 h-11'}`}
                   title={isSidebarCollapsed ? session.user?.name || 'User' : ''}
-                  onMouseEnter={e => {
-                    if (isSidebarCollapsed) {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      setTooltipStyle({
-                        top: rect.top + (rect.height / 2) - 20,
-                        left: rect.right + 8,
-                        display: 'flex',
-                        position: 'fixed'
-                      });
-                      setTooltipContent(session.user?.name || 'User');
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (isSidebarCollapsed) {
-                      setTooltipStyle({ ...tooltipStyle, display: 'none' });
-                    }
-                  }}
+                  onMouseEnter={e => handleSidebarTooltip(e, session.user?.name || 'User')}
+                  onMouseLeave={handleSidebarTooltipLeave}
                 />
                 
                 {!isSidebarCollapsed && (
@@ -392,12 +374,8 @@ export default function DashboardPage() {
                   setIsSidebarCollapsed(false);
                 }}
                 title="Home"
-                onMouseEnter={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.add('show-tooltip');
-                }}
-                onMouseLeave={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.remove('show-tooltip');
-                }}
+                onMouseEnter={e => handleSidebarTooltip(e, 'Home')}
+                onMouseLeave={handleSidebarTooltipLeave}
               >
                 <FaHome className="icon" />
                 {!isSidebarCollapsed && <span>Home</span>}
@@ -419,12 +397,8 @@ export default function DashboardPage() {
                   setIsSidebarCollapsed(true);
                 }}
                 title="Resume"
-                onMouseEnter={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.add('show-tooltip');
-                }}
-                onMouseLeave={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.remove('show-tooltip');
-                }}
+                onMouseEnter={e => handleSidebarTooltip(e, 'Resume')}
+                onMouseLeave={handleSidebarTooltipLeave}
               >
                 <FaFileAlt className="icon" />
                 {!isSidebarCollapsed && <span>Resume</span>}
@@ -446,12 +420,8 @@ export default function DashboardPage() {
                   setIsSidebarCollapsed(true);
                 }}
                 title="Cover Letter"
-                onMouseEnter={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.add('show-tooltip');
-                }}
-                onMouseLeave={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.remove('show-tooltip');
-                }}
+                onMouseEnter={e => handleSidebarTooltip(e, 'Cover Letter')}
+                onMouseLeave={handleSidebarTooltipLeave}
               >
                 <FaEnvelopeOpenText className="icon" />
                 {!isSidebarCollapsed && <span>Cover Letter</span>}
@@ -473,12 +443,8 @@ export default function DashboardPage() {
                   setIsSidebarCollapsed(true);
                 }}
                 title="Job Tracker"
-                onMouseEnter={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.add('show-tooltip');
-                }}
-                onMouseLeave={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.remove('show-tooltip');
-                }}
+                onMouseEnter={e => handleSidebarTooltip(e, 'Job Tracker')}
+                onMouseLeave={handleSidebarTooltipLeave}
               >
                 <FaBriefcase className="icon" />
                 {!isSidebarCollapsed && <span>Job Tracker</span>}
@@ -500,12 +466,8 @@ export default function DashboardPage() {
                   setIsSidebarCollapsed(true);
                 }}
                 title="Copilot"
-                onMouseEnter={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.add('show-tooltip');
-                }}
-                onMouseLeave={e => {
-                  if (isSidebarCollapsed) e.currentTarget.classList.remove('show-tooltip');
-                }}
+                onMouseEnter={e => handleSidebarTooltip(e, 'Copilot')}
+                onMouseLeave={handleSidebarTooltipLeave}
               >
                 <FaRobot className="icon" />
                 {!isSidebarCollapsed && <span>Copilot</span>}
@@ -527,6 +489,8 @@ export default function DashboardPage() {
                   setIsSidebarCollapsed(true);
                 }}
                 title="Playground"
+                onMouseEnter={e => handleSidebarTooltip(e, 'Playground')}
+                onMouseLeave={handleSidebarTooltipLeave}
               >
                 <FaFlask className="icon" /> {!isSidebarCollapsed && <span>Playground</span>}
               </button>
@@ -560,7 +524,7 @@ export default function DashboardPage() {
           ) : showResume ? (
             <div className="max-w-6xl mx-auto p-4 lg:p-8">
               <h1 className="text-2xl font-bold text-white mb-6">Your Resume</h1>
-
+              <ResumeList />
             </div>
           ) : showCoverLetter ? (
             <div className="max-w-6xl mx-auto p-4 lg:p-8">
@@ -1382,7 +1346,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-[#fff70080] rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-violet-500 flex items-center justify-center">
@@ -1408,7 +1372,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-[#fff70080] rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center">
@@ -1434,7 +1398,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-[#fff70080] rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
@@ -1463,7 +1427,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-[#fff70080] rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center">
@@ -1488,7 +1452,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-[#fff70080] rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 flex items-center justify-center">
@@ -1514,7 +1478,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowCopilot(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-[#fff70080] rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-400 flex items-center justify-center">
@@ -1564,7 +1528,10 @@ export default function DashboardPage() {
           
           .sidebar.collapsed {
             width: 80px;
-            padding: 24px 10px;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
           }
           
           .sidebar.open {
@@ -1607,6 +1574,15 @@ export default function DashboardPage() {
           .menu-group {
             margin-top: 10px;
           }
+          
+          .sidebar.collapsed .menu-group {
+            margin-top: 0;
+          }
+          
+          /* Ensure equal spacing in collapsed mode */
+          .sidebar.collapsed .menu-item:last-child {
+            margin-bottom: 10px;
+          }
 
           .menu-label {
             font-size: 13px;
@@ -1629,10 +1605,13 @@ export default function DashboardPage() {
             margin: 2px 0;
           }
           .sidebar.collapsed .menu-item {
-            margin-bottom: 16px;
-            padding: 12px 16px;
+            margin-bottom: 10px;
+            padding: 8px 0;
             border-radius: 12px;
             gap: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
           }
           
           .sidebar.collapsed .menu-item {
@@ -1646,28 +1625,13 @@ export default function DashboardPage() {
             font-size: 1.25rem;
           }
           
-          /* Enhanced tooltip for collapsed sidebar */
+          /* We're using React-based tooltips instead of CSS pseudo-elements */
           .sidebar.collapsed .menu-item::after {
-            content: attr(title);
-            position: absolute;
-            left: 100%;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            z-index: 100;
-            margin-left: 10px;
+            content: none;
           }
           
           .sidebar.collapsed .menu-item:hover::after {
-            opacity: 1;
+            opacity: 0;
           }
 
           .menu-item:hover,
@@ -1714,71 +1678,31 @@ export default function DashboardPage() {
           }
 
           .sidebar-tooltip {
-            position: fixed;
-            background: #181b23;
-            color: #fff;
-            padding: 8px 22px;
-            border-radius: 12px;
-            font-size: 1.18rem;
-            font-weight: 500;
-            white-space: nowrap;
-            box-shadow: 0 6px 24px rgba(0,0,0,0.22);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            height: 44px;
-            min-width: 120px;
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            z-index: 1000;
             pointer-events: none;
-            transition: all 0.15s;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            align-items: center;
+            justify-content: center;
+            position: fixed;
           }
+          
           .sidebar-tooltip::before {
             content: '';
             position: absolute;
-            left: -10px;
+            left: -6px;
             top: 50%;
             transform: translateY(-50%);
             width: 0;
             height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid #181b23;
-          }
-          /* Tooltip is controlled by React state now */
-          .sidebar-tooltip::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid #181b23;
-          }
-          .sidebar-tooltip::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid #eaf1fb;
-          }
-          .sidebar-tooltip::before {
-            content: '';
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid #13141a;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-right: 6px solid rgba(0, 0, 0, 0.85);
           }
           .menu-item.show-tooltip .sidebar-tooltip {
             opacity: 1;
@@ -1798,7 +1722,7 @@ export default function DashboardPage() {
       </div>
       
       {/* Global tooltip that follows cursor position */}
-      {isSidebarCollapsed && (
+      {isSidebarCollapsed && tooltipStyle.display !== 'none' && (
         <div 
           className="sidebar-tooltip" 
           style={tooltipStyle}

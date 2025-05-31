@@ -3,10 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "next dev",
+    "custom-server": "node server.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "engines": {
+    "node": ">=16.0.0 <23.0.0"
   },
   "dependencies": {
     "@builder.io/react": "^8.2.0",

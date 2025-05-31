@@ -1539,7 +1539,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-yellow-400 rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-violet-500 flex items-center justify-center">
@@ -1565,7 +1565,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-yellow-400 rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center">
@@ -1591,7 +1591,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-yellow-400 rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
@@ -1620,7 +1620,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-yellow-400 rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center">
@@ -1645,7 +1645,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowPlayground(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-yellow-400 rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 flex items-center justify-center">
@@ -1671,7 +1671,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowCopilot(false);
                   }}
-                  className="bg-[#12101a]/50 border border-[#FFD700]/30 rounded-xl p-5 transition-all shadow-lg shadow-[#FFD700]/10 hover:border-[#FFD700]/50 hover:shadow-[#FFD700]/20 cursor-pointer"
+                  className="bg-[#12101a]/50 border-b border-l border-r border-yellow-400 rounded-xl p-5 transition-all shadow-lg cursor-pointer" style={{ boxShadow: '0 0 1px 0 #fff70015' }}
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-400 flex items-center justify-center">
