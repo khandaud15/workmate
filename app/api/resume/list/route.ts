@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     // Fetch user's custom resume name if available
     const userDoc = await db.collection('users').doc(userEmail).get();
     const userData = userDoc.exists ? userDoc.data() : {};
-    const customResumeNames = userData.resumeNames || {};
+    const customResumeNames = userData?.resumeNames || {};
 
     // Build resume list with signed URLs and metadata
     const resumes = await Promise.all(

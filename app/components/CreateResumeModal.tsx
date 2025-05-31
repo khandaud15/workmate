@@ -41,7 +41,7 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div
-        className="bg-[#0f0e15] rounded-2xl shadow-lg w-full max-w-lg md:max-w-lg max-w-[95vw] p-0 relative border-b-[1.5px] border-l-[1.5px] border-r-[1.5px] border-[#fff70066] px-2"
+        className="bg-[#0f0e15] rounded-2xl shadow-lg w-full max-w-lg p-0 relative border-b-[1.5px] border-l-[1.5px] border-r-[1.5px] border-[#fff70066]"
         style={{ boxShadow: '0 0 8px 0 #fff70044' }}
       >
         <button

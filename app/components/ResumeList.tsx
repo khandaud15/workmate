@@ -160,7 +160,7 @@ const ResumeList: React.FC = () => {
                               const updated = await fetchResumes();
                               setResumes(updated);
                             } catch (e) {
-                              alert('Failed to delete resume: ' + (e?.message || e));
+                              alert('Failed to delete resume: ' + (typeof e === 'object' && e && 'message' in e ? (e as any).message : String(e)));
                             }
                           }}
                         >
