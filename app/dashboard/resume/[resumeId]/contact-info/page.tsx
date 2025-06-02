@@ -104,7 +104,7 @@ export default function ContactInfoPage() {
 
             // Close dropdown on outside click
             useEffect(() => {
-              function handleClick(e) {
+              function handleClick(e: MouseEvent): void {
                 if (boxRef.current && !boxRef.current.contains(e.target)) {
                   setDropdownOpen(false);
                 }
@@ -114,7 +114,7 @@ export default function ContactInfoPage() {
             }, [dropdownOpen]);
 
             // Find current resume
-            const currentResume = resumes.find(r => r.storageName === resumeId || r.id === resumeId);
+            const currentResume = resumes.find((r: { id?: string; storageName?: string; name?: string }) => r.storageName === resumeId || r.id === resumeId);
 
             return (
               <div ref={boxRef} className="relative inline-flex items-center justify-between mb-4 border border-[#2d3250] rounded-lg bg-[#171923] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]">
@@ -125,7 +125,7 @@ export default function ContactInfoPage() {
                     (currentResume && currentResume.name) || resumeName || 'Resume'
                   )}
                 </span>
-                <button className="text-white ml-3 flex items-center" onClick={() => setDropdownOpen(v => !v)} aria-label="Show resume list">
+                <button className="text-white ml-3 flex items-center" onClick={() => setDropdownOpen((v: boolean) => !v)} aria-label="Show resume list">
                   <FaChevronDown size={16} />
                 </button>
                 {/* Dropdown menu (right-aligned) */}
@@ -134,7 +134,7 @@ export default function ContactInfoPage() {
                     {resumes.length === 0 ? (
                       <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
                     ) : (
-                      resumes.map((r: any) => (
+                      resumes.map((r: { id?: string; storageName?: string; name?: string }) => (
                         <button
                           key={r.id || r.storageName}
                           className={`block w-full text-left px-4 py-2 text-sm truncate hover:bg-[#23263a] ${((r.storageName === resumeId || r.id === resumeId) ? 'bg-[#23263a] text-white font-semibold' : 'text-gray-200')}`}
