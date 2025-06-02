@@ -47,7 +47,8 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const resumeName = formData.get('resumeName') as string | null;
-    console.log('[UPLOAD API] Got form data', { resumeName });
+    const isTargeted = formData.get('isTargeted') === 'true';
+    console.log('[UPLOAD API] Got form data', { resumeName, fileName: file?.name, isTargeted });
 
     if (!file) {
       console.error('[UPLOAD API] No file provided');
@@ -102,12 +103,79 @@ export async function POST(request: Request) {
     
     // Store the new resume URL
     // Save custom resume name keyed by file name
-    const fileKey = file.name;
-    const resumeNamesUpdate = resumeName ? { [`resumeNames.${fileKey}`]: resumeName } : {};
+    const fileKey = filePath.split('/').pop() || file.name;
+    console.log('[UPLOAD API] Using fileKey for resumeName:', fileKey);
+    
+    // Get existing resumeNames or create new object
+    let resumeNamesUpdate = {};
+    let targetedUpdate = {};
+    // Get current user data
+    const currentUserData: any = userDoc && userDoc.exists && typeof userDoc.data === 'function' ? userDoc.data() : {};
+    const currentResumeNames = (currentUserData && currentUserData.resumeNames) ? currentUserData.resumeNames : {};
+    const currentTargeted = (currentUserData && currentUserData.targetedResumes) ? currentUserData.targetedResumes : {};
+    
+    console.log('[UPLOAD API] Current data:', {
+      resumeNames: currentResumeNames,
+      targetedResumes: currentTargeted
+    });
+    // Update resumeNames
+    if (resumeName) {
+      // Check if this resume name already exists for another file
+      const existingNames = Object.values(currentResumeNames);
+      let uniqueResumeName = resumeName;
+      
+      // If the name already exists, make it unique by adding a number
+      if (existingNames.includes(resumeName)) {
+        let counter = 1;
+        while (existingNames.includes(`${resumeName} (${counter})`)) {
+          counter++;
+        }
+        uniqueResumeName = `${resumeName} (${counter})`;
+        console.log('[UPLOAD API] Made resume name unique:', { original: resumeName, unique: uniqueResumeName });
+      }
+      
+      // Only update this specific file's name, not all files
+      const updatedResumeNames = {
+        ...currentResumeNames,
+        [fileKey]: uniqueResumeName
+      };
+      
+      // Log what's being saved to help debug
+      console.log('[UPLOAD API] Current resume names:', currentResumeNames);
+      console.log('[UPLOAD API] Updated resume names:', updatedResumeNames);
+      
+      resumeNamesUpdate = { resumeNames: updatedResumeNames };
+      console.log('[UPLOAD API] Saving resumeName:', { [fileKey]: uniqueResumeName });
+    }
+    // Update targetedResumes
+    if (typeof isTargeted === 'boolean') {
+      // If this is a targeted resume, we need to make sure it's the only targeted one
+      let updatedTargeted: Record<string, boolean> = {};
+      
+      if (isTargeted) {
+        // Create a new object with all resumes set to false
+        Object.keys(currentTargeted).forEach(key => {
+          updatedTargeted[key] = false;
+        });
+        // Then set only the current resume to true
+        updatedTargeted[fileKey] = true;
+        console.log('[UPLOAD API] Setting as the only targeted resume:', fileKey);
+      } else {
+        // If not targeted, just update this one resume
+        updatedTargeted = {
+          ...currentTargeted,
+          [fileKey]: false
+        };
+      }
+      
+      targetedUpdate = { targetedResumes: updatedTargeted };
+      console.log('[UPLOAD API] Updated targeted resumes:', updatedTargeted);
+    }
     await db.collection('users').doc(userEmail).set({ 
       resumeUrl: url,
       resumeUploadTimestamp: new Date().toISOString(),
-      ...resumeNamesUpdate
+      ...resumeNamesUpdate,
+      ...targetedUpdate
     }, { merge: true });
     
     // If user had a previous resume, mark that we need to clear old data

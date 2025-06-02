@@ -31,8 +31,15 @@ export async function GET(request: NextRequest) {
     });
     // Fetch user's custom resume name if available
     const userDoc = await db.collection('users').doc(userEmail).get();
-    const userData = userDoc.exists ? userDoc.data() : {};
-    const customResumeNames = userData?.resumeNames || {};
+    const userData: any = userDoc && userDoc.exists && typeof userDoc.data === 'function' ? userDoc.data() : {};
+    const customResumeNames = (userData && userData.resumeNames) ? userData.resumeNames : {};
+    const targetedResumes = (userData && userData.targetedResumes) ? userData.targetedResumes : {};
+    
+    console.log('[LIST API] User data:', {
+      email: userEmail,
+      customResumeNames,
+      targetedResumes
+    });
 
     // Build resume list with signed URLs and metadata
     const resumes = await Promise.all(
@@ -41,9 +48,46 @@ export async function GET(request: NextRequest) {
           action: 'read',
           expires: Date.now() + 60 * 60 * 1000 // 1 hour
         });
-        const fileName = file.name.replace(prefix, '');
+        // Extract clean filename by removing prefix and timestamp pattern
+        let fileName = file.name.replace(prefix, '');
+        // Remove timestamp pattern (e.g., 1748727806656_) from the beginning of filenames
+        fileName = fileName.replace(/^\d+_/, '');
+        console.log('[RESUME LIST API] Processing file:', { originalName: file.name, cleanedName: fileName });
+        // Only use the full filename (with timestamp) as the key for custom names
+        const fullFileName = file.name.replace(prefix, '');
+        const displayName = customResumeNames[fullFileName] || fileName;
+        
+        // Check if this resume is targeted - convert string 'true' to boolean true if needed
+        let isTargeted = false;
+        
+        // First check with the full filename (with timestamp)
+        if (targetedResumes && fullFileName in targetedResumes) {
+          const targetValue = targetedResumes[fullFileName];
+          isTargeted = targetValue === true || targetValue === 'true';
+        }
+        
+        console.log(`[RESUME LIST API] Resume ${fullFileName} targeted status:`, {
+          hasTargetedKey: targetedResumes && fullFileName in targetedResumes,
+          targetedValue: targetedResumes ? targetedResumes[fullFileName] : null,
+          finalIsTargeted: isTargeted
+        });
+        
+        console.log('[RESUME LIST API] Name resolution:', { 
+          fullFileName, 
+          cleanedFileName: fileName, 
+          customNames: Object.keys(customResumeNames), 
+          resolved: displayName,
+          isTargeted: isTargeted,
+          targetedValue: targetedResumes ? targetedResumes[fullFileName] : 'no data',
+          targetedResumesKeys: targetedResumes ? Object.keys(targetedResumes) : [],
+          targetedResumesValues: targetedResumes ? Object.values(targetedResumes) : []
+        });
+        
+        // Ensure isTargeted is a boolean, not a string
         return {
-          name: customResumeNames[fileName] || fileName,
+          name: displayName, // for UI display
+          storageName: fullFileName, // actual storage file name (with timestamp)
+          isTargeted: Boolean(isTargeted), // force conversion to boolean
           url: signedUrl,
           createdAt: file.metadata?.timeCreated,
           updatedAt: file.metadata?.updated || file.metadata?.timeCreated,

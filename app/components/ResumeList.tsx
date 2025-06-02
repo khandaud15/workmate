@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { FaFileAlt, FaLock, FaEllipsisV, FaPlus } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 import CreateResumeModal from './CreateResumeModal';
 
 interface Resume {
   id: string;
   name: string;
+  storageName: string;
   createdAt: string;
   updatedAt: string;
   url: string;
@@ -13,19 +15,27 @@ interface Resume {
 }
 
 const fetchResumes = async (): Promise<Resume[]> => {
-  const res = await fetch('/api/resume/list');
-  if (!res.ok) return [];
-  const data = await res.json();
-  // Map API response to Resume[]
-  return (data.resumes || []).map((r: any, i: number) => ({
-    id: r.url,
-    name: r.name,
-    createdAt: r.createdAt,
-    updatedAt: r.updatedAt,
-    isTargeted: i === 0, // Optionally mark the latest as targeted
-    isLocked: false, // Update if you have this info
-    url: r.url,
-  }));
+  try {
+    // Add a cache-busting parameter to ensure we get fresh data
+    const res = await fetch(`/api/resume/list?t=${Date.now()}`);
+    const data = await res.json();
+    console.log('Fetched resumes:', data.resumes);
+    
+    // Map API response to Resume[]
+    return (data.resumes || []).map((r: any, i: number) => ({
+      id: r.storageName || r.url, // fallback to url if storageName missing
+      name: r.name, // display name (custom or cleaned)
+      storageName: r.storageName, // actual storage file name
+      createdAt: r.createdAt,
+      updatedAt: r.updatedAt,
+      isTargeted: r.isTargeted === true, // Only show badge if backend says so
+      isLocked: false, // Update if you have this info
+      url: r.url,
+    }));
+  } catch (error) {
+    console.error('Error fetching resumes:', error);
+    return [];
+  }
 };
 
 function timeAgo(dateString: string) {
@@ -43,6 +53,7 @@ const ResumeList: React.FC = () => {
   const [newResumeName, setNewResumeName] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [menuOpenIdx, setMenuOpenIdx] = useState<number | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     fetchResumes().then(setResumes);
@@ -58,7 +69,7 @@ const ResumeList: React.FC = () => {
   }, [menuOpenIdx]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-12 font-helvetica">
+    <div className="w-full mx-auto mt-8 px-2 sm:px-4 md:px-8 font-helvetica">
       {/* Header Row for Creating New Resume */}
 
 
@@ -88,7 +99,22 @@ const ResumeList: React.FC = () => {
         <span className="">Create new resume</span>
         <FaPlus className="text-purple-400 text-lg" />
       </button>
-      <CreateResumeModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
+      <CreateResumeModal
+        isOpen={showCreateModal}
+        onClose={() => {
+          console.log('Modal close triggered');
+          setShowCreateModal(false);
+        }}
+        onResumeUploaded={async () => {
+          console.log('Resume uploaded, refreshing list');
+          const updated = await fetchResumes();
+          setResumes(updated);
+          console.log('Setting showCreateModal to false');
+          setShowCreateModal(false);
+          // Always fetch fresh data after modal closes (create, rename, or target)
+          fetchResumes().then(setResumes);
+        }}
+      />
       {/* Resume List */}
       <div className="space-y-4 font-helvetica">
         {resumes.length === 0 ? (
@@ -99,10 +125,22 @@ const ResumeList: React.FC = () => {
             <div
               key={resume.id}
               className="relative flex items-center border border-[#23263a] rounded-md px-7 py-3 transition group min-h-[48px] shadow-xl font-helvetica bg-transparent hover:bg-[#23263a] cursor-pointer"
+              onClick={() => {
+                // Extract numeric ID from storageName or id (e.g., 1748752352469_Resume.pdf -> 1748752352469)
+                let rawId = resume.storageName || resume.id;
+                let numericId = rawId.split('_')[0];
+                router.push(`/dashboard/resume/${numericId}/contact-info`);
+              }}
             >
               <FaFileAlt className="text-gray-300 mr-5 flex-shrink-0" size={22} />
               <div className="flex-1 truncate text-white font-semibold text-base font-helvetica">
                 {resume.name.replace(/\.[^/.]+$/, "")}
+
+                {/* Simple debug log for targeted status */}
+                {(() => {
+                  console.log(`Resume ${resume.name} targeted status:`, resume.isTargeted);
+                  return null;
+                })()}
                 {resume.isTargeted && (
                   <span className="ml-4 px-4 py-1 text-xs bg-blue-700 text-white rounded-full align-middle font-bold tracking-wide">TARGETED</span>
                 )}
@@ -146,21 +184,41 @@ const ResumeList: React.FC = () => {
                           onClick={async () => {
                             setMenuOpenIdx(null);
                             try {
+                              // Extract file name from URL if storageName is not available
+                              // URL format is typically like: https://storage.googleapis.com/talexus-4339c.appspot.com/raw_resume/user@email.com/1748727806656_Daud_CV.pdf
+                              let fileIdentifier = resume.storageName;
+                              
+                              if (!fileIdentifier && resume.url) {
+                                // Try to extract the file path from the URL
+                                const urlParts = resume.url.split('raw_resume/');
+                                if (urlParts.length > 1) {
+                                  fileIdentifier = 'raw_resume/' + urlParts[1];
+                                }
+                              }
+                              
+                              console.log('Deleting resume with identifier:', fileIdentifier);
+                              
                               const res = await fetch('/api/resume/delete', {
                                 method: 'DELETE',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ name: resume.name }), // Use exact filename with extension
+                                body: JSON.stringify({ name: fileIdentifier }),
                               });
+                              
+                              const responseData = await res.json();
+                              
                               if (!res.ok) {
-                                const err = await res.json();
-                                alert('Failed to delete resume: ' + (err.error || res.status));
+                                console.error('Delete failed:', responseData);
+                                alert('Failed to delete resume: ' + (responseData.error || res.status));
                                 return;
                               }
+                              
+                              console.log('Delete successful:', responseData);
                               // Re-fetch resumes from server to ensure UI is in sync
                               const updated = await fetchResumes();
                               setResumes(updated);
                             } catch (e) {
-                              alert('Failed to delete resume: ' + (typeof e === 'object' && e && 'message' in e ? (e as any).message : String(e)));
+                              console.error('Delete error:', e);
+                              alert('Failed to delete resume: ' + (e instanceof Error ? e.message : String(e)));
                             }
                           }}
                         >
@@ -178,10 +236,10 @@ const ResumeList: React.FC = () => {
 
       {/* Add Section Button */}
       <div className="flex justify-center mt-8 font-helvetica">
-  <button className="flex items-center bg-[#181b23] border border-dotted border-2 border-[#23263a] rounded-md px-4 py-2 text-sm text-gray-400 hover:text-purple-400 gap-2 font-semibold shadow-lg font-helvetica">
-    <FaPlus size={14} /> ADD SECTION
-  </button>
-</div>
+        <button className="flex items-center bg-[#181b23] border border-dotted border-2 border-[#23263a] rounded-md px-4 py-2 text-sm text-gray-400 hover:text-purple-400 gap-2 font-semibold shadow-lg font-helvetica">
+          <FaPlus size={14} /> ADD SECTION
+        </button>
+      </div>
     </div>
   );
 };
