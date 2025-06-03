@@ -20,26 +20,41 @@ import {
 type DashboardSidebarProps = {
   onShowAccountSettings?: () => void;
   defaultCollapsed?: boolean;
+  isMobileSidebarOpen?: boolean;
+  setIsMobileSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  toggleSidebarCollapse?: () => void;
+  isSidebarCollapsed?: boolean;
 };
 
 export default function DashboardSidebar({ 
   onShowAccountSettings, 
-  defaultCollapsed = false 
+  defaultCollapsed = false,
+  isMobileSidebarOpen,
+  setIsMobileSidebarOpen,
+  toggleSidebarCollapse,
+  isSidebarCollapsed: propIsSidebarCollapsed
 }: DashboardSidebarProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(defaultCollapsed);
+  // Use the prop if provided, otherwise use local state
+  const [localIsSidebarCollapsed, setLocalIsSidebarCollapsed] = useState(defaultCollapsed);
+  const isSidebarCollapsed = propIsSidebarCollapsed !== undefined ? propIsSidebarCollapsed : localIsSidebarCollapsed;
   
-  // State for tooltip position and content
-  const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({ 
-    top: 0, 
-    left: 0, 
-    display: 'none', 
-    position: 'fixed' 
-  });
+  // Helper function to handle sidebar collapse state
+  const handleSidebarCollapse = (collapsed: boolean) => {
+    if (toggleSidebarCollapse && propIsSidebarCollapsed !== undefined) {
+      // If parent is controlling the state, call the parent's toggle function
+      toggleSidebarCollapse();
+    } else {
+      // Otherwise use local state
+      setLocalIsSidebarCollapsed(collapsed);
+    }
+  };
+  
+  const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({ top: 0, left: 0, display: 'none', position: 'fixed' });
   const [tooltipContent, setTooltipContent] = useState('');
   
   // DRY helper for sidebar tooltips
@@ -73,11 +88,141 @@ export default function DashboardSidebar({
 
   return (
     <>
-
-
-      {/* Sidebar - only visible on lg and above */}
+      {/* Mobile Sidebar - only visible on mobile when open */}
       <div 
-        className={`sidebar hidden lg:block ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}
+        className={`sidebar mobile-sidebar fixed top-0 left-0 h-full z-50 lg:hidden ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        role="navigation"
+        aria-label="Mobile navigation"
+      >
+        {/* Close Button for Mobile */}
+        <button 
+          className="absolute right-4 top-4 text-white hover:text-gray-200 transition-colors"
+          onClick={() => setIsMobileSidebarOpen?.(false)}
+          aria-label="Close sidebar"
+        >
+          <FaTimes size={20} />
+        </button>
+        
+        <div className="top-section">
+          {/* Logo at the top */}
+          <div className="sidebar-logo flex items-center gap-3 mb-2 ml-3 mt-2">
+            <div 
+              className="bg-gradient-to-br from-[#d8f1eb] to-[#9bd6c4] rounded transform rotate-45 relative logo-icon w-7 h-7"
+              style={{
+                boxShadow: '2px 2px 5px rgba(0,0,0,0.2), -1px -1px 3px rgba(255,255,255,0.4)'
+              }}
+            >
+              
+            </div>
+            <div className="text-lg font-bold text-white ml-2">Talexus AI</div>
+          </div>
+          
+          <div 
+            className="user hover:bg-white/5 rounded-lg transition-colors duration-200 p-2 cursor-pointer -mx-2"
+            onClick={onShowAccountSettings}
+            style={{ marginTop: '-10px' }}
+          >
+            <div className="flex items-center gap-3">
+              <img 
+                src={session?.user?.image || 'https://randomuser.me/api/portraits/men/75.jpg'} 
+                alt="User Avatar" 
+                className="rounded-full object-cover flex-shrink-0 avatar-img w-11 h-11"
+              />
+              
+              <div className="user-info min-w-0">
+                <div className="text-sm font-medium text-white truncate">{session?.user?.name || 'User'}</div>
+                <div className="text-xs text-gray-300 truncate">Manage Account (Free Plan)</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="menu-group">
+            <div className="menu-label">Workspace</div>
+            
+            {/* Dashboard */}
+            <Link 
+              href="/dashboard"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard') && pathname === '/dashboard' ? 'active' : ''}`}
+              onClick={() => {
+                setIsMobileSidebarOpen?.(false);
+              }}
+            >
+              <FaHome className="icon" />
+              <span>Home</span>
+            </Link>
+            
+            {/* Resume */}
+            <Link 
+              href="/dashboard/resume"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard/resume') ? 'active' : ''}`}
+              onClick={() => {
+                setIsMobileSidebarOpen?.(false);
+              }}
+            >
+              <FaFileAlt className="icon" />
+              <span>Resume</span>
+            </Link>
+            
+            {/* Cover Letter */}
+            <Link 
+              href="/dashboard/cover-letter"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard/cover-letter') ? 'active' : ''}`}
+              onClick={() => {
+                setIsMobileSidebarOpen?.(false);
+              }}
+            >
+              <FaEnvelopeOpenText className="icon" />
+              <span>Cover Letter</span>
+            </Link>
+            
+            {/* Job Tracker */}
+            <Link 
+              href="/dashboard/job-tracker"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard/job-tracker') ? 'active' : ''}`}
+              onClick={() => {
+                setIsMobileSidebarOpen?.(false);
+              }}
+            >
+              <FaBriefcase className="icon" />
+              <span>Job Tracker</span>
+            </Link>
+            
+            {/* Copilot */}
+            <Link 
+              href="/dashboard/copilot"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard/copilot') ? 'active' : ''}`}
+              onClick={() => {
+                setIsMobileSidebarOpen?.(false);
+              }}
+            >
+              <FaRobot className="icon" />
+              <span>Copilot</span>
+            </Link>
+            
+            {/* Playground */}
+            <Link 
+              href="/dashboard/playground"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard/playground') ? 'active' : ''}`}
+              onClick={() => {
+                setIsMobileSidebarOpen?.(false);
+              }}
+            >
+              <FaFlask className="icon" /> 
+              <span>Playground</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className="bottom-card" style={{ position: 'fixed', bottom: '20px', left: '20px', width: '240px' }}>
+          <strong>Upgrade to Pro</strong>
+          <p>Get unlimited sessions<br />and unlock all the job tools</p>
+          <button>Upgrade</button>
+        </div>
+      </div>
+
+      {/* Desktop Sidebar - only visible on lg and above, hidden when mobile sidebar is open */}
+      <div 
+        className={`sidebar ${isMobileSidebarOpen ? 'hidden' : 'hidden lg:block'} ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}
         role="navigation"
         aria-label="Main navigation"
       >
@@ -142,7 +287,7 @@ export default function DashboardSidebar({
               onClick={() => {
                 setIsSidebarOpen(false);
                 // Expand sidebar when Home is clicked
-                setIsSidebarCollapsed(false);
+                handleSidebarCollapse(false);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Home')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -158,7 +303,7 @@ export default function DashboardSidebar({
               onClick={() => {
                 setIsSidebarOpen(false);
                 // Auto-collapse sidebar when section is clicked
-                setIsSidebarCollapsed(true);
+                handleSidebarCollapse(true);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Resume')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -174,7 +319,7 @@ export default function DashboardSidebar({
               onClick={() => {
                 setIsSidebarOpen(false);
                 // Auto-collapse sidebar when section is clicked
-                setIsSidebarCollapsed(true);
+                handleSidebarCollapse(true);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Cover Letter')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -190,7 +335,7 @@ export default function DashboardSidebar({
               onClick={() => {
                 setIsSidebarOpen(false);
                 // Auto-collapse sidebar when section is clicked
-                setIsSidebarCollapsed(true);
+                handleSidebarCollapse(true);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Job Tracker')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -206,7 +351,7 @@ export default function DashboardSidebar({
               onClick={() => {
                 setIsSidebarOpen(false);
                 // Auto-collapse sidebar when section is clicked
-                setIsSidebarCollapsed(true);
+                handleSidebarCollapse(true);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Copilot')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -222,7 +367,7 @@ export default function DashboardSidebar({
               onClick={() => {
                 setIsSidebarOpen(false);
                 // Auto-collapse sidebar when section is clicked
-                setIsSidebarCollapsed(true);
+                handleSidebarCollapse(true);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Playground')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -267,6 +412,18 @@ export default function DashboardSidebar({
           z-index: 50;
           transform: translateX(-100%);
           transition: all 0.3s ease-in-out;
+        }
+        
+        .mobile-sidebar {
+          width: 280px;
+          transform: translateX(-100%);
+          transition: transform 0.3s ease-in-out;
+          overflow-y: auto;
+          padding-bottom: 200px;
+        }
+        
+        .mobile-sidebar.translate-x-0 {
+          transform: translateX(0);
         }
         
         .sidebar.expanded {

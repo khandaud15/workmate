@@ -12,72 +12,17 @@ import {
   FaChevronDown
 } from 'react-icons/fa';
 import DashboardSidebar from '../../../../components/DashboardSidebar';
+import DashboardLayout from '../../../../components/DashboardLayout';
 
 export default function ContactInfoPage() {
   const params = useParams();
   const resumeId = params.resumeId as string;
-  const router = useRouter();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
-  
-  const pathname = usePathname();
-  
-  // Close sidebar when route changes on mobile
-  useEffect(() => {
-    if (window.innerWidth < 1024) {
-      setIsSidebarOpen(false);
-    }
-  }, [pathname]);
+  // ...any other hooks you need
 
-  // Handle click outside to close sidebar on mobile
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const sidebar = document.querySelector('.sidebar');
-      if (sidebar && !sidebar.contains(event.target as Node) && window.innerWidth < 1024) {
-        setIsSidebarOpen(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isSidebarOpen]);
-  
   return (
-    <div className="flex min-h-screen bg-[#0e0c12] relative overflow-x-hidden">
-      {/* Mobile Toggle Button - Only visible when sidebar is closed */}
-      {!isSidebarOpen && (
-        <button 
-          className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#7a64c2] text-white p-2 rounded-r-lg shadow-lg lg:hidden sidebar-toggle"
-          onClick={() => setIsSidebarOpen(true)}
-          aria-label="Open sidebar"
-        >
-          <FaChevronRight size={16} />
-        </button>
-      )}
-      
-      {/* Overlay - Only on mobile when sidebar is open */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <DashboardSidebar 
-        defaultCollapsed={true}
-      />
-
+    <DashboardLayout>
       {/* Main Content */}
-      <main 
-        className={`flex-1 overflow-y-auto pt-4 lg:pt-0 transition-all duration-300 bg-[#0e0c12] text-white ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'}`}
-        onClick={() => {
-          // Collapse sidebar when clicking on main content area
-          if (!isSidebarCollapsed && window.innerWidth >= 1024) {
-            setIsSidebarCollapsed(true);
-          }
-        }}
-      >
+      <div className="overflow-y-auto pt-4 lg:pt-0">
         <div className="w-full px-4 sm:px-6 md:px-8 py-4">
           {/* Resume Name Box */}
           {/* Resume Name Box with Dropdown */}
@@ -117,7 +62,7 @@ export default function ContactInfoPage() {
             const currentResume = resumes.find((r: { id?: string; storageName?: string; name?: string }) => r.storageName === resumeId || r.id === resumeId);
 
             return (
-              <div ref={boxRef} className="relative inline-flex items-center justify-between mb-4 border border-[#2d3250] rounded-lg bg-[#171923] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]">
+              <div ref={boxRef} className="relative inline-flex items-center justify-between mb-4 border border-[#23263a] rounded-lg bg-[#0e0c12] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]">
                 <span className="truncate text-white font-medium text-sm max-w-[100px]">
                   {isLoading ? (
                     <span className="inline-block bg-gray-700 rounded w-20 h-4 animate-pulse" />
@@ -130,7 +75,7 @@ export default function ContactInfoPage() {
                 </button>
                 {/* Dropdown menu (right-aligned) */}
                 {dropdownOpen && (
-                  <div className="absolute left-0 top-full mt-1 bg-[#171923] border border-[#2d3250] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
+                  <div className="absolute left-0 top-full mt-1 bg-[#171923] border border-[#23263a] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
                     {resumes.length === 0 ? (
                       <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
                     ) : (
@@ -160,7 +105,7 @@ export default function ContactInfoPage() {
           <div className="flex flex-col gap-2 mb-4">
             {/* Button-style nav: each section is a button, matching the action buttons below */}
             {/* All nav buttons inside a single container, always two lines, matching screenshot */}
-            <div className="border border-[#2d3250] rounded-lg bg-[#171923] px-2 py-1 lg:flex lg:flex-wrap overflow-x-auto whitespace-nowrap mb-4 shadow-md" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-2 py-1 lg:flex lg:flex-wrap overflow-x-auto whitespace-nowrap mb-4 shadow-md" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <div className="flex flex-nowrap lg:flex-wrap gap-x-2 gap-y-1 pb-1 lg:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {[
                 "Contact",
@@ -193,90 +138,124 @@ export default function ContactInfoPage() {
           </div>
 
           {/* Contact Info Box */}
-          <div className="border border-[#2d3250] rounded-lg bg-[#171923] px-6 py-6 mt-2 w-full max-w-full shadow-lg">
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-              {/* Full Name */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Full Name</label>
-                <input type="text" className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="Full Name" />
-              </div>
-              {/* Email Address */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Email Address</label>
-                <input type="email" className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="Email Address" />
-              </div>
-              {/* Phone Number */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Phone Number</label>
-                <input type="tel" className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="Phone Number" />
-              </div>
-              {/* LinkedIn URL */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">LinkedIn URL</label>
-                <input type="url" className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="LinkedIn URL" />
-              </div>
-              {/* Personal Website */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Personal Website <span className="font-normal lowercase">or relevant link</span></label>
-                <input type="url" className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="https://yourwebsite.com" />
-              </div>
-              {/* Country */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Country</label>
-                <select className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner">
-                  <option>USA</option>
-                  <option>Canada</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              {/* State */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">State</label>
-                <select className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner">
-                  <option>IL</option>
-                  <option>NY</option>
-                  <option>CA</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              {/* City */}
-              <div className="flex flex-col">
-                <label className="text-xs font-bold text-gray-300 mb-1 uppercase">City</label>
-                <select className="bg-[#1e212d] border border-[#2d3250] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner">
-                  <option>Chicago</option>
-                  <option>New York</option>
-                  <option>San Francisco</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              {/* Save Button */}
-              <div className="col-span-1 md:col-span-2 flex justify-end mt-2">
-                <button type="submit" className="bg-[#6366f1] hover:bg-[#4f46e5] text-white font-bold text-xs uppercase px-6 py-2 rounded-md transition">Save Basic Info</button>
-              </div>
-            </form>
+          <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-6 py-6 mt-2 w-full max-w-full shadow-lg">
+             {/* Autofill Contact Info Form */}
+            {(() => {
+              const React = require('react');
+              const { useEffect, useState } = React;
+              const [contactInfo, setContactInfo] = useState({
+                fullName: '',
+                emailAddress: '',
+                phoneNumber: '',
+                linkedinUrl: '',
+                personalWebsite: '',
+                country: 'USA',
+                state: '',
+                city: '',
+              });
+
+              useEffect(() => {
+                fetch(`/api/resume/contact-info?id=${resumeId}`)
+                  .then(res => res.json())
+                  .then(data => {
+                    if (data && data.contactInfo) setContactInfo({
+                      fullName: data.contactInfo.fullName || '',
+                      emailAddress: data.contactInfo.emailAddress || '',
+                      phoneNumber: data.contactInfo.phoneNumber || '',
+                      linkedinUrl: data.contactInfo.linkedinUrl || '',
+                      personalWebsite: data.contactInfo.personalWebsite || '',
+                      country: data.contactInfo.country || 'USA',
+                      state: data.contactInfo.state || '',
+                      city: data.contactInfo.city || '',
+                    });
+                  });
+              }, [resumeId]);
+
+              function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+                const { name, value } = e.target;
+                setContactInfo((prev: typeof contactInfo) => ({ ...prev, [name]: value }));
+              }
+
+              return (
+                <form className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  {/* Full Name */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Full Name</label>
+                    <input type="text" name="fullName" value={contactInfo.fullName} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="Full Name" />
+                  </div>
+                  {/* Email Address */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Email Address</label>
+                    <input type="email" name="emailAddress" value={contactInfo.emailAddress} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="Email Address" />
+                  </div>
+                  {/* Phone Number */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Phone Number</label>
+                    <input type="tel" name="phoneNumber" value={contactInfo.phoneNumber} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="Phone Number" />
+                  </div>
+                  {/* LinkedIn URL */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">LinkedIn URL</label>
+                    <input type="url" name="linkedinUrl" value={contactInfo.linkedinUrl} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="LinkedIn URL" />
+                  </div>
+                  {/* Personal Website */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Personal Website <span className="font-normal lowercase">or relevant link</span></label>
+                    <input type="url" name="personalWebsite" value={contactInfo.personalWebsite} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner" placeholder="https://yourwebsite.com" />
+                  </div>
+                  {/* Country */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Country</label>
+                    <select name="country" value={contactInfo.country} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner">
+                      <option>USA</option>
+                      <option>Canada</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  {/* State */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">State</label>
+                    <select name="state" value={contactInfo.state} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner">
+                      <option>IL</option>
+                      <option>NY</option>
+                      <option>CA</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  {/* City */}
+                  <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-300 mb-1 uppercase">City</label>
+                    <select name="city" value={contactInfo.city} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-4 py-2 text-gray-100 text-sm focus:outline-none focus:border-blue-500 transition shadow-inner">
+                      <option>Chicago</option>
+                      <option>New York</option>
+                      <option>San Francisco</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+
+                </form>
+              );
+            })()}
+
           </div>
+        {/* Action Buttons Row - moved inside the padded container */}
+        <div className="flex justify-between items-center gap-4 mt-8">
+          <button
+            type="button"
+            className="border border-[#434354] text-white text-base font-medium rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#18181c] hover:border-[#63636f]"
+            onClick={() => window.history.back()}
+          >
+            BACK
+          </button>
+          <button
+            type="submit"
+            className="bg-black text-white text-base font-bold rounded-lg border border-[#434354] px-7 py-2 transition-colors duration-150 hover:bg-[#18181c]"
+          >
+            SAVE
+          </button>
         </div>
-      </main>
-
-      {/* Global Styles */}
-      <style jsx global>{`
-        body {
-          margin: 0;
-          font-family: 'Inter', sans-serif;
-          background: #0e0c12;
-        }
-
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .top-section::-webkit-scrollbar {
-          display: none;
-        }
-        
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .top-section {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
-        }
-      `}</style>
-    </div>
+        </div>
+      </div>
+    </DashboardLayout>
   );
 }

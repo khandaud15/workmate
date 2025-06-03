@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import DashboardSidebar from './DashboardSidebar';
 import AccountSettings from './AccountSettings';
+import { FaChevronRight } from 'react-icons/fa';
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -17,9 +18,16 @@ export default function DashboardLayout({
 }: DashboardLayoutProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   
   const [showAccountSettings, setShowAccountSettings] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(defaultCollapsed);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Close mobile sidebar when route changes
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
 
   // Redirect if not authenticated
   if (status === 'unauthenticated') {
@@ -32,16 +40,39 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#12101a] text-white overflow-x-hidden">
-      {/* Sidebar Component */}
+    <div className="flex min-h-screen bg-[#0e0c12] text-white overflow-x-hidden relative">
+      {/* Mobile Toggle Button - Vertical Tab */}
+      {!isSidebarOpen && (
+        <button 
+          className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#7a64c2] text-white p-2 rounded-r-lg shadow-lg lg:hidden sidebar-toggle"
+          onClick={() => setIsSidebarOpen(true)}
+          aria-label="Open sidebar"
+        >
+          <FaChevronRight size={16} />
+        </button>
+      )}
+      
+      {/* Overlay - Only on mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+      
+      {/* Sidebar Component - Only one instance for the entire app */}
       <DashboardSidebar 
         onShowAccountSettings={() => setShowAccountSettings(true)}
         defaultCollapsed={defaultCollapsed}
+        isMobileSidebarOpen={isSidebarOpen}
+        setIsMobileSidebarOpen={setIsSidebarOpen}
+        toggleSidebarCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        isSidebarCollapsed={isSidebarCollapsed}
       />
 
       {/* Main Content */}
       <div 
-        className={`flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'ml-[60px]' : 'ml-[280px]'}`}
+        className={`flex-1 transition-all duration-300 w-full ${isSidebarCollapsed ? 'lg:ml-[60px]' : 'lg:ml-[280px]'}`}
       >
         {showAccountSettings ? (
           <div className="relative">
@@ -57,7 +88,13 @@ export default function DashboardLayout({
         body {
           margin: 0;
           font-family: 'Inter', sans-serif;
-          background: #12101a;
+          background: #0e0c12;
+        }
+        
+        @media (max-width: 1023px) {
+          .ml-\[60px\], .ml-\[280px\] {
+            margin-left: 0 !important;
+          }
         }
       `}</style>
     </div>

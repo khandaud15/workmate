@@ -1343,7 +1343,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border-b border-l border-r border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-violet-500 flex items-center justify-center">
@@ -1365,7 +1365,7 @@ export default function DashboardPage() {
                     // Navigate to /dashboard/resume and update URL
                     window.location.href = '/dashboard/resume';
                   }}
-                  className="group bg-[#12101a]/50 border-b border-l border-r border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center">
@@ -1391,7 +1391,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border-b border-l border-r border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
@@ -1420,7 +1420,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border-b border-l border-r border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center">
@@ -1445,7 +1445,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border-b border-l border-r border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 flex items-center justify-center">
@@ -1471,7 +1471,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowCopilot(false);
                   }}
-                  className="group bg-[#12101a]/50 border-b border-l border-r border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-400 flex items-center justify-center">

@@ -5,6 +5,16 @@
 /* Import page transition styles */
 @import './components/PageTransition.css';
 
+/* Hide expanded and mobile sidebar only on desktop for resume section */
+@media (min-width: 1024px) {
+  .resume-section .sidebar.expanded {
+    display: none !important;
+  }
+  .resume-section .mobile-sidebar {
+    display: none !important;
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -17,7 +27,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  background: #0f0e15;
+  background: #0e0c12;
   color: #F5F6FA;
 }
 
