@@ -34,10 +34,10 @@ export default function ResumePage() {
       `}</style>
       
       <DashboardLayout>
-        <div className="p-6">
-          <div className="max-w-7xl mx-auto">
+        <div className="p-2 sm:p-4 md:p-6">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-8">
+            <h1 className="text-2xl font-bold text-white mt-2 mb-8 text-center block md:hidden">Your Resumes</h1>
             <div className="flex flex-col">
-              <h1 className="text-3xl font-bold text-white mb-8">Your Resumes</h1>
               <ResumeList />
             </div>
           </div>

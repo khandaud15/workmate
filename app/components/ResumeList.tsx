@@ -69,7 +69,7 @@ const ResumeList: React.FC = () => {
   }, [menuOpenIdx]);
 
   return (
-    <div className="w-full mx-auto mt-8 px-2 sm:px-4 md:px-8 font-helvetica">
+    <div className="w-full mx-auto mt-8 font-helvetica">
       {/* Header Row for Creating New Resume */}
 
 
