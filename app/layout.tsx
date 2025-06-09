@@ -95,12 +95,13 @@ export default function RootLayout({
       <body className="bg-[#fefcf9] min-h-screen flex flex-col">
         <Providers>
           <DataCleaner />
-          <LayoutStabilizer />
-          {!hideHeader && <Header />}
-          <main className={isDashboard ? 'dashboard-main' : ''}>
-            {children}
-          </main>
-          {!hideFooter && <Footer />}
+          <LayoutStabilizer>
+            {!hideHeader && <Header />}
+            <main className={isDashboard ? 'dashboard-main' : ''}>
+              {children}
+            </main>
+            {!hideFooter && <Footer />}
+          </LayoutStabilizer>
         </Providers>
       </body>
     </html>

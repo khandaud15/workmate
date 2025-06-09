@@ -80,11 +80,3 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to delete resume' }, { status: 500 });
   }
 }
-    }
-    
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('[RESUME DELETE API] Error:', error);
-    return NextResponse.json({ error: 'Failed to delete resume' }, { status: 500 });
-  }
-}
