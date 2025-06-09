@@ -27,20 +27,53 @@ export async function POST(req: NextRequest) {
       contactInfo
     });
 
-    // Get user doc reference
-    const userRef = db.collection('users').doc(userEmail);
-    const userDoc = await userRef.get();
+    // Get reference to the resume document in parsed_resumes collection
+    const resumeRef = db.collection('parsed_resumes')
+      .doc(userEmail)
+      .collection('resumes')
+      .doc(resumeId);
     
-    if (!userDoc.exists) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    const resumeDoc = await resumeRef.get();
+    
+    if (!resumeDoc.exists) {
+      return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
     }
+
+    console.log('DEBUG: Received contactInfo from frontend:', JSON.stringify(contactInfo, null, 2));
     
-    // Update the contact info for this resume
-    await userRef.update({
-      [`resumeContactInfo.${resumeId}`]: contactInfo
+    // Get the current document data
+    const currentData = resumeDoc.data();
+    const existingParsedData = currentData?.parsedResumeData || {};
+
+    // Create update object with only the contact info fields
+    const contactInfoUpdate = {
+      'Full Name': contactInfo.fullName,
+      'Email': contactInfo.emailAddress,
+      'Phone': contactInfo.phoneNumber,
+      'LinkedIn': contactInfo.linkedinUrl,
+      'Country': contactInfo.country,
+      'State': contactInfo.state,
+      'City': contactInfo.city,
+      'Address': contactInfo.address,
+      'Postal Code': contactInfo.zipCode
+    };
+
+    // Merge the new contact info with existing data
+    const parsedResumeDataUpdate = {
+      ...existingParsedData,  // Keep all existing data (skills, education, etc.)
+      ...contactInfoUpdate    // Update only the contact info fields
+    };
+
+    console.log('DEBUG: Existing parsed data:', JSON.stringify(existingParsedData, null, 2));
+    console.log('DEBUG: Contact info update:', JSON.stringify(contactInfoUpdate, null, 2));
+    console.log('DEBUG: Final merged update:', JSON.stringify(parsedResumeDataUpdate, null, 2));
+
+    // Update only the merged data
+    await resumeRef.update({
+      parsedResumeData: parsedResumeDataUpdate
     });
     
-    console.log(`Successfully updated contact info for resume ${resumeId}`);
+    console.log(`Successfully updated contact info for resume ${resumeId} in parsed_resumes collection`);
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

@@ -21,25 +21,11 @@ export default function ResumePage() {
 
   return (
     <>
-      {/* Hide expanded sidebar and mobile sidebar only on desktop for resume page */}
-      <style jsx global>{`
-        @media (min-width: 1024px) {
-          .sidebar.expanded {
-            display: none !important;
-          }
-          .mobile-sidebar {
-            display: none !important;
-          }
-        }
-      `}</style>
-      
       <DashboardLayout>
-        <div className="p-2 sm:p-4 md:p-6">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-8">
-            <h1 className="text-2xl font-bold text-white mt-2 mb-8 text-center block md:hidden">Your Resumes</h1>
-            <div className="flex flex-col">
-              <ResumeList />
-            </div>
+        <div className="max-w-7xl mx-auto p-6 md:p-8 lg:p-10">
+          <h1 className="text-2xl font-bold text-white mt-2 mb-8 text-center block md:hidden">Your Resumes</h1>
+          <div className="flex flex-col">
+            <ResumeList />
           </div>
         </div>
       </DashboardLayout>

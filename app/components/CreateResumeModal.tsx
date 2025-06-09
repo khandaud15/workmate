@@ -35,7 +35,10 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
     try {
       const formData = new FormData();
       formData.append('file', file);
-      // Don't include custom name or targeting yet - those are confirmed with SAVE
+      // Include the resumeName if it's already set
+      if (resumeName && resumeName.trim() !== '') {
+        formData.append('resumeName', resumeName);
+      }
       const res = await fetch('/api/resume/upload', {
         method: 'POST',
         body: formData,

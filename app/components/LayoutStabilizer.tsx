@@ -9,29 +9,13 @@ import { useEffect, useState } from 'react';
  * by forcing the browser to calculate layout before showing content.
  */
 export default function LayoutStabilizer({ children }: { children: React.ReactNode }) {
-  const [isStabilized, setIsStabilized] = useState(false);
-  
   useEffect(() => {
     // Force a layout calculation by reading a layout property
-    document.body.getBoundingClientRect();
-    
-    // Set a very short timeout to ensure the browser has time to calculate layout
-    const timeout = setTimeout(() => {
-      setIsStabilized(true);
-    }, 10);
-    
-    return () => clearTimeout(timeout);
-  }, []);
-  
-  // Apply a style that hides content until layout is calculated
-  const stabilizingStyle = {
-    opacity: isStabilized ? 1 : 0,
-    transition: 'opacity 0.1s ease-in',
-  };
-  
-  return (
-    <div style={stabilizingStyle}>
-      {children}
-    </div>
-  );
+    // This should be done as early as possible.
+    if (typeof window !== 'undefined') {
+      document.body.getBoundingClientRect();
+    }
+  }, []); // Runs once on mount
+
+  return <>{children}</>; // Render children immediately
 }

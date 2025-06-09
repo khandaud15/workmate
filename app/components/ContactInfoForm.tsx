@@ -19,9 +19,13 @@ export interface ContactFormData {
   country: string;
   state: string;
   city: string;
+  address: string;
+  zipCode: string;
   showCountry: boolean;
   showState: boolean;
   showCity: boolean;
+  showAddress: boolean;
+  showZipCode: boolean;
 }
 
 const ContactInfoForm: React.FC<ContactInfoFormProps> = ({
@@ -40,9 +44,13 @@ const ContactInfoForm: React.FC<ContactInfoFormProps> = ({
     country: "USA",
     state: "",
     city: "",
+    address: "",
+    zipCode: "",
     showCountry: true,
     showState: true,
     showCity: true,
+    showAddress: true,
+    showZipCode: true,
   });
 
   useEffect(() => {
@@ -56,12 +64,24 @@ const ContactInfoForm: React.FC<ContactInfoFormProps> = ({
 
   const fetchContactInfo = async (id: string) => {
     try {
+      console.log('Fetching contact info for resume ID:', id);
       const res = await fetch(`/api/resume/contact-info?id=${id}`);
+      console.log('API response status:', res.status);
+      
       if (res.ok) {
         const data = await res.json();
+        console.log('API response data:', JSON.stringify(data, null, 2));
+        
         if (data.contactInfo) {
+          console.log('Contact info found:', JSON.stringify(data.contactInfo, null, 2));
+          console.log('Address field:', data.contactInfo.address);
+          console.log('Zip code field:', data.contactInfo.zipCode);
           setFormData(data.contactInfo);
+        } else {
+          console.warn('No contactInfo in API response');
         }
+      } else {
+        console.error('API response not OK:', await res.text());
       }
     } catch (error) {
       console.error("Error fetching contact info:", error);
@@ -76,7 +96,7 @@ const ContactInfoForm: React.FC<ContactInfoFormProps> = ({
     }));
   };
 
-  const handleToggle = (field: 'showCountry' | 'showState' | 'showCity') => {
+  const handleToggle = (field: 'showCountry' | 'showState' | 'showCity' | 'showAddress' | 'showZipCode') => {
     setFormData(prev => ({
       ...prev,
       [field]: !prev[field]
@@ -95,6 +115,7 @@ const ContactInfoForm: React.FC<ContactInfoFormProps> = ({
           contactInfo: formData
         };
         
+        console.log('FRONTEND DEBUG: Attempting to save contact info. Payload:', JSON.stringify(payload, null, 2));
         const res = await fetch('/api/resume/update-contact-info', {
           method: 'POST',
           headers: {
@@ -344,9 +365,64 @@ const ContactInfoForm: React.FC<ContactInfoFormProps> = ({
                     <option value="Los Angeles">Los Angeles</option>
                     <option value="San Francisco">San Francisco</option>
                     <option value="Austin">Austin</option>
+                    <option value="Charlottesville">Charlottesville</option>
                   </select>
                   <ChevronDownIcon className="absolute right-3 top-3 h-5 w-5 text-gray-400" />
                 </div>
+              </div>
+              
+              {/* Address */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-white uppercase text-xs font-bold">
+                    Address
+                  </label>
+                  <div className="flex items-center">
+                    <span className="text-xs text-gray-400 mr-2">Show on resume</span>
+                    <button 
+                      type="button"
+                      onClick={() => handleToggle('showAddress')}
+                      className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ease-in-out ${formData.showAddress ? 'bg-blue-600' : 'bg-gray-700'}`}
+                    >
+                      <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${formData.showAddress ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  className="w-full bg-[#1a1d2d] border border-[#363b4d] rounded-md px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="112 Montibello Circle, Apt-8."
+                />
+              </div>
+              
+              {/* ZIP Code */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-white uppercase text-xs font-bold">
+                    ZIP Code
+                  </label>
+                  <div className="flex items-center">
+                    <span className="text-xs text-gray-400 mr-2">Show on resume</span>
+                    <button 
+                      type="button"
+                      onClick={() => handleToggle('showZipCode')}
+                      className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ease-in-out ${formData.showZipCode ? 'bg-blue-600' : 'bg-gray-700'}`}
+                    >
+                      <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${formData.showZipCode ? 'translate-x-6' : 'translate-x-0'}`}></div>
+                    </button>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  name="zipCode"
+                  value={formData.zipCode}
+                  onChange={handleChange}
+                  className="w-full bg-[#1a1d2d] border border-[#363b4d] rounded-md px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="22908"
+                />
               </div>
             </div>
             

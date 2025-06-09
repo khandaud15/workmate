@@ -72,7 +72,7 @@ export default function DashboardLayout({
 
       {/* Main Content */}
       <div 
-        className={`flex-1 transition-all duration-300 w-full ${isSidebarCollapsed ? 'lg:ml-[60px]' : 'lg:ml-[280px]'}`}
+        className={`flex-1 transition-[padding] duration-300 ease-in-out w-full ${isSidebarCollapsed ? 'lg:pl-[32px]' : 'lg:pl-[200px]'}`}
       >
         {showAccountSettings ? (
           <div className="relative">

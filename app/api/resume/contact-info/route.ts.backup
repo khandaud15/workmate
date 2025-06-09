@@ -1,0 +1,489 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { db } from '@/lib/firebase';
+import { storage } from '@/lib/firebase';
+import { File } from '@google-cloud/storage';
+
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
+interface ParsedAddress {
+  street?: string;
+  city?: string;
+  state?: string;
+  'Postal Code'?: string;
+  'Zip Code'?: string;
+  'ZIP'?: string;
+}
+
+interface WorkExperience {
+  Location?: string;
+  [key: string]: any;
+}
+
+interface ParsedResumeData extends Record<string, any> {
+  id?: string;
+  timestamp?: number;
+  'Full Name'?: string;
+  'Email'?: string;
+  'Phone'?: string;
+  'LinkedIn'?: string;
+  'Personal Website'?: string;
+  'Address'?: ParsedAddress | string;
+  'City'?: string;
+  'State'?: string;
+  'Work Experience'?: WorkExperience[];
+}
+
+interface ContactInfo {
+  fullName: string;
+  emailAddress: string;
+  phoneNumber: string;
+  linkedinUrl: string;
+  personalWebsite: string;
+  country: string;
+  state: string;
+  city: string;
+  address: string;
+  zipCode: string;
+  showCountry: boolean;
+  showState: boolean;
+  showCity: boolean;
+}
+
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?.email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const searchParams = request.nextUrl.searchParams;
+  const resumeId = searchParams.get('id');
+
+  if (!resumeId) {
+    return NextResponse.json({ error: 'Resume ID is required' }, { status: 400 });
+  }
+
+  try {
+    const userEmail = session.user.email;
+    const userDoc = await db.collection('users').doc(userEmail).get();
+    const userData = userDoc.data();
+
+    if (!userData) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Get the most recent parsed resume data from Firebase Storage
+    console.log('DEBUG: Fetching parsed resume data for:', { userEmail, resumeId });
+    
+    // Get the storage bucket with explicit name
+    const bucket = storage.bucket('talexus-4339c.appspot.com');
+    console.log('DEBUG: Got bucket reference');
+    
+    // Extract the base name of the resume (without timestamp and extension)
+    // Handle both old format (name_timestamp.pdf) and new format (timestamp_name.pdf)
+    console.log('DEBUG: Trying to extract base name from resumeId:', resumeId);
+    
+    // First, let's look at the raw resume ID without any parsing
+    console.log('DEBUG: Raw resumeId:', resumeId);
+    console.log('DEBUG: resumeId length:', resumeId?.length);
+    console.log('DEBUG: resumeId characters:', resumeId?.split('').map(c => c.charCodeAt(0)));
+    
+    let baseName = null;
+    
+    // Special case for the format with spaces: 1748967225570_%20Resume.Daud.pdf
+    if (resumeId && resumeId.includes('%20')) {
+      console.log('DEBUG: Found URL-encoded spaces in resumeId');
+      // This is likely a URL-encoded filename with spaces
+      const decodedId = decodeURIComponent(resumeId);
+      console.log('DEBUG: Decoded resumeId:', decodedId);
+      
+      // Try to extract timestamp and name
+      const spacedFormatMatch = decodedId.match(/^(\d+)_\s*(.+)\.pdf$/);
+      if (spacedFormatMatch) {
+        baseName = spacedFormatMatch[2].trim();
+        console.log('DEBUG: Extracted base name from space-encoded format:', baseName);
+      }
+    }
+    
+    // If we haven't found a base name yet, try the standard formats
+    if (!baseName) {
+      // Try new format first: timestamp_name.pdf
+      const newFormatMatch = resumeId.match(/^(\d+)_(.+)\.pdf$/);
+      if (newFormatMatch) {
+        baseName = newFormatMatch[2];
+        console.log('DEBUG: Extracted base name from new format:', baseName);
+      } else {
+        // Try old format: name_timestamp.pdf
+        const oldFormatMatch = resumeId.match(/(.+)_\d+\.pdf$/);
+        if (oldFormatMatch) {
+          baseName = oldFormatMatch[1];
+          console.log('DEBUG: Extracted base name from old format:', baseName);
+        } else {
+          // If no timestamp pattern found, just remove the extension
+          baseName = resumeId.replace(/\.pdf$/, '');
+          console.log('DEBUG: No timestamp pattern found, using:', baseName);
+        }
+      }
+    }
+    
+    console.log('DEBUG: Final extracted base name:', baseName);
+    
+    let parsedResumeData: ParsedResumeData | null = null;
+    
+    try {
+      // DIRECT ACCESS: Use the exact path provided by the user
+      // gs://talexus-4339c.firebasestorage.app/parsed_resume/khandaud15@gmail.com/1749354133017_Daud_CV.pdf.json
+      
+      // First, try to directly access the expected parsed JSON file with the exact path format
+      const exactParsedPath = `parsed_resume/${userEmail}/${resumeId}.json`;
+      console.log('DEBUG: Trying to access with exact path format:', exactParsedPath);
+      
+      // Also try with .pdf.json extension (as seen in the provided path)
+      const pdfJsonPath = `parsed_resume/${userEmail}/${resumeId}.pdf.json`;
+      console.log('DEBUG: Trying to access with .pdf.json extension:', pdfJsonPath);
+      
+      // Try the first path format (.json extension)
+      try {
+        const parsedFile = bucket.file(exactParsedPath);
+        const [exists] = await parsedFile.exists();
+        
+        if (exists) {
+          console.log('DEBUG: Found exact parsed JSON file match with .json extension!');
+          try {
+            const [content] = await parsedFile.download();
+            const jsonContent = content.toString('utf-8');
+            console.log('DEBUG: Successfully downloaded JSON content, length:', jsonContent.length);
+            parsedResumeData = JSON.parse(jsonContent);
+            console.log('DEBUG: Successfully parsed JSON data with keys:', Object.keys(parsedResumeData || {}));
+          } catch (error) {
+            console.error('DEBUG: Error downloading or parsing direct file:', error);
+          }
+        } else {
+          console.log('DEBUG: Exact parsed JSON file not found with .json extension, trying .pdf.json format');
+          
+          // Try the second path format (.pdf.json extension)
+          try {
+            const pdfJsonFile = bucket.file(pdfJsonPath);
+            const [pdfJsonExists] = await pdfJsonFile.exists();
+            
+            if (pdfJsonExists) {
+              console.log('DEBUG: Found parsed JSON file match with .pdf.json extension!');
+              try {
+                const [content] = await pdfJsonFile.download();
+                const jsonContent = content.toString('utf-8');
+                console.log('DEBUG: Successfully downloaded PDF.JSON content, length:', jsonContent.length);
+                parsedResumeData = JSON.parse(jsonContent);
+                console.log('DEBUG: Successfully parsed PDF.JSON data with keys:', Object.keys(parsedResumeData || {}));
+              } catch (error) {
+                console.error('DEBUG: Error downloading or parsing PDF.JSON file:', error);
+              }
+            } else {
+              console.log('DEBUG: No direct match found with either extension, will search for alternatives');
+            }
+          } catch (error) {
+            console.error('DEBUG: Error checking for PDF.JSON file:', error);
+          }
+        }
+      } catch (error) {
+        console.error('DEBUG: Error checking for direct file:', error);
+      }
+      
+      // If we didn't find the file directly, list all files and search
+      if (!parsedResumeData) {
+        // List all files in both possible directories
+        console.log('DEBUG: Listing all parsed resume files for this user');
+        const [parsedFiles] = await bucket.getFiles({
+          prefix: `parsed_resume/${userEmail}/`
+        });
+        
+        console.log('DEBUG: Listing all raw resume files for this user');
+        const [rawFiles] = await bucket.getFiles({
+          prefix: `raw_resume/${userEmail}/`
+        });
+      
+        // Combine all files
+        const allFiles = [...parsedFiles, ...rawFiles];
+        console.log('DEBUG: All files found:', allFiles.map((f: any) => f.name));
+      
+        // Find JSON files that match the base name or the raw resume name
+        console.log('DEBUG: Looking for parsed JSON files with baseName:', baseName);
+        console.log('DEBUG: All files to search through:', allFiles.map(f => f.name));
+      
+        // First, let's try to find the exact parsed file using our knowledge of the storage pattern
+        // From the memory: parsed_resume/userEmail/timestamp_filename.json
+      
+        // Extract timestamp from resumeId
+        const timestampMatch = resumeId.match(/^(\d+)/);
+        const timestamp = timestampMatch ? timestampMatch[1] : null;
+        console.log('DEBUG: Extracted timestamp:', timestamp);
+        
+        // Try to find files that match this timestamp
+        const timestampMatchingFiles = allFiles.filter((file: any) => {
+          return file.name.includes(timestamp) && file.name.endsWith('.json');
+        });
+        
+        console.log('DEBUG: Files matching timestamp:', timestampMatchingFiles.map(f => f.name));
+        
+        // If we have timestamp matches, use those as our primary candidates
+        const primaryCandidates = timestampMatchingFiles.length > 0 ? 
+          timestampMatchingFiles : 
+          allFiles.filter(f => f.name.endsWith('.json'));
+      
+        // Now filter these candidates with more specific criteria
+        const matchingJsonFiles = primaryCandidates.filter((file: any) => {
+        const fileName = file.name;
+        
+        // Basic check - must be a JSON file
+        const isJsonFile = fileName.endsWith('.json');
+        if (!isJsonFile) return false;
+        
+        // Check 1: Direct path match for the expected parsed file location
+        const expectedParsedPath = `parsed_resume/${userEmail}/${resumeId}.json`;
+        const directPathMatch = fileName === expectedParsedPath;
+        
+        // Check 2: If we have a timestamp, look for files with that timestamp
+        const hasTimestamp = timestamp && fileName.includes(timestamp);
+        
+        // Check 3: If we have a base name, look for files with that base name
+        const hasBaseName = baseName && fileName.includes(baseName);
+        
+        // Check 4: For URL-encoded spaces, try the decoded version
+        let hasDecodedMatch = false;
+        if (resumeId.includes('%20')) {
+          const decodedId = decodeURIComponent(resumeId);
+          hasDecodedMatch = fileName.includes(decodedId);
+        }
+        
+        // Log detailed matching info for debugging
+        console.log('DEBUG: Checking file', fileName, {
+          isJsonFile,
+          directPathMatch,
+          hasTimestamp,
+          hasBaseName,
+          hasDecodedMatch
+        });
+        
+        return isJsonFile && (directPathMatch || hasTimestamp || hasBaseName || hasDecodedMatch);
+      });
+      
+      console.log('DEBUG: Matching JSON files:', matchingJsonFiles.map((f: any) => f.name));
+      
+      // Sort by timestamp (newest first) and try each one
+      matchingJsonFiles.sort((a: any, b: any) => {
+        const timestampA = parseInt(a.name.split('_')[0]) || 0;
+        const timestampB = parseInt(b.name.split('_')[0]) || 0;
+        return timestampB - timestampA; // Descending order
+      });
+      
+      // Try each matching file
+      for (const file of matchingJsonFiles) {
+        console.log(`DEBUG: Trying to parse JSON from: ${file.name}`);
+        try {
+          const [content] = await file.download();
+          const jsonContent = content.toString('utf-8');
+          console.log('DEBUG: Raw JSON content length:', jsonContent.length);
+          console.log('DEBUG: JSON content preview:', jsonContent.substring(0, 200) + '...');
+          
+          // Try to parse the JSON content
+          try {
+            parsedResumeData = JSON.parse(jsonContent);
+            console.log('DEBUG: Successfully parsed resume data keys:', Object.keys(parsedResumeData || {}));
+            
+            // Check if this is the expected format with fields like 'Full Name', 'Email', etc.
+            if (parsedResumeData && (
+              parsedResumeData['Full Name'] || 
+              parsedResumeData['Email'] || 
+              parsedResumeData['Phone']
+            )) {
+              console.log('DEBUG: Found resume data with expected fields');
+              break; // Found and parsed successfully with expected fields, exit loop
+            } else {
+              console.log('DEBUG: Parsed data does not have expected fields, continuing search');
+            }
+          } catch (parseError) {
+            console.error(`DEBUG: Error parsing JSON from ${file.name}:`, parseError);
+          }
+        } catch (error) {
+          console.error(`DEBUG: Error downloading file ${file.name}:`, error);
+        }
+      }
+      
+      if (!parsedResumeData && matchingJsonFiles.length === 0) {
+        console.log('DEBUG: No matching JSON files found for base name:', baseName);
+      } else if (!parsedResumeData) {
+        console.log('DEBUG: Found matching JSON files but could not parse any of them');
+      }
+    } catch (error) {
+      console.error('DEBUG: Error accessing storage or listing files:', error);
+    }
+
+    let contactInfo: ContactInfo | null = null;
+    if (userData.resumeContactInfo && userData.resumeContactInfo[resumeId]) {
+      contactInfo = userData.resumeContactInfo[resumeId];
+    } else if (parsedResumeData) {
+      console.log('DEBUG: Extracting contact info from parsed data');
+      
+      // Initialize contact info with empty values
+      let newContactInfo: ContactInfo = {
+        fullName: '',
+        emailAddress: '',
+        phoneNumber: '',
+        linkedinUrl: '',
+        personalWebsite: '',
+        country: '',
+        state: '',
+        city: '',
+        address: '',
+        zipCode: '',
+        showCountry: true,
+        showState: true,
+        showCity: true
+      };
+
+      try {
+        // Extract basic fields
+        console.log('DEBUG: Extracting from parsed data with keys:', Object.keys(parsedResumeData));
+        
+        // Extract name
+        newContactInfo.fullName = parsedResumeData['Full Name'] || parsedResumeData.fullName || parsedResumeData.name || '';
+        console.log('DEBUG: Extracted fullName:', newContactInfo.fullName);
+        
+        // Extract email
+        newContactInfo.emailAddress = parsedResumeData['Email'] || parsedResumeData.emailAddress || parsedResumeData.email || '';
+        console.log('DEBUG: Extracted emailAddress:', newContactInfo.emailAddress);
+        
+        // Extract phone
+        newContactInfo.phoneNumber = parsedResumeData['Phone'] || parsedResumeData.phoneNumber || parsedResumeData.phone || '';
+        console.log('DEBUG: Extracted phoneNumber:', newContactInfo.phoneNumber);
+        
+        // Extract LinkedIn
+        newContactInfo.linkedinUrl = parsedResumeData['LinkedIn'] || parsedResumeData.linkedinUrl || parsedResumeData.linkedin || '';
+        console.log('DEBUG: Extracted linkedinUrl:', newContactInfo.linkedinUrl);
+        
+        // Extract website
+        newContactInfo.personalWebsite = parsedResumeData['Personal Website'] || parsedResumeData.personalWebsite || parsedResumeData.Website || parsedResumeData.website || '';
+        console.log('DEBUG: Extracted personalWebsite:', newContactInfo.personalWebsite);
+        
+        // Default country
+        newContactInfo.country = parsedResumeData.country || 'USA';
+        console.log('DEBUG: Set country:', newContactInfo.country);
+
+        // Try to extract address information
+        let address = '';
+        let city = '';
+        let state = '';
+        let zipCode = '';
+
+        console.log('DEBUG: Extracting address information');
+
+        // Check for direct city, state, postal code fields first (as in the example)
+        city = parsedResumeData['City'] || parsedResumeData.city || '';
+        state = parsedResumeData['State'] || parsedResumeData.state || '';
+        zipCode = parsedResumeData['Postal Code'] || parsedResumeData['ZIP'] || parsedResumeData['Zip Code'] || parsedResumeData.zipCode || parsedResumeData.postalCode || '';
+
+        console.log('DEBUG: Direct fields found:', { city, state, zipCode });
+
+        // Check for Address field
+        if (parsedResumeData['Address'] || parsedResumeData.address) {
+          const addressField = parsedResumeData['Address'] || parsedResumeData.address;
+          console.log('DEBUG: Found address field of type:', typeof addressField);
+
+          if (typeof addressField === 'string') {
+            address = addressField;
+            console.log('DEBUG: Address is string:', address);
+
+            // Try to extract city, state, zip from address string if not already found
+            if (!city || !state || !zipCode) {
+              const addressParts = address.split(',').map(part => part.trim());
+              console.log('DEBUG: Address parts:', addressParts);
+
+              if (addressParts.length >= 2) {
+                // Last part might contain state and zip
+                const lastPart = addressParts[addressParts.length - 1];
+                console.log('DEBUG: Last address part:', lastPart);
+
+                const stateZipMatch = lastPart.match(/([A-Z]{2})\s*(\d{5}(-\d{4})?)/);
+                if (stateZipMatch) {
+                  state = state || stateZipMatch[1];
+                  zipCode = zipCode || stateZipMatch[2];
+                  console.log('DEBUG: Extracted from address:', { state, zipCode });
+                }
+
+                // Second to last part might be the city
+                if (addressParts.length >= 2 && !city) {
+                  city = addressParts[addressParts.length - 2];
+                  console.log('DEBUG: Extracted city from address:', city);
+                }
+              }
+            }
+          } else if (typeof addressField === 'object' && addressField !== null) {
+            const addr = addressField as ParsedAddress;
+            console.log('DEBUG: Address is object with keys:', Object.keys(addr));
+
+            address = addr.street || '';
+            city = city || addr.city || '';
+            state = state || addr.state || '';
+            zipCode = zipCode || addr['Postal Code'] || addr['Zip Code'] || addr['ZIP'] || '';
+
+            console.log('DEBUG: Extracted from address object:', { address, city, state, zipCode });
+          }
+        }
+
+        // We've already checked for direct fields at the beginning
+        // This is just to ensure we have the most complete data
+        console.log('DEBUG: Final check for any missing address components');
+
+        // Check if location is in Work Experience
+        if ((!city || !state) && Array.isArray(parsedResumeData['Work Experience']) && parsedResumeData['Work Experience'].length > 0) {
+          const latestJob = parsedResumeData['Work Experience'][0];
+          if (latestJob.Location) {
+            const locationParts = latestJob.Location.split(',').map(part => part.trim());
+            if (locationParts.length >= 2) {
+              city = city || locationParts[0];
+              // State might include zip
+              const stateWithZip = locationParts[1];
+              const stateZipMatch = stateWithZip.match(/([A-Z]{2})\s+(\d{5}(-\d{4})?)/);          
+              if (stateZipMatch) {
+                state = state || stateZipMatch[1];
+                zipCode = zipCode || stateZipMatch[2];
+              } else {
+                state = state || stateWithZip;
+              }
+            } else if (locationParts.length === 1) {
+              city = city || locationParts[0];
+            }
+          }
+        }
+
+        // Update contact info with extracted values
+        newContactInfo.address = address;
+        newContactInfo.city = city;
+        newContactInfo.state = state;
+        newContactInfo.zipCode = zipCode;
+        
+        contactInfo = newContactInfo;
+        console.log('DEBUG: Extracted contact info:', contactInfo);
+      } catch (error) {
+        console.error('Error extracting contact info:', error);
+      }
+    }
+
+    // Log what we're returning
+    console.log('DEBUG: Returning contactInfo:', contactInfo ? 'present' : 'null');
+    console.log('DEBUG: Returning parsedData:', parsedResumeData ? 'present' : 'null');
+    if (parsedResumeData) {
+      console.log('DEBUG: parsedData keys:', Object.keys(parsedResumeData));
+    }
+    
+    // Return the contact info and parsed resume data
+    return NextResponse.json({ 
+      contactInfo, 
+      parsedData: parsedResumeData 
+    });
+  } catch (error: any) {
+    console.error('Error fetching contact info:', error);
+    return NextResponse.json({ error: error.message || 'Failed to fetch contact info' }, { status: 500 });
+  }
+}

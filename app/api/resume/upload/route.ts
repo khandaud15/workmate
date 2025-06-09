@@ -13,8 +13,9 @@ const AFFINDA_BASE_URL = 'https://api.affinda.com/v2';
 export async function POST(request: Request) {
   console.log('[UPLOAD API] Called /api/resume/upload');
   
-  // Define userEmail in the outer scope so it's available throughout the function
+  // Define variables in the outer scope so they're available throughout the function
   let userEmail: string;
+  let timestamp: number = 0; // Initialize with a default value
   
   // Enhanced authentication check
   try {
@@ -77,7 +78,29 @@ export async function POST(request: Request) {
     const bucket = storage.bucket(bucketName);
     console.log('[UPLOAD API] Got bucket reference with name:', bucket.name);
     
-    const filePath = `raw_resume/${userEmail}/${Date.now()}_${file.name}`;
+    // Get the resume name from the form input
+    console.log('[UPLOAD API] Resume name from form:', resumeName);
+    
+    // Use resumeName from the form input as the base for the filename
+    let baseFileName;
+    if (resumeName && resumeName.trim() !== '') {
+      // Convert resumeName to a valid filename format (replace spaces with underscores)
+      baseFileName = resumeName.trim().replace(/\s+/g, '_');
+      console.log('[UPLOAD API] Using custom name:', baseFileName);
+    } else {
+      // If no resumeName provided, use original filename without extension
+      baseFileName = file.name.replace(/\.[^/.]+$/, '');
+      console.log('[UPLOAD API] Using original filename:', baseFileName);
+    }
+    
+    // Add a timestamp at the beginning to ensure uniqueness and prevent overwriting
+    // This timestamp will be used for both the filename and the document ID
+    timestamp = Date.now(); // Assign to outer scope variable
+    const resumeId = timestamp.toString();
+    const fileName = `${resumeId}_${baseFileName}.pdf`;
+    
+    // Create the file path with the unique filename
+    const filePath = `raw_resume/${userEmail}/${fileName}`;
     const storageFile = bucket.file(filePath);
     try {
       console.log('[UPLOAD API] Attempting to save file to path:', filePath);
@@ -95,180 +118,137 @@ export async function POST(request: Request) {
       action: 'read',
       expires: Date.now() + 365 * 24 * 60 * 60 * 1000
     });
-    // Store file URL in Firestore under user's doc
-    // First, check if the user already has a resume
-    const userDoc = await db.collection('users').doc(userEmail).get();
-    const userData = userDoc.exists ? userDoc.data() : null;
-    const hadPreviousResume = userData && userData.resumeUrl;
+
+    // We already created the resumeId from the timestamp above
     
-    // Store the new resume URL
-    // Save custom resume name keyed by file name
-    const fileKey = filePath.split('/').pop() || file.name;
-    console.log('[UPLOAD API] Using fileKey for resumeName:', fileKey);
-    
-    // Get existing resumeNames or create new object
-    let resumeNamesUpdate = {};
-    let targetedUpdate = {};
-    // Get current user data
-    const currentUserData: any = userDoc && userDoc.exists && typeof userDoc.data === 'function' ? userDoc.data() : {};
-    const currentResumeNames = (currentUserData && currentUserData.resumeNames) ? currentUserData.resumeNames : {};
-    const currentTargeted = (currentUserData && currentUserData.targetedResumes) ? currentUserData.targetedResumes : {};
-    
-    console.log('[UPLOAD API] Current data:', {
-      resumeNames: currentResumeNames,
-      targetedResumes: currentTargeted
-    });
-    // Update resumeNames
-    if (resumeName) {
-      // Check if this resume name already exists for another file
-      const existingNames = Object.values(currentResumeNames);
-      let uniqueResumeName = resumeName;
-      
-      // If the name already exists, make it unique by adding a number
-      if (existingNames.includes(resumeName)) {
-        let counter = 1;
-        while (existingNames.includes(`${resumeName} (${counter})`)) {
-          counter++;
-        }
-        uniqueResumeName = `${resumeName} (${counter})`;
-        console.log('[UPLOAD API] Made resume name unique:', { original: resumeName, unique: uniqueResumeName });
-      }
-      
-      // Only update this specific file's name, not all files
-      const updatedResumeNames = {
-        ...currentResumeNames,
-        [fileKey]: uniqueResumeName
-      };
-      
-      // Log what's being saved to help debug
-      console.log('[UPLOAD API] Current resume names:', currentResumeNames);
-      console.log('[UPLOAD API] Updated resume names:', updatedResumeNames);
-      
-      resumeNamesUpdate = { resumeNames: updatedResumeNames };
-      console.log('[UPLOAD API] Saving resumeName:', { [fileKey]: uniqueResumeName });
-    }
-    // Update targetedResumes
-    if (typeof isTargeted === 'boolean') {
-      // If this is a targeted resume, we need to make sure it's the only targeted one
-      let updatedTargeted: Record<string, boolean> = {};
-      
-      if (isTargeted) {
-        // Create a new object with all resumes set to false
-        Object.keys(currentTargeted).forEach(key => {
-          updatedTargeted[key] = false;
-        });
-        // Then set only the current resume to true
-        updatedTargeted[fileKey] = true;
-        console.log('[UPLOAD API] Setting as the only targeted resume:', fileKey);
-      } else {
-        // If not targeted, just update this one resume
-        updatedTargeted = {
-          ...currentTargeted,
-          [fileKey]: false
-        };
-      }
-      
-      targetedUpdate = { targetedResumes: updatedTargeted };
-      console.log('[UPLOAD API] Updated targeted resumes:', updatedTargeted);
-    }
-    await db.collection('users').doc(userEmail).set({ 
-      resumeUrl: url,
-      resumeUploadTimestamp: new Date().toISOString(),
-      ...resumeNamesUpdate,
-      ...targetedUpdate
-    }, { merge: true });
-    
-    // If user had a previous resume, mark that we need to clear old data
-    if (hadPreviousResume) {
-      console.log('[UPLOAD API] User had a previous resume, marking for data replacement');
-      await db.collection('users').doc(userEmail).set({ 
-        shouldReplaceProfileData: true 
-      }, { merge: true });
+    // Create resume document data
+    const resumeData = {
+      rawResumeUrl: url,
+      rawResumePath: filePath,
+      uploadTimestamp: new Date(timestamp), // Use the timestamp we defined earlier
+      displayName: resumeName || file.name.replace(/\.[^/.]+$/, ''),
+      isTargeted: isTargeted || false,
+      status: 'uploaded', // Can be: uploaded, parsing, parsed, error
+      parsedResumeData: null, // Will be set after GPT parsing
+      parsedResumeUrl: null, // Will be set after parsing and saving JSON
+      parsedResumeTimestamp: null // Will be set after parsing
+    };
+
+    // Store in parsed_resumes collection under user's email
+    await db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(resumeId).set(resumeData);
+    console.log('[UPLOAD API] Saved resume document:', { userEmail, resumeId });
+
+    // If this is a targeted resume, update other resumes to be non-targeted
+    if (isTargeted) {
+      const userResumesRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes');
+      const q = userResumesRef
+        .where('isTargeted', '==', true)
+        .where('__name__', '!=', resumeId);
+
+      const querySnapshot = await q.get();
+      const batch = db.batch();
+
+      querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, { isTargeted: false });
+      });
+
+      await batch.commit();
+      console.log('[UPLOAD API] Updated other resumes to non-targeted');
     }
 
+    // Return success response with resume info
+    const response = {
+      success: true,
+      resumeId,
+      resumeUrl: url,
+      displayName: resumeData.displayName,
+      isTargeted: resumeData.isTargeted,
+      message: 'Resume uploaded successfully'
+    };
+
     // --- Parse PDF with GPT-4 after upload ---
-    let parsedResumeUrl = null;
-    let parsedResumeError = null;
     try {
       // Cloud Run Python microservice solution: send storage path to service, let it parse and save JSON
-      const parsedFilePath = `parsed_resume/${userEmail}/${Date.now()}_${file.name}.json`;
+      // Use the same filename for parsed JSON as the raw resume, just add .json extension
+      const parsedFilePath = `parsed_resume/${userEmail}/${fileName}.json`;
+      console.log('[UPLOAD API] Raw resume path:', filePath);
+      console.log('[UPLOAD API] Parsed resume path:', parsedFilePath);
+      
+      // Update status to parsing
+      const resumeRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(resumeId);
+      await resumeRef.update({
+        status: 'parsing'
+      });
+
       const cloudRunUrl = 'https://resume-parser-84814621060.us-central1.run.app/parse-resume';
-      const response = await fetch(cloudRunUrl, {
+      const parseResponse = await fetch(cloudRunUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          firebase_pdf_path: filePath, // the path in Firebase Storage
-          parsed_json_path: parsedFilePath // where to save the parsed JSON
+          firebase_pdf_path: filePath,
+          parsed_json_path: parsedFilePath
         })
       });
-      const result = await response.json();
-      if (result.status !== 'success') throw new Error('Python API failed: ' + JSON.stringify(result));
-      // Get signed URL for parsed resume
+      
+      const result = await parseResponse.json();
+      if (result.status !== 'success') {
+        throw new Error('Python API failed: ' + JSON.stringify(result));
+      }
+      
+      // Get signed URL for parsed resume JSON
       const parsedStorageFile = bucket.file(parsedFilePath);
       const [parsedUrl] = await parsedStorageFile.getSignedUrl({
         action: 'read',
         expires: Date.now() + 365 * 24 * 60 * 60 * 1000
       });
-      parsedResumeUrl = parsedUrl;
-      // SINGLE SOURCE OF TRUTH: Store parsed resume data ONLY in the parsedResumes collection
-      console.log('[UPLOAD API] Writing parsed resume for:', userEmail);
-      console.log('[UPLOAD API] Storing parsed resume data in parsedResumes collection');
+
+      // Update parsed_resumes document with parsed data
+      await resumeRef.update({
+        status: 'parsed',
+        parsedResumeData: result.parsed || null,
+        parsedResumeUrl: parsedUrl,
+        parsedResumeTimestamp: new Date()
+      });
       
-      // Create a unique identifier for this resume upload
-      const resumeId = `${userEmail}_${Date.now()}`;
+      console.log('[UPLOAD API] Successfully parsed and stored resume data');
+      return NextResponse.json({
+        ...response,
+        parsedResumeUrl: parsedUrl,
+        success: true
+      });
+    } catch (error) {
+      console.error('[UPLOAD API] Error parsing resume:', error);
       
-      // Store the complete parsed resume data in the parsedResumes collection only
-      await db.collection('parsedResumes').doc(userEmail).set({
-        parsedResumeUrl: parsedResumeUrl,
-        parsedResumeData: result.parsed !== undefined ? result.parsed : null,
-        parsedResumeTimestamp: new Date().toISOString(),
-        resumeId: resumeId,
-        userEmail: userEmail // Store user email for verification
-      }, { merge: false }); // Use merge: false to completely replace any existing data
-      console.log('[UPLOAD API] Write to parsedResumes complete.');
+      // Update status to error
+      const resumeRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(resumeId);
+      await resumeRef.update({
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Failed to parse resume'
+      });
       
-      // Get user document reference
-      const userDocRef = db.collection('users').doc(userEmail);
-      const userDoc = await userDocRef.get();
-      
-      // Update the user document with ONLY a reference to the parsed resume
-      // Do NOT duplicate the actual resume data here
-      if (userDoc.exists) {
-        console.log('[UPLOAD API] Updating user document with reference to parsed resume');
-        await userDocRef.set({
-          // Store only essential user information
-          email: userEmail,
-          lastUpdated: new Date().toISOString(),
-          
-          // ONLY store a reference to the parsed resume, not the data itself
-          parsedResumeReference: {
-            collectionPath: 'parsedResumes',
-            documentId: userEmail,
-            resumeId: resumeId,
-            timestamp: new Date().toISOString()
-          },
-          
-          // Control flags for frontend
-          ignoreLocalStorage: true,
-          forceRefreshData: true,
-          dataResetAt: new Date().toISOString()
-        }, { merge: false }); // Use merge: false to completely replace the document
-        
-        console.log('[UPLOAD API] User document updated with reference to parsed resume');
-      }
-    } catch (parseError) {
-      console.error('[UPLOAD API] Error parsing/saving resume with Python Cloud Run:', parseError);
-      parsedResumeError = parseError instanceof Error ? parseError.message : String(parseError);
+      return NextResponse.json({
+        ...response,
+        parsedResumeUrl: null,
+        parsedResumeError: error instanceof Error ? error.message : 'Failed to parse resume',
+        success: false
+      });
     }
-    // Respond with both URLs and error if any
-    return NextResponse.json({
-      resumeUrl: url,
-      parsedResumeUrl,
-      parsedResumeError,
-      success: true
-    });
   } catch (error) {
     console.error('Error uploading resume:', error);
+    // We don't need to check for resumeId existence since we're not using a variable from outer scope anymore
+    // If we got far enough to have userEmail, we might have created a document that needs updating
+    if (userEmail && timestamp) {
+      const errorResumeId = timestamp.toString();
+      try {
+        await db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(errorResumeId).update({
+          status: 'error',
+          error: error instanceof Error ? error.message : 'Failed to upload or parse resume'
+        });
+      } catch (updateError) {
+        console.error('Failed to update resume status:', updateError);
+      }
+    }
+    
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to upload resume' },
       { status: 500 }

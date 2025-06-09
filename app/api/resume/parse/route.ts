@@ -25,12 +25,18 @@ export async function GET() {
     const userEmail = session.user.email;
     console.log('[PARSE API] Authenticated as', userEmail);
     
-    // SINGLE SOURCE OF TRUTH: Get parsed resume data directly from parsedResumes collection
-    console.log('[PARSE API] Retrieving data from parsedResumes collection');
-    const parsedResumeDoc = await db.collection('parsedResumes').doc(userEmail).get();
+    // Get all parsed resumes for the user, ordered by timestamp
+    console.log('[PARSE API] Retrieving resumes from parsed_resumes collection');
+    const userResumesRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes');
+    const q = userResumesRef
+      .where('status', '==', 'parsed')
+      .orderBy('uploadTimestamp', 'desc')
+      .limit(1); // Get most recent parsed resume
     
-    if (!parsedResumeDoc.exists) {
-      console.log('[PARSE API] No parsed resume found for user');
+    const querySnapshot = await q.get();
+    
+    if (querySnapshot.empty) {
+      console.log('[PARSE API] No parsed resumes found for user');
       return NextResponse.json({ 
         error: 'No parsed resume found', 
         success: false,
@@ -45,11 +51,13 @@ export async function GET() {
       });
     }
     
+    // Get the most recent parsed resume
+    const parsedResumeDoc = querySnapshot.docs[0];
     const parsedResumeData = parsedResumeDoc.data();
+    const resumeId = parsedResumeDoc.id;
     
-    // Verify data ownership
-    if (!parsedResumeData) {
-      console.error('[PARSE API] Empty data for user');
+    if (!parsedResumeData || !parsedResumeData.parsedResumeData) {
+      console.error('[PARSE API] Empty or invalid data for resume:', resumeId);
       return NextResponse.json({ 
         error: 'No resume data available', 
         success: false,
@@ -57,23 +65,14 @@ export async function GET() {
       }, { status: 404 });
     }
     
-    // Additional verification to ensure data belongs to the current user
-    if (parsedResumeData.userEmail && parsedResumeData.userEmail !== userEmail) {
-      console.error(`[PARSE API] Data ownership mismatch! Document belongs to ${parsedResumeData.userEmail} but request is from ${userEmail}`);
-      return NextResponse.json({ 
-        error: 'Data ownership verification failed', 
-        success: false,
-        clearCache: true 
-      }, { status: 403 });
-    }
-    
     console.log('[PARSE API] Successfully retrieved parsed resume data');
     
     return NextResponse.json({
-      data: parsedResumeData.parsedResumeData || null,
+      data: parsedResumeData.parsedResumeData,
       success: true,
-      userEmail: userEmail, // Include user email for verification on client side
-      timestamp: parsedResumeData.parsedResumeTimestamp || new Date().toISOString()
+      userEmail: userEmail,
+      resumeId: resumeId,
+      timestamp: parsedResumeData.parsedResumeTimestamp?.toDate().toISOString() || new Date().toISOString()
     }, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
