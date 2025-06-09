@@ -176,6 +176,7 @@ export default function ContactInfoPage() {
                 city: string;
                 address: string;
                 zipCode: string;
+                // Note: country and personalWebsite fields have been removed
               }
 
               const initialContactInfo: ContactInfo = {
@@ -260,15 +261,8 @@ export default function ContactInfoPage() {
                     }
                     updatedContactInfo.linkedinUrl = linkedinUrl;
                   }
-
-                  // Clean up Personal Website URL
-                  if (updatedContactInfo.personalWebsite) {
-                    let websiteUrl = updatedContactInfo.personalWebsite.trim();
-                    if (!websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
-                      websiteUrl = 'https://' + websiteUrl;
-                    }
-                    updatedContactInfo.personalWebsite = websiteUrl;
-                  }
+                  
+                  // Note: personalWebsite field has been removed from the form
 
                   console.log('Saving contact info:', updatedContactInfo);
                   

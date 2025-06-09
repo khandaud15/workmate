@@ -46,17 +46,25 @@ export async function POST(req: NextRequest) {
     const existingParsedData = currentData?.parsedResumeData || {};
 
     // Create update object with only the contact info fields
-    const contactInfoUpdate = {
-      'Full Name': contactInfo.fullName,
-      'Email': contactInfo.emailAddress,
-      'Phone': contactInfo.phoneNumber,
-      'LinkedIn': contactInfo.linkedinUrl,
-      'Country': contactInfo.country,
-      'State': contactInfo.state,
-      'City': contactInfo.city,
-      'Address': contactInfo.address,
-      'Postal Code': contactInfo.zipCode
+    // Add null checks for all fields to prevent undefined values
+    // Note: Country field has been removed from the form
+    const contactInfoUpdate: Record<string, string | null> = {
+      'Full Name': contactInfo.fullName || null,
+      'Email': contactInfo.emailAddress || null,
+      'Phone': contactInfo.phoneNumber || null,
+      'LinkedIn': contactInfo.linkedinUrl || null,
+      'State': contactInfo.state || null,
+      'City': contactInfo.city || null,
+      'Address': contactInfo.address || null,
+      'Postal Code': contactInfo.zipCode || null
     };
+    
+    // Filter out null values to avoid storing them in Firestore
+    Object.keys(contactInfoUpdate).forEach(key => {
+      if (contactInfoUpdate[key] === null) {
+        delete contactInfoUpdate[key];
+      }
+    });
 
     // Merge the new contact info with existing data
     const parsedResumeDataUpdate = {
