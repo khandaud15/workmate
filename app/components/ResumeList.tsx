@@ -69,12 +69,12 @@ const ResumeList: React.FC = () => {
   }, [menuOpenIdx]);
 
   return (
-    <div className="w-full mx-auto mt-8 font-helvetica">
+    <div className="w-full px-0 sm:px-4 mt-8 font-helvetica">
       {/* Header Row for Creating New Resume */}
 
 
       {/* Table Header with sort and view toggles */}
-      <div className="flex items-center text-gray-400 text-xs uppercase px-3 pb-3 font-bold tracking-wider font-helvetica">
+      <div className="flex items-center text-gray-400 text-xs uppercase px-2 sm:px-3 pb-3 font-bold tracking-wider font-helvetica">
         <div className="flex-1 flex items-center gap-2">
           Name
         </div>
@@ -92,7 +92,7 @@ const ResumeList: React.FC = () => {
 
       {/* Create new resume button row */}
       <button
-        className="w-full border-2 border-dotted border-[#4b5563] rounded-md px-7 py-3 mb-2 flex items-center justify-center gap-2 bg-transparent text-white font-helvetica text-base hover:bg-[#23263a] transition min-h-[48px]"
+        className="w-full border-2 border-dotted border-[#4b5563] rounded-md px-1.5 sm:px-7 py-3 mb-2 flex items-center justify-center gap-2 bg-transparent text-white font-helvetica text-base hover:bg-[#23263a] transition min-h-[48px]"
         style={{ minHeight: '48px' }}
         onClick={() => setShowCreateModal(true)}
       >
@@ -124,7 +124,7 @@ const ResumeList: React.FC = () => {
           return (
             <div
               key={resume.id}
-              className="relative flex items-center border border-[#23263a] rounded-md px-7 py-3 transition group min-h-[48px] shadow-xl font-helvetica bg-transparent hover:bg-[#23263a] cursor-pointer"
+              className="relative flex items-center border border-[#23263a] rounded-md px-1.5 sm:px-7 py-3 transition group min-h-[48px] shadow-xl font-helvetica bg-transparent hover:bg-[#23263a] cursor-pointer w-full"
               onClick={() => {
                 // Extract numeric ID from storageName or id (e.g., 1748752352469_Resume.pdf -> 1748752352469)
                 let rawId = resume.storageName || resume.id;
@@ -132,7 +132,7 @@ const ResumeList: React.FC = () => {
                 router.push(`/dashboard/resume/${numericId}/contact-info`);
               }}
             >
-              <FaFileAlt className="text-gray-300 mr-5 flex-shrink-0" size={22} />
+              <FaFileAlt className="text-gray-300 mr-2 sm:mr-5 flex-shrink-0" size={22} />
               <div className="flex-1 truncate text-white font-semibold text-base font-helvetica">
                 {resume.name.replace(/\.[^/.]+$/, "")}
 
@@ -145,14 +145,14 @@ const ResumeList: React.FC = () => {
                   <span className="ml-4 px-4 py-1 text-xs bg-blue-700 text-white rounded-full align-middle font-bold tracking-wide">TARGETED</span>
                 )}
               </div>
-              <div className="w-36 text-center text-gray-400 text-sm font-helvetica">{timeAgo(resume.createdAt)}</div>
-              <div className="w-36 text-center text-gray-400 text-sm font-helvetica hidden md:block">{timeAgo(resume.updatedAt)}</div>
-              <div className="w-12 flex justify-end items-center gap-3">
+              <div className="w-20 sm:w-36 text-center text-gray-400 text-sm font-helvetica">{timeAgo(resume.createdAt)}</div>
+              <div className="w-20 sm:w-36 text-center text-gray-400 text-sm font-helvetica hidden md:block">{timeAgo(resume.updatedAt)}</div>
+              <div className="w-20 sm:w-12 flex justify-end items-center gap-3">
                 <a
                   href={resume.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-200 font-helvetica"
+                  className="text-blue-400 hover:text-blue-200 font-helvetica flex items-center"
                   title="Download Resume"
                   onClick={e => e.stopPropagation()}
                 >
@@ -163,7 +163,7 @@ const ResumeList: React.FC = () => {
                 ) : (
                   <div className="relative">
                     <button
-                      className="text-gray-400 cursor-pointer text-xl font-helvetica"
+                      className="text-gray-400 cursor-pointer text-xl font-helvetica flex items-center h-[22px]"
                       aria-haspopup="true"
                       aria-controls={menuId}
                       onClick={e => {

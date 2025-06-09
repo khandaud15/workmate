@@ -40,7 +40,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#0e0c12] text-white overflow-x-hidden relative">
+    <div className="flex min-h-screen bg-[#0e0c12] text-white overflow-x-hidden relative p-0 w-full">
       {/* Mobile Toggle Button - Vertical Tab */}
       {!isSidebarOpen && (
         <button 
