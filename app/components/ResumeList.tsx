@@ -69,7 +69,7 @@ const ResumeList: React.FC = () => {
   }, [menuOpenIdx]);
 
   return (
-    <div className="w-full px-0 sm:px-4 mt-8 font-helvetica">
+    <div className="w-[98%] mx-auto sm:w-full sm:mx-0 sm:px-4 mt-8 font-helvetica">
       {/* Header Row for Creating New Resume */}
 
 
@@ -92,7 +92,7 @@ const ResumeList: React.FC = () => {
 
       {/* Create new resume button row */}
       <button
-        className="w-full border-2 border-dotted border-[#4b5563] rounded-md px-1.5 sm:px-7 py-3 mb-2 flex items-center justify-center gap-2 bg-transparent text-white font-helvetica text-base hover:bg-[#23263a] transition min-h-[48px]"
+        className="w-full border border-dotted border-[#23263a] rounded-md px-1.5 sm:px-7 py-3 mb-2 flex items-center justify-center gap-2 bg-transparent text-white font-helvetica text-base hover:bg-[#23263a] transition shadow-xl overflow-hidden"
         style={{ minHeight: '48px' }}
         onClick={() => setShowCreateModal(true)}
       >
@@ -124,7 +124,8 @@ const ResumeList: React.FC = () => {
           return (
             <div
               key={resume.id}
-              className="relative flex items-center border border-[#23263a] rounded-md px-1.5 sm:px-7 py-3 transition group min-h-[48px] shadow-xl font-helvetica bg-transparent hover:bg-[#23263a] cursor-pointer w-full"
+              className="relative flex items-center border border-[#23263a] rounded-md px-1.5 sm:px-7 py-3 transition group shadow-xl font-helvetica bg-transparent hover:bg-[#23263a] cursor-pointer w-full overflow-hidden"
+              style={{ minHeight: '48px' }}
               onClick={() => {
                 // Extract numeric ID from storageName or id (e.g., 1748752352469_Resume.pdf -> 1748752352469)
                 let rawId = resume.storageName || resume.id;
