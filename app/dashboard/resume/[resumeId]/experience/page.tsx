@@ -34,6 +34,50 @@ interface ExperienceState {
   showMobileForm: boolean; // Track mobile form visibility
 }
 
+// TypingText component for typing animation
+import React from 'react';
+
+type TypingTextProps = { text: string; speed?: number };
+function TypingText({ text, speed = 100 }: TypingTextProps) {
+  const [displayed, setDisplayed] = React.useState('');
+  const [index, setIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (index < text.length) {
+      timeout = setTimeout(() => {
+        setDisplayed(text.slice(0, index + 1));
+        setIndex(index + 1);
+      }, speed);
+    } else {
+      // Pause, then restart
+      timeout = setTimeout(() => {
+        setDisplayed('');
+        setIndex(0);
+      }, 1200);
+    }
+    return () => clearTimeout(timeout);
+  }, [index, text, speed]);
+
+  // Only show cursor while typing
+  const isTyping = index < text.length;
+  return (
+    <span>
+      {displayed}
+      {isTyping && (
+        <span
+          className="animate-pulse"
+          style={{ fontWeight: 400, color: '#a3a3a3', fontSize: '1em', marginLeft: '-2px', lineHeight: '1' }}
+        >
+          |
+        </span>
+      )}
+    </span>
+  );
+}
+
+
+
 export default function ExperiencePage() {
   const params = useParams();
   const router = useRouter();
@@ -530,12 +574,14 @@ export default function ExperiencePage() {
                       </div>
                       
                       {/* Save Button */}
-                      <div className="col-span-full flex justify-between md:justify-end items-center gap-4 mt-4">
+                      <div className="col-span-full flex justify-between items-center gap-4 mt-4">
+
                         <button
-                          onClick={() => setState(prev => ({ ...prev, showMobileForm: false }))}
-                          className="md:hidden border border-[#434354] text-white text-base font-medium rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#18181c] hover:border-[#63636f]"
+                          className="flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#0e0c12] text-white text-base font-semibold rounded-full border border-[#2563eb] px-6 h-10 shadow-sm hover:from-[#1d4ed8] hover:to-[#23263a] transition-colors duration-150 whitespace-nowrap"
+                          style={{ width: '200px', justifyContent: 'center' }}
+                          type="button"
                         >
-                          BACK
+                          <TypingText text="Talexus BulletGen" speed={90} />
                         </button>
                         <button
                           onClick={handleSaveExperience}
