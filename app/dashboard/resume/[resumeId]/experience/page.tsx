@@ -546,7 +546,7 @@ export default function ExperiencePage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex justify-center items-center h-64 text-gray-400">
+                    <div className="hidden md:flex justify-center items-center h-64 text-gray-400">
                       Select an experience or create a new one to get started.
                     </div>
                   )}
