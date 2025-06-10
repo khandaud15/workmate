@@ -173,7 +173,7 @@ Be thorough and comprehensive. For work experience, capture ALL bullet points an
 Resume:
 {text}
 """
-        response = openai.chat.completions.create(
+        response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
