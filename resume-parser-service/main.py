@@ -2,11 +2,14 @@ import os
 import json
 import logging
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from google.cloud import storage
 import fitz  # PyMuPDF
-import openai
 from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,51 +17,132 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Get environment variables
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
-OPENAI_API_MODEL = os.environ.get('OPENAI_API_MODEL', 'gpt-4-1106-preview')
-OPENAI_API_URL = os.environ.get('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions')
-FIREBASE_BUCKET = os.environ.get('FIREBASE_BUCKET')
-
-# Log environment variables (without sensitive info)
-logger.info(f"Using model: {OPENAI_API_MODEL}")
-logger.info(f"API URL: {OPENAI_API_URL}")
-logger.info(f"Firebase bucket: {FIREBASE_BUCKET}")
+# Environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_MODEL = os.getenv("OPENAI_API_MODEL", "gpt-3.5-turbo")
+FIREBASE_BUCKET = os.getenv("FIREBASE_BUCKET")
 
 # Initialize OpenAI client
-client = OpenAI(
-    api_key=OPENAI_API_KEY
-    # Don't set base_url - let the client use the default
-)
+client = OpenAI(api_key=OPENAI_API_KEY)
 
-# Initialize Storage client
+# Initialize Firebase storage client
 storage_client = storage.Client()
 bucket = storage_client.bucket(FIREBASE_BUCKET)
+
+
+class BulletGenRequest(BaseModel):
+    job_title: str = Field(..., min_length=1)
+    company: str = ''
+    existing_bullets: list[str] = []
+    description: str = ''
+
+
+@app.post('/generate-bullets')
+async def generate_bullets(req: BulletGenRequest):
+    if not req.description.strip() and not req.existing_bullets:
+        return {"error": "Provide either a job description or existing bullets."}
+
+    prompt = f"""
+You are an expert resume writer.
+
+Based on the following job title, company, job description, and existing bullet points, generate exactly 2 new resume bullet points that are:
+- Professional
+- Concise
+- Relevant
+- Do NOT repeat any of the existing bullets
+- Start each new point with a strong action verb
+
+Respond only with the 2 new bullet points, each starting with a dash (-).
+
+Job Title: {req.job_title}
+Company: {req.company}
+Description: {req.description}
+Existing Bullets:
+""" + "\n".join(f"- {b}" for b in req.existing_bullets) + "\n\nNew Bullets:"
+
+    try:
+        logger.info(f"Request data - Title: {req.job_title}, Company: {req.company}")
+        logger.info(f"Description length: {len(req.description)}, Existing bullets: {len(req.existing_bullets)}")
+        logger.info(f"Full prompt:\n{prompt}")
+
+        try:
+            response = client.chat.completions.create(
+                model=OPENAI_API_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=256,
+                temperature=0.7,
+                n=1
+            )
+            logger.info(f"Raw OpenAI response: {response}")
+            text = response.choices[0].message.content.strip()
+        except Exception as e:
+            logger.error(f"OpenAI API error: {str(e)}")
+            raise
+            logger.info(f"Extracted text from response: {text}")
+        except (KeyError, IndexError) as e:
+            logger.error(f"Error extracting content from response: {str(e)}")
+            logger.error(f"Response structure: {response}")
+            raise ValueError(f"Invalid response structure: {str(e)}")
+
+        # Extract bullet points, handling different bullet formats
+        new_bullets = []
+        lines = text.split('\n')
+        logger.info(f"Split into {len(lines)} lines")
+
+        for line in lines:
+            line = line.strip()
+            if line and line.startswith(('-', '•', '*')):
+                clean_line = line.lstrip('-•* ').strip()
+                if clean_line:
+                    new_bullets.append(clean_line)
+                    logger.info(f"Added bullet: {clean_line}")
+
+        # If no bullet-like lines found, try any non-empty lines
+        if not new_bullets:
+            logger.info("No bullet-prefixed lines found, trying any non-empty lines")
+            new_bullets = [line.strip() for line in lines if line.strip()]
+
+        # Ensure we have exactly 2 bullets
+        new_bullets = new_bullets[:2]
+        logger.info(f"Final bullets (count: {len(new_bullets)}): {new_bullets}")
+
+        # Validate bullets
+        if not new_bullets:
+            raise ValueError("No valid bullets generated from response")
+
+        return {"bullets": new_bullets}
+
+    except Exception as e:
+        logger.error(f"Error generating bullets: {str(e)}")
+        return {"error": str(e)}
+
 
 class ParseRequest(BaseModel):
     firebase_pdf_path: str
     parsed_json_path: str
+
 
 def extract_text_from_firebase_pdf(firebase_path):
     try:
         logger.info(f"Downloading PDF from: {firebase_path}")
         blob = bucket.blob(firebase_path)
         pdf_bytes = blob.download_as_bytes()
-        
+
         logger.info(f"Extracting text from PDF")
         with fitz.open(stream=pdf_bytes, filetype="pdf") as doc:
             text = "\n".join([page.get_text() for page in doc])
-        
+
         logger.info(f"Successfully extracted {len(text)} characters from PDF")
         return text
     except Exception as e:
         logger.error(f"Error extracting text from PDF: {str(e)}")
         raise
 
+
 def parse_with_openai(text, model=OPENAI_API_MODEL):
     try:
         logger.info(f"Parsing resume with OpenAI model: {model}")
-        
+
         prompt = f"""
 You are a resume parser. Extract the following structured data from the resume text below and return in JSON format.
 Do not include markdown formatting or code blocks. Return only the raw JSON object.
@@ -89,14 +173,13 @@ Be thorough and comprehensive. For work experience, capture ALL bullet points an
 Resume:
 {text}
 """
-        # Use the new OpenAI client API
-        response = client.chat.completions.create(
+        response = openai.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
-            max_tokens=4000  # Increase token limit to ensure complete response
+            max_tokens=4000
         )
-        
+
         content = response.choices[0].message.content
         logger.info(f"Successfully received response from OpenAI")
         return content
@@ -104,42 +187,31 @@ Resume:
         logger.error(f"Error parsing with OpenAI: {str(e)}")
         raise
 
+
 def clean_json_response(text):
-    """Clean the OpenAI response by removing markdown formatting."""
-    # Remove markdown code block formatting if present
     if text.startswith('```'):
-        # Find the end of the first line (which might contain ```json)
         first_line_end = text.find('\n')
         if first_line_end != -1:
-            # Remove the first line
             text = text[first_line_end + 1:]
-            
-        # Find and remove the closing code block
         closing_marker = text.rfind('```')
         if closing_marker != -1:
             text = text[:closing_marker].strip()
-    
-    # Remove any leading/trailing whitespace
     return text.strip()
+
 
 @app.post("/parse-resume")
 async def parse_resume(req: ParseRequest):
     try:
         logger.info(f"Received request to parse resume from: {req.firebase_pdf_path}")
         logger.info(f"Will save parsed JSON to: {req.parsed_json_path}")
-        
-        # Extract text from PDF
+
         resume_text = extract_text_from_firebase_pdf(req.firebase_pdf_path)
-        
-        # Parse with OpenAI
         parsed = parse_with_openai(resume_text)
         logger.info(f"Raw response from OpenAI: {parsed[:100]}...")
-        
-        # Clean the response to remove any markdown formatting
+
         cleaned_parsed = clean_json_response(parsed)
         logger.info(f"Cleaned response: {cleaned_parsed[:100]}...")
-        
-        # Convert to JSON
+
         try:
             parsed_json = json.loads(cleaned_parsed)
             logger.info("Successfully parsed resume data to JSON")
@@ -147,19 +219,17 @@ async def parse_resume(req: ParseRequest):
             logger.error(f"JSON decode error: {str(e)}")
             logger.error(f"Raw output: {parsed[:200]}...")
             return {
-                "status": "error", 
-                "error": f"JSON decode error: {str(e)}", 
-                "raw_output": parsed[:500]  # Limit to first 500 chars
+                "status": "error",
+                "error": f"JSON decode error: {str(e)}",
+                "raw_output": parsed[:500]
             }
-        
-        # Save to Firebase Storage
-        logger.info(f"Saving parsed JSON to Firebase Storage")
+
         blob = bucket.blob(req.parsed_json_path)
         blob.upload_from_string(json.dumps(parsed_json, indent=2), content_type='application/json')
-        
+
         logger.info(f"Successfully saved parsed resume to: {req.parsed_json_path}")
         return {"status": "success", "parsed_json_path": req.parsed_json_path}
-    
+
     except Exception as e:
         logger.error(f"Error in parse_resume: {str(e)}")
         return {"status": "error", "error": str(e)}

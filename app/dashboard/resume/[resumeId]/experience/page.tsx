@@ -82,6 +82,9 @@ export default function ExperiencePage() {
   const params = useParams();
   const router = useRouter();
   const resumeId = params.resumeId as string;
+
+  // Loading state for BulletGen button
+  const [loadingBullets, setLoadingBullets] = useState(false);
   
   const [state, setState] = useState<ExperienceState>({
     experiences: [],
@@ -561,11 +564,33 @@ export default function ExperiencePage() {
                           </label>
                           <label className="block text-xs text-gray-300 mb-1 uppercase">BULLET POINTS *</label>
                           <textarea
-                            value={(state.activeExperience.bullets || state.activeExperience.Description || []).map(b => `•  ${b}`).join('\n')}
+                            value={(state.activeExperience.bullets || state.activeExperience.Description || []).map(b => {
+                              // Ensure each line starts with a bullet point
+                              const text = b.replace(/^[\u2022\-\*]\s*/, '').trim();
+                              return text ? `•    ${text}` : '';
+                            }).filter(Boolean).join('\n')}
                             onChange={(e) => {
-                              const newBullets = e.target.value.split('\n').map(b => b.replace(/^•\s?/, ''));
+                              const cursorPos = e.target.selectionStart;
+                              
+                              // Split into lines
+                              const lines = e.target.value.split('\n');
+                              
+                              // Process each line
+                              const newBullets = lines.map(line => {
+                                // Remove existing bullet points and trim
+                                return line.replace(/^[\u2022\-\*]\s*/, '').trim();
+                              }).filter(line => line.length > 0); // Remove empty lines
+                              
                               handleUpdateField('bullets', newBullets);
                               handleUpdateField('Description', newBullets);
+                              
+                              // Restore cursor position
+                              requestAnimationFrame(() => {
+                                if (e.target) {
+                                  e.target.selectionStart = cursorPos;
+                                  e.target.selectionEnd = cursorPos;
+                                }
+                              });
                             }}
                             className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 font-medium text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] h-48 resize-y"
                             placeholder="Enter each bullet point on a new line..."
@@ -577,11 +602,95 @@ export default function ExperiencePage() {
                       <div className="col-span-full flex justify-between items-center gap-4 mt-4">
 
                         <button
-                          className="flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#0e0c12] text-white text-base font-semibold rounded-full border border-[#2563eb] px-6 h-10 shadow-sm hover:from-[#1d4ed8] hover:to-[#23263a] transition-colors duration-150 whitespace-nowrap"
+                          className={`flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#0e0c12] text-white text-base font-semibold rounded-full border border-[#2563eb] px-6 h-10 shadow-sm hover:from-[#1d4ed8] hover:to-[#23263a] transition-colors duration-150 whitespace-nowrap ${loadingBullets ? 'animate-pulse ring-2 ring-blue-400 ring-offset-2' : ''}`}
                           style={{ width: '200px', justifyContent: 'center' }}
                           type="button"
+                          onClick={async () => {
+                            if (!state.activeExperience) return;
+                            setLoadingBullets(true);
+                            try {
+                              const job_title = state.activeExperience.role || state.activeExperience['Job Title'] || '';
+                              const company = state.activeExperience.employer || state.activeExperience.Company || '';
+                              const description = Array.isArray(state.activeExperience.Description) ? state.activeExperience.Description.join(' ') : '';
+                              const existing_bullets = state.activeExperience.bullets || state.activeExperience.Description || [];
+                              
+                              console.log('Sending bullet generation request:', {
+                                job_title,
+                                company,
+                                description: description.slice(0, 100) + '...',  // Log truncated description
+                                existing_bullets_count: existing_bullets.length
+                              });
+                              
+                              const res = await fetch('/api/generate-bullets', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ job_title, company, description, existing_bullets }),
+                              });
+                              
+                              const data = await res.json();
+                              console.log('Received bullet generation response:', data);
+                              
+                              if (!res.ok) {
+                                console.error('API error:', data);
+                                throw new Error(data.error || `Failed to generate bullets: ${res.status}`);
+                              }
+                              
+                              if (!data.bullets || !Array.isArray(data.bullets)) {
+                                console.error('Invalid response format:', data);
+                                throw new Error('Invalid response format from bullet generation');
+                              }
+                              
+                              if (data.bullets.length === 0) {
+                                console.error('No bullets in response:', data);
+                                throw new Error('No bullets were generated. Please try again.');
+                              }
+                              
+                              // Remove any existing bullet points from the text
+                              const cleanBullets: string[] = data.bullets.map((bullet: string) => bullet.replace(/^[•\-\*]\s*/, '').trim());
+                              
+                              // Live typing animation for each new bullet
+                              for (const bullet of cleanBullets) {
+                                await new Promise((resolve) => {
+                                  let i = 0;
+                                  const interval = setInterval(() => {
+                                    i++;
+                                    // Show typing animation by updating only the new bullet being typed
+                                    const inProgressBullet = bullet.slice(0, i);
+                                    const displayBullets = [
+                                      ...existing_bullets,
+                                      `• ${inProgressBullet}` // Add bullet point to in-progress text
+                                    ];
+                                    
+                                    handleUpdateField('bullets', displayBullets);
+                                    handleUpdateField('Description', displayBullets);
+                                    
+                                    if (i >= bullet.length) {
+                                      clearInterval(interval);
+                                      // Add the completed bullet
+                                      const finalBullets = [...existing_bullets, `• ${bullet}`];
+                                      handleUpdateField('bullets', finalBullets);
+                                      handleUpdateField('Description', finalBullets);
+                                      existing_bullets.push(`• ${bullet}`); // Update our tracking array
+                                      setTimeout(resolve, 350); // Pause before next bullet
+                                    }
+                                  }, 35); // Slower typing speed for better visibility
+                                });
+                                existing_bullets.push(bullet);
+                              }
+                            }
+                            catch (error) {
+                              console.error(error);
+                            } finally {
+                              setLoadingBullets(false);
+                            }
+                          }}
+                          disabled={loadingBullets}
                         >
-                          <TypingText text="Talexus BulletGen" speed={90} />
+                          {loadingBullets ? (
+                            <span className="animate-pulse text-gray-300">Generating...</span>
+                          ) : (
+                            <TypingText text="Talexus BulletGen" speed={90} />
+                          )}
                         </button>
                         <button
                           onClick={handleSaveExperience}

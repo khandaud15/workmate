@@ -3,3 +3,5 @@ uvicorn
 google-cloud-storage
 pymupdf
 openai>=1.0.0
+python-dotenv
+pydantic
