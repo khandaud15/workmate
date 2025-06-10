@@ -362,7 +362,7 @@ export default function ExperiencePage() {
           <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-3 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
             {state.isLoading ? (
               <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500" />
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#2563eb]" />
               </div>
             ) : (
               <div className="flex flex-col md:flex-row gap-4">
@@ -372,7 +372,7 @@ export default function ExperiencePage() {
                     <h2 className="text-lg font-bold text-white">Work Experience</h2>
                     <button 
                       onClick={handleCreateExperience}
-                      className="bg-blue-500 hover:bg-blue-600 text-white p-1 rounded-md transition-colors"
+                      className="bg-[#2563eb] hover:bg-[#2563eb]/90 text-white p-1 rounded-md transition-colors"
                     >
                       <FaPlus size={16} />
                     </button>
@@ -385,7 +385,7 @@ export default function ExperiencePage() {
                       state.experiences.map((exp) => (
                         <div 
                           key={exp.id} 
-                          className={`p-3 rounded-md cursor-pointer transition-colors ${state.activeExperience?.id === exp.id ? 'bg-[#23263a] border-l-4 border-blue-500' : 'bg-[#171923] hover:bg-[#1e2130]'}`}
+                          className={`p-3 rounded-md cursor-pointer transition-colors ${state.activeExperience?.id === exp.id ? 'bg-[#23263a] border-l-4 border-[#2563eb]' : 'bg-[#171923] hover:bg-[#1e2130]'}`}
                           onClick={() => handleSelectExperience(exp)}
                         >
                           <h3 className="font-medium text-white">{exp.role || exp['Job Title'] || 'Untitled Role'}</h3>
@@ -438,7 +438,7 @@ export default function ExperiencePage() {
                         
                         {/* Company Field */}
                         <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-1">FOR WHICH COMPANY DID YOU WORK? *</label>
+                          <label className="block text-xs text-gray-300 mb-1 uppercase">FOR WHICH COMPANY DID YOU WORK? *</label>
                           <input 
                             type="text" 
                             className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
@@ -512,10 +512,10 @@ export default function ExperiencePage() {
                         
                         {/* Bullet Points */}
                         <div className="mt-4">
-                          <label className="block text-sm font-medium text-gray-300 mb-1">
+                          <label className="block text-xs text-gray-300 mb-1 uppercase">
                             WHAT DID YOU DO AT THIS COMPANY?
                           </label>
-                          <p className="text-xs text-gray-500 mb-2">BULLET POINTS *</p>
+                          <label className="block text-xs text-gray-300 mb-1 uppercase">BULLET POINTS *</label>
                           <textarea
                             value={(state.activeExperience.bullets || state.activeExperience.Description || []).map(b => `•  ${b}`).join('\n')}
                             onChange={(e) => {
