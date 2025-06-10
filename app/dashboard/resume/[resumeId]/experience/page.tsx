@@ -31,6 +31,7 @@ interface ExperienceState {
   isLoading: boolean;
   isEditing: boolean;
   bulletCount: number;
+  showMobileForm: boolean; // Track mobile form visibility
 }
 
 export default function ExperiencePage() {
@@ -43,7 +44,8 @@ export default function ExperiencePage() {
     activeExperience: null,
     isLoading: true,
     isEditing: false,
-    bulletCount: 0
+    bulletCount: 0,
+    showMobileForm: false // Hide form on mobile by default
   });
   
   // Create a new blank experience
@@ -68,6 +70,7 @@ export default function ExperiencePage() {
         const response = await fetch(`/api/resume/experience?resumeId=${resumeId}&t=${Date.now()}`);
         const parsedData = await response.json();
         console.log('DEBUG: Received parsed resume data:', parsedData);
+        console.log('DEBUG: Keys in parsedData:', Object.keys(parsedData));
         
         let workExperiences: WorkExperience[] = [];
         
@@ -123,8 +126,10 @@ export default function ExperiencePage() {
         setState(prev => ({
           ...prev,
           experiences: workExperiences,
-          activeExperience: workExperiences.length > 0 ? workExperiences[0] : createNewExperience(),
+          // Set activeExperience to the first one if available, otherwise null.
+          activeExperience: workExperiences.length > 0 ? workExperiences[0] : null,
           isLoading: false,
+          // Only enter editing mode if there's an experience to edit.
           isEditing: workExperiences.length > 0
         }));
       } catch (error) {
@@ -141,7 +146,8 @@ export default function ExperiencePage() {
     setState(prev => ({
       ...prev,
       activeExperience: experience,
-      isEditing: true
+      isEditing: true,
+      showMobileForm: true // Show form on mobile when experience is selected
     }));
   };
   
@@ -151,7 +157,8 @@ export default function ExperiencePage() {
     setState(prev => ({
       ...prev,
       activeExperience: newExperience,
-      isEditing: true
+      isEditing: true,
+      showMobileForm: true // Show form when creating new experience
     }));
   };
   
@@ -231,96 +238,55 @@ export default function ExperiencePage() {
   // Handle saving the experience
   const handleSaveExperience = async () => {
     if (!state.activeExperience) return;
-    
+
+    setState(prev => ({ ...prev, isLoading: true }));
+
     try {
-      setState(prev => ({ ...prev, isLoading: true }));
+      // Create a copy of the experiences to avoid direct mutation
+      let updatedExperiences = [...state.experiences];
       
-      // Format the experience data for the API
-      // Use the same format as seen in the Firestore data
-      const experienceData = {
-        id: state.activeExperience.id,
-        'Job Title': state.activeExperience.role,
-        Company: state.activeExperience.employer,
-        'Start/End Year': state.activeExperience.isCurrent ? 
-          `${state.activeExperience.startDate}- Present` : 
-          `${state.activeExperience.startDate}- ${state.activeExperience.endDate}`,
-        Location: state.activeExperience.location,
-        Description: state.activeExperience.bullets
-      };
-      
-      console.log('DEBUG: Saving experience data:', experienceData);
-      
-      // Get current experiences array and convert to Firestore format
-      const currentExperiences = state.experiences.map(exp => ({
-        id: exp.id,
-        'Job Title': exp.role,
-        Company: exp.employer,
-        'Start/End Year': exp.isCurrent ? 
-          `${exp.startDate}- Present` : 
-          `${exp.startDate}- ${exp.endDate}`,
-        Location: exp.location,
-        Description: exp.bullets
-      }));
-      
-      // Add or update the current experience
-      const existingIndex = currentExperiences.findIndex(exp => exp.id === state.activeExperience?.id);
-      if (existingIndex >= 0) {
-        currentExperiences[existingIndex] = experienceData;
+      // Find the index of the experience being edited
+      const index = updatedExperiences.findIndex(exp => exp.id === state.activeExperience!.id);
+
+      if (index > -1) {
+        // If found, update it
+        updatedExperiences[index] = state.activeExperience;
       } else {
-        currentExperiences.push(experienceData);
+        // If not found (it's a new one), add it to the array
+        updatedExperiences.push(state.activeExperience);
       }
       
-      // Save to Firestore
-      const response = await fetch('/api/resume/update-experience', {
+      // Map the data to the format expected by Firestore
+      const experiencesToSave = updatedExperiences.map(exp => ({
+        'id': exp.id || `exp-${Math.random().toString(36).substr(2, 9)}`,
+        'Job Title': exp.role,
+        'Company': exp.employer,
+        'Location': exp.location,
+        'Start/End Year': exp.isCurrent ? `${exp.startDate} - Present` : `${exp.startDate} - ${exp.endDate || ''}`,
+        'Description': exp.bullets,
+      }));
+
+      const response = await fetch(`/api/resume/experience?resumeId=${resumeId}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          resumeId,
-          'Work Experience': currentExperiences
-        })
+        body: JSON.stringify({ experiences: experiencesToSave }),
       });
-      
-      const data = await response.json();
-      console.log('DEBUG: Save response:', data);
-      
-      if (data.success) {
-        // Map the saved experience back to our internal format
-        const savedExperience = {
-          id: experienceData.id,
-          role: experienceData['Job Title'],
-          employer: experienceData.Company,
-          startDate: experienceData['Start/End Year'].split('-')[0].trim(),
-          endDate: experienceData['Start/End Year'].includes('Present') ? null : experienceData['Start/End Year'].split('-')[1].trim(),
-          location: experienceData.Location,
-          bullets: experienceData.Description,
-          isCurrent: experienceData['Start/End Year'].includes('Present')
-        };
-        
-        // Update state with the saved experience
-        setState(prev => {
-          const updatedExperiences = [...prev.experiences];
-          const idx = updatedExperiences.findIndex(exp => exp.id === savedExperience.id);
-          
-          if (idx >= 0) {
-            updatedExperiences[idx] = savedExperience;
-          } else {
-            updatedExperiences.push(savedExperience);
-          }
-          
-          return {
-            ...prev,
-            experiences: updatedExperiences,
-            activeExperience: savedExperience,
-            isLoading: false,
-            isEditing: true
-          };
-        });
-      } else {
-        console.error('Failed to save experience:', data.error);
-        setState(prev => ({ ...prev, isLoading: false }));
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save experience');
       }
+
+      // On successful save, update the main state and exit editing mode
+      setState(prev => ({
+        ...prev,
+        experiences: updatedExperiences,
+        isEditing: false,
+        isLoading: false,
+      }));
+
     } catch (error) {
       console.error('Error saving experience:', error);
       setState(prev => ({ ...prev, isLoading: false }));
@@ -431,14 +397,14 @@ export default function ExperiencePage() {
                   </div>
                 </div>
                 
-                {/* Right Pane - Experience Form */}
-                <div className="w-full md:w-2/3">
-                  {state.activeExperience ? (
+                {/* Right Column - Experience Form */}
+                <div className={`w-full md:w-2/3 ${state.showMobileForm ? 'block' : 'hidden md:block'}`}>
+                  {state.isEditing && state.activeExperience ? (
                     <div>
                       {/* Form Header */}
                       <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-bold text-white">
-                          {state.activeExperience.id ? 'Edit Experience' : 'Add New Experience'}
+                          {state.activeExperience.id && (state.activeExperience.role || state.activeExperience['Job Title']) ? 'Edit Experience' : 'Add New Experience'}
                         </h2>
                         {state.activeExperience.id && (
                           <button
@@ -456,13 +422,13 @@ export default function ExperiencePage() {
                         {/* Role Field */}
                         <div>
                           <label className="block text-sm font-medium text-gray-400 mb-1">
-                            WHAT WAS YOUR ROLE {state.activeExperience.employer ? `AT ${state.activeExperience.employer.toUpperCase()}` : ''}? *
+                            WHAT WAS YOUR ROLE {state.activeExperience.employer || state.activeExperience.Company ? `AT ${(state.activeExperience.employer || state.activeExperience.Company)?.toUpperCase()}` : ''}? *
                           </label>
                           <input 
                             type="text" 
                             className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                             placeholder="Job Title"
-                            value={state.activeExperience['Job Title'] || state.activeExperience.role || ''}
+                            value={state.activeExperience.role || state.activeExperience['Job Title'] || ''}
                             onChange={(e) => {
                               handleUpdateField('role', e.target.value);
                               handleUpdateField('Job Title', e.target.value);
@@ -477,7 +443,7 @@ export default function ExperiencePage() {
                             type="text" 
                             className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                             placeholder="Company Name"
-                            value={state.activeExperience.Company || state.activeExperience.employer || ''}
+                            value={state.activeExperience.employer || state.activeExperience.Company || ''}
                             onChange={(e) => {
                               handleUpdateField('employer', e.target.value);
                               handleUpdateField('Company', e.target.value);
@@ -496,7 +462,7 @@ export default function ExperiencePage() {
                               type="text" 
                               className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                               placeholder="Sep 2020"
-                              value={state.activeExperience.startDate || (state.activeExperience['Start/End Year'] ? state.activeExperience['Start/End Year'].split('-')[0].trim() : '')}
+                              value={state.activeExperience.startDate || (state.activeExperience['Start/End Year'] ? state.activeExperience['Start/End Year'].split(/[-–]/)[0].trim() : '')}
                               onChange={(e) => handleUpdateField('startDate', e.target.value)}
                             />
                           </div>
@@ -510,7 +476,7 @@ export default function ExperiencePage() {
                                   type="checkbox" 
                                   id="currentJob" 
                                   className="mr-2"
-                                  checked={state.activeExperience.isCurrent || (state.activeExperience['Start/End Year'] ? state.activeExperience['Start/End Year'].includes('Present') : false)}
+                                  checked={state.activeExperience.isCurrent || (state.activeExperience['Start/End Year'] ? state.activeExperience['Start/End Year'].toLowerCase().includes('present') : false)}
                                   onChange={(e) => handleToggleCurrentJob(e.target.checked)}
                                 />
                                 <label htmlFor="currentJob" className="text-xs text-gray-400">Current</label>
@@ -520,12 +486,7 @@ export default function ExperiencePage() {
                               type="text" 
                               className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                               placeholder="Present"
-                              value={
-                                state.activeExperience.isCurrent ? 'Present' : 
-                                state.activeExperience.endDate || 
-                                (state.activeExperience['Start/End Year'] && !state.activeExperience['Start/End Year'].includes('Present') ? 
-                                  state.activeExperience['Start/End Year'].split('-')[1].trim() : '')
-                              }
+                              value={state.activeExperience.isCurrent ? 'Present' : (state.activeExperience.endDate || (state.activeExperience['Start/End Year'] && !state.activeExperience['Start/End Year'].toLowerCase().includes('present') ? state.activeExperience['Start/End Year'].split(/[-–]/)[1]?.trim() : '') || '')}
                               onChange={(e) => handleUpdateField('endDate', e.target.value)}
                               disabled={state.activeExperience.isCurrent}
                             />
@@ -540,7 +501,7 @@ export default function ExperiencePage() {
                               type="text" 
                               className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                               placeholder="New York, NY"
-                              value={state.activeExperience.Location || state.activeExperience.location || ''}
+                              value={state.activeExperience.location || state.activeExperience.Location || ''}
                               onChange={(e) => {
                                 handleUpdateField('location', e.target.value);
                                 handleUpdateField('Location', e.target.value);
@@ -550,70 +511,37 @@ export default function ExperiencePage() {
                         </div>
                         
                         {/* Bullet Points */}
-                        <div>
-                          <label className="block text-sm font-medium text-gray-400 mb-1">
-                            WHAT DID YOU DO AT {state.activeExperience.employer ? state.activeExperience.employer.toUpperCase() : 'THIS COMPANY'}?
+                        <div className="mt-4">
+                          <label className="block text-sm font-medium text-gray-300 mb-1">
+                            WHAT DID YOU DO AT THIS COMPANY?
                           </label>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-400 mb-1">BULLET POINTS *</label>
-                            <div className="space-y-2">
-                              {state.activeExperience && (state.activeExperience.Description || state.activeExperience.bullets || []).map((bullet, index) => (
-                                <div key={index} className="flex items-center gap-2">
-                                  <input 
-                                    type="text" 
-                                    className="flex-1 bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
-                                    placeholder="Enter bullet point"
-                                    value={bullet}
-                                    onChange={(e) => {
-                                      if (!state.activeExperience) return;
-                                      handleUpdateBullet(index, e.target.value);
-                                      // Also update Description field
-                                      const updatedBullets = [...(state.activeExperience.Description || state.activeExperience.bullets || [])];
-                                      updatedBullets[index] = e.target.value;
-                                      handleUpdateField('Description', updatedBullets);
-                                    }}
-                                  />
-                                  <button 
-                                    type="button"
-                                    className="text-red-500 hover:text-red-600"
-                                    onClick={() => {
-                                      if (!state.activeExperience) return;
-                                      handleRemoveBullet(index);
-                                      // Also update Description field
-                                      const updatedBullets = [...(state.activeExperience.Description || state.activeExperience.bullets || [])];
-                                      updatedBullets.splice(index, 1);
-                                      handleUpdateField('Description', updatedBullets);
-                                    }}
-                                  >
-                                    <FaTrash size={14} />
-                                  </button>
-                                </div>
-                              ))}
-                              <button 
-                                type="button"
-                                className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-gray-400 hover:text-white hover:border-[#2563eb] flex items-center justify-center gap-2"
-                                onClick={() => {
-                                  if (!state.activeExperience) return;
-                                  handleAddBullet();
-                                  // Also update Description field
-                                  const updatedBullets = [...(state.activeExperience.Description || state.activeExperience.bullets || []), ''];
-                                  handleUpdateField('Description', updatedBullets);
-                                }}
-                              >
-                                <FaPlus size={14} /> Add Bullet Point
-                              </button>
-                            </div>
-                          </div>
+                          <p className="text-xs text-gray-500 mb-2">BULLET POINTS *</p>
+                          <textarea
+                            value={(state.activeExperience.bullets || state.activeExperience.Description || []).map(b => `•  ${b}`).join('\n')}
+                            onChange={(e) => {
+                              const newBullets = e.target.value.split('\n').map(b => b.replace(/^•\s?/, ''));
+                              handleUpdateField('bullets', newBullets);
+                              handleUpdateField('Description', newBullets);
+                            }}
+                            className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 font-medium text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] h-48 resize-y"
+                            placeholder="Enter each bullet point on a new line..."
+                          />
                         </div>
                       </div>
                       
                       {/* Save Button */}
-                      <div className="flex justify-end">
+                      <div className="col-span-full flex justify-end items-center gap-4 mt-4">
+                        <button
+                          onClick={() => setState(prev => ({ ...prev, showMobileForm: false }))}
+                          className="md:hidden border border-[#434354] text-white text-base font-medium rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#18181c] hover:border-[#63636f]"
+                        >
+                          BACK
+                        </button>
                         <button
                           onClick={handleSaveExperience}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-md transition-colors"
+                          className="bg-black text-white text-base font-bold rounded-lg border border-[#434354] px-7 py-2 transition-colors duration-150 hover:bg-[#18181c]"
                         >
-                          SAVE EXPERIENCE
+                          SAVE
                         </button>
                       </div>
                     </div>
