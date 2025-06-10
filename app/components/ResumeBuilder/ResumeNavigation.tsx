@@ -47,7 +47,10 @@ export default function ResumeNavigation({ resumeId, currentSection }: ResumeNav
           ) : (
             <button
               key={section}
-              onClick={() => router.push(`/dashboard/resume/${resumeId}/${section.toLowerCase()}`)}
+              onClick={() => {
+                const path = section === 'Contact' ? 'contact-info' : section.toLowerCase();
+                router.push(`/dashboard/resume/${resumeId}/${path}`);
+              }}
               className={`text-xs font-bold px-4 py-2 rounded-md uppercase tracking-wide transition-colors duration-150 ${section.toLowerCase() === currentSection ? "border border-[#2563eb] text-gray-300 bg-transparent hover:bg-[#2563eb] hover:bg-opacity-10" : "border border-[#363b4d] text-gray-300 bg-transparent hover:bg-[#23263a] hover:text-white"}`}
               style={{ userSelect: "none", minWidth: 'fit-content' }}
             >
