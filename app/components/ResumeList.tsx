@@ -164,7 +164,7 @@ const ResumeList: React.FC = () => {
                 ) : (
                   <div className="relative">
                     <button
-                      className="text-gray-400 cursor-pointer text-xl font-helvetica flex items-center h-[22px]"
+                      className="text-gray-400 hover:text-white cursor-pointer text-xl font-helvetica flex items-center justify-center h-[28px] w-[28px] rounded-full hover:bg-[#363b4d] transition-colors"
                       aria-haspopup="true"
                       aria-controls={menuId}
                       onClick={e => {
@@ -177,11 +177,12 @@ const ResumeList: React.FC = () => {
                     {menuOpenIdx === idx && (
                       <div
                         id={menuId}
-                        className="absolute right-0 mt-2 w-32 z-20 bg-[#23263a] border border-[#363b4d] rounded-lg shadow-lg py-1 animate-fade-in font-helvetica"
+                        className="absolute right-[45px] top-[-7px] w-28 z-50 bg-[#171923] border border-[#23263a] rounded-lg shadow-xl py-1 font-helvetica"
                         onClick={e => e.stopPropagation()}
+                        style={{ boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)' }}
                       >
                         <button
-                          className="w-full text-left px-4 py-2 text-red-400 hover:bg-[#363b4d] hover:text-red-500 text-sm rounded font-helvetica"
+                          className="w-full text-left px-3 py-1.5 text-red-400 hover:bg-[#23263a] hover:text-red-300 text-sm rounded font-semibold flex items-center gap-2 font-helvetica"
                           onClick={async () => {
                             setMenuOpenIdx(null);
                             try {
@@ -223,6 +224,9 @@ const ResumeList: React.FC = () => {
                             }
                           }}
                         >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
                           Delete
                         </button>
                       </div>

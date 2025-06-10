@@ -17,6 +17,7 @@ import DashboardLayout from '../../../../components/DashboardLayout';
 export default function ContactInfoPage() {
   const params = useParams();
   const resumeId = params.resumeId as string;
+  const router = useRouter();
   // ...any other hooks you need
 
   return (
@@ -146,13 +147,21 @@ export default function ContactInfoPage() {
               ].map((section) => (
                 <button
                   key={section}
+                  onClick={() => {
+                    if (section !== "FINISH UP & PREVIEW") {
+                      router.push(`/dashboard/resume/${resumeId}/${section.toLowerCase()}`);
+                    }
+                  }}
                   className={
                     `text-xs font-bold px-4 py-2 rounded-md uppercase tracking-wide transition-colors duration-150 ` +
                     (section === "Contact" ? 
                     "border border-[#2563eb] text-gray-300 bg-transparent hover:bg-[#2563eb] hover:bg-opacity-10" :
+                    section === "FINISH UP & PREVIEW" ?
+                    "border border-[#363b4d] text-gray-500 bg-transparent cursor-not-allowed" :
                     "border border-[#363b4d] text-gray-300 bg-transparent hover:bg-[#23263a] hover:text-white")
                   }
                   style={{ userSelect: "none", minWidth: 'fit-content' }}
+                  disabled={section === "FINISH UP & PREVIEW"}
                 >
                   {section}
                 </button>
@@ -278,6 +287,8 @@ export default function ContactInfoPage() {
                     console.log('Contact info saved successfully to Firestore');
                     // Update the form state with the cleaned URLs
                     setContactInfo(updatedContactInfo);
+                    // Navigate to the experience page
+                    router.push(`/dashboard/resume/${resumeId}/experience`);
                   } else {
                     console.error('Server returned error while saving:', data.error);
                     alert('Failed to save contact information. Please try again.');
