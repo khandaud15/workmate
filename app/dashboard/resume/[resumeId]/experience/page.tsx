@@ -530,7 +530,7 @@ export default function ExperiencePage() {
                       </div>
                       
                       {/* Save Button */}
-                      <div className="col-span-full flex justify-end items-center gap-4 mt-4">
+                      <div className="col-span-full flex justify-between md:justify-end items-center gap-4 mt-4">
                         <button
                           onClick={() => setState(prev => ({ ...prev, showMobileForm: false }))}
                           className="md:hidden border border-[#434354] text-white text-base font-medium rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#18181c] hover:border-[#63636f]"
