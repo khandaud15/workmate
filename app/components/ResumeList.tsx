@@ -92,12 +92,12 @@ const ResumeList: React.FC = () => {
 
       {/* Create new resume button row */}
       <button
-        className="w-full border border-dotted border-[#23263a] rounded-md px-1.5 sm:px-7 py-3 mb-2 flex items-center justify-center gap-2 bg-transparent text-white font-helvetica text-base hover:bg-[#23263a] transition shadow-xl overflow-hidden"
+        className="w-full border border-dotted border-[#2563eb] rounded-md px-1.5 sm:px-7 py-3 mb-2 flex items-center justify-center gap-2 bg-transparent text-white font-helvetica text-base hover:bg-[#2563eb]/10 transition shadow-xl overflow-hidden"
         style={{ minHeight: '48px' }}
         onClick={() => setShowCreateModal(true)}
       >
         <span className="">Create new resume</span>
-        <FaPlus className="text-purple-400 text-lg" />
+        <FaPlus className="text-[#2563eb] text-lg" />
       </button>
       <CreateResumeModal
         isOpen={showCreateModal}

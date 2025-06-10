@@ -399,7 +399,7 @@ export default function DashboardSidebar({
       <style jsx global>{`
         .sidebar {
           height: 100vh;
-          background: linear-gradient(to bottom, #141019, #7a64c2);
+          background: linear-gradient(to bottom, #141019, #2563eb);
           color: white;
           padding: 24px 20px;
           display: flex;

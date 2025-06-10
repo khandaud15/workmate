@@ -142,10 +142,10 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 px-0.5">
       <div
-        className="bg-[#0f0e15] rounded-2xl shadow-lg w-full max-w-lg p-0 relative border-b-[2px] border-l-[2px] border-r-[2px] border-[#fff70080] max-h-[90vh] overflow-y-auto"
-        style={{ boxShadow: '0 0 16px 0 #fff70055' }}
+        className="bg-[#0f0e15] rounded-2xl shadow-lg w-full max-w-lg p-0 relative border-[3px] border-[#2563eb]/30 max-h-[90vh] overflow-y-auto mx-0.5"
+        style={{ boxShadow: '0 0 16px 0 rgba(37, 99, 235, 0.2)' }}
       >
         <button
           className="absolute right-6 top-6 text-gray-300 hover:text-white text-2xl focus:outline-none"
@@ -159,7 +159,7 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">RESUME NAME *</label>
             <input
-              className="w-full rounded-md border border-[#363b4d] bg-transparent px-4 py-3 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full rounded-md border border-[#363b4d] bg-transparent px-4 py-3 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-[#2563eb]"
               placeholder="Enter here..."
               value={resumeName}
               onChange={e => setResumeName(e.target.value)}
@@ -167,7 +167,7 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           </div>
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">EXPERIENCE</label>
-            <select className="w-full rounded-md border border-[#363b4d] bg-transparent px-4 py-3 text-white outline-none focus:ring-2 focus:ring-purple-500">
+            <select className="w-full rounded-md border border-[#363b4d] bg-transparent px-4 py-3 text-white outline-none focus:ring-2 focus:ring-[#2563eb]">
               <option className="bg-[#23263a] text-gray-400">Select...</option>
               <option className="bg-[#23263a] text-gray-400">0-1 years</option>
               <option className="bg-[#23263a] text-gray-400">1-3 years</option>
@@ -213,7 +213,7 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
               CANCEL
             </button>
             <button
-              className="min-w-[120px] px-6 py-2 rounded-md bg-black border border-[#363b4d] text-white font-bold hover:bg-[#23263a] transition"
+              className="min-w-[120px] px-6 py-2 rounded-md border border-[#363b4d] bg-transparent text-white font-bold hover:bg-[#23263a] transition"
               type="button"
               onClick={handleSave}
               disabled={uploading}

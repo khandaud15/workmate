@@ -398,7 +398,7 @@ export default function ExperiencePage() {
   return (
     <DashboardLayout>
       <div className="overflow-y-auto pt-4 lg:pt-0">
-        <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-8 lg:p-10">
+        <div className="max-w-7xl mx-auto px-1 sm:p-4 md:p-8 lg:p-10">
           {/* Resume Name Box with Dropdown */}
           <ResumeNameDropdown resumeId={resumeId} currentSection="experience" />
 
@@ -406,7 +406,7 @@ export default function ExperiencePage() {
           <ResumeNavigation resumeId={resumeId} currentSection="experience" />
 
           {/* Main Experience Content - Two-part layout */}
-          <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-3 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
+          <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-1 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
             {state.isLoading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#2563eb]" />
@@ -414,7 +414,7 @@ export default function ExperiencePage() {
             ) : (
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Left Pane - Experience List */}
-                <div className="w-full md:w-1/3 border-r border-[#23263a] pr-4">
+                <div className="w-full md:w-1/3 border-r border-[#23263a] px-2 sm:px-0 md:pr-4">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold text-white">Work Experience</h2>
                     <button 
@@ -445,7 +445,7 @@ export default function ExperiencePage() {
                 </div>
                 
                 {/* Right Column - Experience Form */}
-                <div className={`w-full md:w-2/3 ${state.showMobileForm ? 'block' : 'hidden md:block'}`}>
+                <div className={`w-full md:w-2/3 px-2 sm:px-0 md:pl-4 ${state.showMobileForm ? 'block' : 'hidden md:block'}`}>
                   {state.isEditing && state.activeExperience ? (
                     <div>
                       {/* Form Header */}
@@ -670,7 +670,6 @@ export default function ExperiencePage() {
                                       const finalBullets = [...existing_bullets, `• ${bullet}`];
                                       handleUpdateField('bullets', finalBullets);
                                       handleUpdateField('Description', finalBullets);
-                                      existing_bullets.push(`• ${bullet}`); // Update our tracking array
                                       setTimeout(resolve, 350); // Pause before next bullet
                                     }
                                   }, 35); // Slower typing speed for better visibility
