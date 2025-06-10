@@ -12,9 +12,14 @@ interface ResumeNameDropdownProps {
 
 export default function ResumeNameDropdown({ resumeId, currentSection }: ResumeNameDropdownProps) {
   const { resumeName, isLoading: isLoadingName } = useResumeName(resumeId);
-  const [resumes, setResumes] = useState([]);
+  interface Resume {
+    name: string;
+    storageName: string;
+    id: string;
+  }
+  const [resumes, setResumes] = useState<Resume[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const boxRef = useRef(null);
+  const boxRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
