@@ -7,6 +7,7 @@ import DashboardLayout from '../../../../components/DashboardLayout';
 import ResumeNameDropdown from '../../../../components/ResumeBuilder/ResumeNameDropdown';
 import ResumeNavigation from '../../../../components/ResumeBuilder/ResumeNavigation';
 import ScoreIndicator from '../../../../components/ScoreIndicator';
+import ResumeScoreInsights from '../../../../components/ResumeScoreInsights';
 
 interface WorkExperience {
   id?: string;
@@ -34,7 +35,8 @@ interface ExperienceState {
   bulletCount: number;
   showMobileForm: boolean; // Track mobile form visibility
   experienceScore: number; // Score for work experience quality
-  isScoreExpanded: boolean; // Whether the score section is expanded
+  showScoreInsights: boolean; // Whether to show the score insights modal
+  resumeName: string; // Name of the resume
 }
 
 // TypingText component for typing animation
@@ -97,7 +99,8 @@ export default function ExperiencePage() {
     bulletCount: 3,
     showMobileForm: false, // Hide form on mobile by default
     experienceScore: 39, // Default score, can be calculated based on experiences
-    isScoreExpanded: false
+    showScoreInsights: false,
+    resumeName: 'Resume'
   });
   
   // Create a new blank experience
@@ -412,31 +415,58 @@ export default function ExperiencePage() {
           
           {/* Experience Score Indicator */}
           <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-4 py-4 mt-2 mb-4 w-full shadow-lg">
-            <div className="flex justify-between items-center cursor-pointer" 
-              onClick={() => setState(prev => ({ ...prev, isScoreExpanded: !prev.isScoreExpanded }))}
+            <div 
+              className="cursor-pointer" 
+              onClick={() => setState(prev => ({ ...prev, showScoreInsights: true }))}
             >
               <ScoreIndicator 
                 score={state.experienceScore} 
                 label="Your Experience" 
                 description={state.experienceScore < 50 ? "Needs improvement" : "Looking good!"}
               />
-              <div className="text-white">
-                {state.isScoreExpanded ? <FaChevronUp /> : <FaChevronDown />}
-              </div>
             </div>
-            
-            {state.isScoreExpanded && (
-              <div className="mt-4 text-white">
-                <p className="mb-2">Improve your experience score by:</p>
-                <ul className="list-disc pl-5 text-gray-300">
-                  <li>Adding more detailed bullet points to each role</li>
-                  <li>Including measurable achievements and results</li>
-                  <li>Ensuring all date ranges are accurate</li>
-                  <li>Adding all relevant past positions</li>
-                </ul>
-              </div>
-            )}
           </div>
+          
+          {/* Score Insights Modal */}
+          <ResumeScoreInsights 
+            isOpen={state.showScoreInsights}
+            onClose={() => setState(prev => ({ ...prev, showScoreInsights: false }))}
+            resumeName={`${state.resumeName} - Bioinformatician`}
+            overallScore={state.experienceScore}
+            categories={[
+              { name: 'Content', score: 43, color: '#FFC107' },
+              { name: 'Format', score: 15, color: '#f44336' },
+              { name: 'Optimization', score: 99, color: '#4caf50' },
+              { name: 'Best Practices', score: 54, color: '#FFC107' },
+              { name: 'Application Ready', score: 39, color: '#FFC107' }
+            ]}
+            issues={[
+              {
+                type: 'warning',
+                message: 'Your resume has 3 experiences with weak bullet points',
+                detail: 'Weak verbs will fail to explain your experience with meaningful language.',
+                relatedExperiences: state.experiences.slice(0, 3).map(exp => 
+                  `${exp.role || exp['Job Title'] || 'Untitled Role'}, ${exp.employer || exp.Company || 'No Company'}`
+                )
+              },
+              {
+                type: 'error',
+                message: 'Your resume has 2 experiences with an incorrect number of bullet points.',
+                detail: 'It\'s critical to include between 3-6 bullet points.',
+                relatedExperiences: state.experiences.slice(0, 2).map(exp => 
+                  `${exp.role || exp['Job Title'] || 'Untitled Role'}, ${exp.employer || exp.Company || 'No Company'}`
+                )
+              },
+              {
+                type: 'warning',
+                message: 'Your resume has 5 experiences without measured responsibilities or achievements',
+                detail: 'It\'s critical to give context to the size and scope of the work that you did.',
+                relatedExperiences: state.experiences.map(exp => 
+                  `${exp.role || exp['Job Title'] || 'Untitled Role'}, ${exp.employer || exp.Company || 'No Company'}`
+                ).slice(0, 5)
+              }
+            ]}
+          />
 
           {/* Main Experience Content - Two-part layout */}
           <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-1 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
