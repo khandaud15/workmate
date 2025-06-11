@@ -92,7 +92,7 @@ export default function RootLayout({
         <meta property="og:site_name" content="Talexus AI" />
         <meta name="apple-mobile-web-app-title" content="Talexus AI" />
       </head>
-      <body className="bg-[#fefcf9] min-h-screen flex flex-col">
+      <body className={`${isAuth ? 'bg-[#0a192f]' : 'bg-[#fefcf9]'} min-h-screen flex flex-col`}>
         <Providers>
           <DataCleaner />
           <LayoutStabilizer>
