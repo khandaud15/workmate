@@ -1,5 +1,6 @@
 'use client';
 
+import './dashboard.css';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -278,7 +279,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="flex h-screen bg-[#0e0c12] relative overflow-x-hidden">
+      <div className="flex h-screen bg-[#0a192f] relative overflow-x-hidden">
         {/* Mobile Toggle Button - Vertical Tab */}
         {!isSidebarOpen && (
           <button 
@@ -300,7 +301,7 @@ export default function DashboardPage() {
         
         {/* Sidebar */}
         <div 
-          className={`sidebar ${isSidebarOpen ? 'open' : ''} ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}
+          className={`sidebar bg-gradient-to-b from-[#0a192f] to-[#0d1b2a] ${isSidebarOpen ? 'open' : ''} ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}
           role="navigation"
           aria-label="Main navigation"
         >
@@ -511,7 +512,7 @@ export default function DashboardPage() {
         </div>
 
         <main 
-          className={`flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 bg-[#0e0c12] text-white ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'}`}
+          className={`flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 bg-[#0a192f] text-white ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'}`}
           onClick={() => {
             // Collapse sidebar when clicking on main content area
             if (!isSidebarCollapsed && window.innerWidth >= 1024) {
@@ -1326,7 +1327,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="w-full max-w-full md:max-w-4xl mx-auto mt-6 overflow-hidden px-4 md:px-0">
-              <div className="w-full bg-gradient-to-r from-[#1e1a2e] to-[#19172d] p-6 rounded-t-xl border border-[#2e2a3d]">
+              <div className="w-full bg-[#0d1b2a] p-6 rounded-t-xl border border-[#1e2d3d]">
                 <h2 className="text-xl font-semibold text-white mb-1 text-center">Welcome back, {session.user?.name?.split(' ')[0] || 'User'}!</h2>
                 <p className="text-gray-400 text-sm text-center">Your next opportunity starts here. Create, optimize, apply — all in one intelligent workspace.</p>
               </div>
@@ -1343,7 +1344,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] hover:border-[#2563eb] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-indigo-600 to-violet-500 flex items-center justify-center">
@@ -1354,7 +1355,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">My Profile</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Manage your personal information and career preferences.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#2e2a3d] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     Edit Profile
                   </div>
                 </div>
@@ -1365,7 +1366,7 @@ export default function DashboardPage() {
                     // Navigate to /dashboard/resume and update URL
                     window.location.href = '/dashboard/resume';
                   }}
-                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] hover:border-[#2563eb] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 flex items-center justify-center">
@@ -1376,7 +1377,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Resume</h3>
                   </div>
                   <p className="text-gray-400 text-sm">View and update your professional resume.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#2e2a3d] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     View Resume
                   </div>
                 </div>
@@ -1391,7 +1392,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] hover:border-[#2563eb] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 flex items-center justify-center">
@@ -1402,7 +1403,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Jobs</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Discover job opportunities tailored to your skills and preferences.</p>
-                  <button className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#2e2a3d] transition-all">
+                  <button className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all">
                     Browse Jobs
                   </button>
                 </div>
@@ -1420,7 +1421,7 @@ export default function DashboardPage() {
                     setShowCopilot(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] hover:border-[#2563eb] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-rose-500 flex items-center justify-center">
@@ -1431,7 +1432,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Applications</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Track your job applications and manage your application process.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#2e2a3d] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     View Applications
                   </div>
                 </div>
@@ -1445,7 +1446,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowPlayground(false);
                   }}
-                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] hover:border-[#2563eb] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 flex items-center justify-center">
@@ -1456,7 +1457,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Networking Copilot</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Build and manage your professional network with AI assistance.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#2e2a3d] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     Open Copilot
                   </div>
                 </div>
@@ -1471,7 +1472,7 @@ export default function DashboardPage() {
                     setShowJobTracker(false);
                     setShowCopilot(false);
                   }}
-                  className="group bg-[#12101a]/50 border border-[#2e2a3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(162,89,255,0.5)] hover:border-[#a259ff] transition-all"
+                  className="group bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] hover:border-[#2563eb] transition-all"
                 >
                   <div className="flex items-center mb-3">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-orange-400 flex items-center justify-center">
@@ -1482,7 +1483,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">SmartPrep</h3>
                   </div>
                   <p className="text-gray-400 text-sm">AI-powered interview preparation and skill assessment tools.</p>
-                  <div className="mt-4 w-full py-2 bg-gradient-to-r from-[#1e1a2e] to-[#19172d] text-white rounded-lg border border-[#2e2a3d] hover:border-[#FFD700]/50 transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     Start Prep
                   </div>
                 </div>
@@ -1500,7 +1501,7 @@ export default function DashboardPage() {
 
           .sidebar {
             height: 100vh;
-            background: linear-gradient(to bottom, #141019, #7a64c2);
+            background: linear-gradient(to bottom, #141019, #2563eb);
             color: white;
             padding: 24px 20px;
             display: flex;

@@ -144,7 +144,7 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 px-0.5">
       <div
-        className="bg-[#0d1b2a] rounded-2xl shadow-lg w-full max-w-lg p-0 relative border-[3px] border-[#2563eb]/30 max-h-[90vh] overflow-y-auto mx-0.5"
+        className="bg-[#111827] rounded-2xl shadow-lg w-full max-w-lg p-0 relative border border-gray-700 max-h-[90vh] overflow-y-auto mx-0.5"
         style={{ boxShadow: '0 0 16px 0 rgba(37, 99, 235, 0.2)' }}
       >
         <button
@@ -159,7 +159,7 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">RESUME NAME *</label>
             <input
-              className="w-full rounded-md border border-[#2563eb]/40 bg-[#0d1b2a] px-4 py-3 text-white placeholder-gray-400 outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
+              className="w-full rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-400 outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
               placeholder="Enter here..."
               value={resumeName}
               onChange={e => setResumeName(e.target.value)}
@@ -167,17 +167,17 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           </div>
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">EXPERIENCE</label>
-            <select className="w-full rounded-md border border-[#2563eb]/40 bg-[#0d1b2a] px-4 py-3 text-white outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]">
-              <option className="bg-[#0d1b2a] text-gray-400">Select...</option>
-              <option className="bg-[#0d1b2a] text-gray-400">0-1 years</option>
-              <option className="bg-[#0d1b2a] text-gray-400">1-3 years</option>
-              <option className="bg-[#0d1b2a] text-gray-400">3-5 years</option>
-              <option className="bg-[#0d1b2a] text-gray-400">5+ years</option>
+            <select className="w-full rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-white outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]">
+              <option className="bg-[#1f2937] text-gray-400">Select...</option>
+              <option className="bg-[#1f2937] text-gray-400">0-1 years</option>
+              <option className="bg-[#1f2937] text-gray-400">1-3 years</option>
+              <option className="bg-[#1f2937] text-gray-400">3-5 years</option>
+              <option className="bg-[#1f2937] text-gray-400">5+ years</option>
             </select>
           </div>
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">IMPORT YOUR EXISTING RESUME</label>
-            <label className="w-full flex justify-between items-center rounded-md border border-[#2563eb]/40 bg-[#0d1b2a] px-4 py-3 text-gray-300 hover:bg-[#0a192f] hover:border-[#2563eb] cursor-pointer">
+            <label className="w-full flex justify-between items-center rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-gray-300 hover:bg-[#374151] hover:border-[#2563eb] cursor-pointer">
               <span>Upload PDF, DOCx resume file</span>
               <span className="ml-2">&#8682;</span>
               <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleFileChange} />
@@ -199,7 +199,7 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
               <div className="text-xs text-red-400 mt-2">{uploadError}</div>
             )}
           </div>
-          <hr className="my-6 border-[#2563eb]/30" />
+          <hr className="my-6 border-gray-700" />
           <div className="flex items-center mb-2">
             <span className="text-white font-semibold text-lg mr-3">Target your resume</span>
             <input type="checkbox" className="toggle toggle-sm" checked={isTargeted} onChange={e => setIsTargeted(e.target.checked)} />
@@ -207,13 +207,13 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           <p className="text-xs text-gray-400 mb-6">A targeted resume is a resume tailored to a specific job opening. You have a significantly higher chance of getting an interview when you make it clear you have the experience required for the job.</p>
           <div className="flex justify-between gap-3 mt-8">
             <button
-              className="min-w-[120px] px-6 py-2 rounded-md border border-[#2563eb]/40 text-white bg-[#0d1b2a] font-medium hover:bg-[#0a192f] hover:border-[#2563eb] transition"
+              className="min-w-[120px] px-6 py-2 rounded-md border border-gray-700 text-white bg-[#1f2937] font-medium hover:bg-[#374151] hover:border-[#2563eb] transition"
               onClick={onClose}
             >
               CANCEL
             </button>
             <button
-              className="min-w-[120px] px-6 py-2 rounded-md border border-[#2563eb]/40 bg-[#0d1b2a] text-white font-bold hover:bg-[#0a192f] hover:border-[#2563eb] transition"
+              className="min-w-[120px] px-6 py-2 rounded-md border border-gray-700 bg-[#1f2937] text-white font-bold hover:bg-[#374151] hover:border-[#2563eb] transition"
               type="button"
               onClick={handleSave}
               disabled={uploading}
