@@ -2,10 +2,11 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { FaPlus, FaTrash, FaPencilAlt, FaChevronDown, FaEdit, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaPencilAlt, FaChevronDown, FaEdit, FaCheck, FaTimes, FaChevronUp } from 'react-icons/fa';
 import DashboardLayout from '../../../../components/DashboardLayout';
 import ResumeNameDropdown from '../../../../components/ResumeBuilder/ResumeNameDropdown';
 import ResumeNavigation from '../../../../components/ResumeBuilder/ResumeNavigation';
+import ScoreIndicator from '../../../../components/ScoreIndicator';
 
 interface WorkExperience {
   id?: string;
@@ -32,6 +33,8 @@ interface ExperienceState {
   isEditing: boolean;
   bulletCount: number;
   showMobileForm: boolean; // Track mobile form visibility
+  experienceScore: number; // Score for work experience quality
+  isScoreExpanded: boolean; // Whether the score section is expanded
 }
 
 // TypingText component for typing animation
@@ -91,8 +94,10 @@ export default function ExperiencePage() {
     activeExperience: null,
     isLoading: true,
     isEditing: false,
-    bulletCount: 0,
-    showMobileForm: false // Hide form on mobile by default
+    bulletCount: 3,
+    showMobileForm: false, // Hide form on mobile by default
+    experienceScore: 39, // Default score, can be calculated based on experiences
+    isScoreExpanded: false
   });
   
   // Create a new blank experience
@@ -404,6 +409,34 @@ export default function ExperiencePage() {
 
           {/* Navigation Buttons */}
           <ResumeNavigation resumeId={resumeId} currentSection="experience" />
+          
+          {/* Experience Score Indicator */}
+          <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-4 py-4 mt-2 mb-4 w-full shadow-lg">
+            <div className="flex justify-between items-center cursor-pointer" 
+              onClick={() => setState(prev => ({ ...prev, isScoreExpanded: !prev.isScoreExpanded }))}
+            >
+              <ScoreIndicator 
+                score={state.experienceScore} 
+                label="Your Experience" 
+                description={state.experienceScore < 50 ? "Needs improvement" : "Looking good!"}
+              />
+              <div className="text-white">
+                {state.isScoreExpanded ? <FaChevronUp /> : <FaChevronDown />}
+              </div>
+            </div>
+            
+            {state.isScoreExpanded && (
+              <div className="mt-4 text-white">
+                <p className="mb-2">Improve your experience score by:</p>
+                <ul className="list-disc pl-5 text-gray-300">
+                  <li>Adding more detailed bullet points to each role</li>
+                  <li>Including measurable achievements and results</li>
+                  <li>Ensuring all date ranges are accurate</li>
+                  <li>Adding all relevant past positions</li>
+                </ul>
+              </div>
+            )}
+          </div>
 
           {/* Main Experience Content - Two-part layout */}
           <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-1 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
