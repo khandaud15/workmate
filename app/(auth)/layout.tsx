@@ -21,9 +21,9 @@ export default function AuthLayout({
   }, []);
 
   return (
-    <div className="auth-layout fixed inset-0 min-h-screen w-full overflow-y-auto" style={{ backgroundColor: '#0a192f' }}>
-      <div className="relative min-h-screen w-full">
-        <div className="w-full max-w-[800px] mx-auto px-6 pt-[env(safe-area-inset-top)] pb-8">
+    <div className="auth-layout min-h-screen w-full overflow-y-auto" style={{ backgroundColor: '#0a192f' }}>
+      <div className="relative w-full py-8">
+        <div className="w-full max-w-[800px] mx-auto px-6 pt-[env(safe-area-inset-top)] pb-16 min-h-[100vh]">
           {children}
         </div>
       </div>
