@@ -57,7 +57,7 @@ export default function ResumeNameDropdown({ resumeId, currentSection }: ResumeN
   return (
     <div 
       ref={boxRef} 
-      className="relative inline-flex items-center justify-between mb-4 border border-[#23263a] rounded-lg bg-[#0e0c12] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]"
+      className="relative inline-flex items-center justify-between mb-4 border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]"
     >
       <span className="truncate text-white font-medium text-sm max-w-[100px]">
         {isLoadingName ? (
@@ -74,14 +74,14 @@ export default function ResumeNameDropdown({ resumeId, currentSection }: ResumeN
         <FaChevronDown size={16} />
       </button>
       {dropdownOpen && (
-        <div className="absolute left-0 top-full mt-1 bg-[#171923] border border-[#23263a] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
+        <div className="absolute left-0 top-full mt-1 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
           {resumes.length === 0 ? (
             <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
           ) : (
             resumes.map((r: { id?: string; storageName?: string; name?: string }) => (
               <button
                 key={r.id || r.storageName}
-                className={`block w-full text-left px-4 py-2 text-sm truncate hover:bg-[#23263a] ${((r.storageName === resumeId || r.id === resumeId) ? 'bg-[#23263a] text-white font-semibold' : 'text-gray-200')}`}
+                className={`block w-full text-left px-4 py-2 text-sm truncate hover:bg-[#1e2d3d] ${((r.storageName === resumeId || r.id === resumeId) ? 'bg-[#1e2d3d] text-white font-semibold' : 'text-gray-200')}`}
                 onClick={() => {
                   setDropdownOpen(false);
                   let targetId = r.id || '';

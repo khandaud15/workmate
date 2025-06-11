@@ -397,7 +397,7 @@ export default function ExperiencePage() {
 
   return (
     <DashboardLayout>
-      <div className="overflow-y-auto pt-4 lg:pt-0">
+      <div className="overflow-y-auto pt-4 lg:pt-0 bg-[#0a192f] min-h-screen w-full">
         <div className="max-w-7xl mx-auto px-1 sm:p-4 md:p-8 lg:p-10">
           {/* Resume Name Box with Dropdown */}
           <ResumeNameDropdown resumeId={resumeId} currentSection="experience" />
@@ -406,7 +406,7 @@ export default function ExperiencePage() {
           <ResumeNavigation resumeId={resumeId} currentSection="experience" />
 
           {/* Main Experience Content - Two-part layout */}
-          <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-1 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
+          <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-1 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
             {state.isLoading ? (
               <div className="flex justify-center items-center h-64">
                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#2563eb]" />
@@ -414,7 +414,7 @@ export default function ExperiencePage() {
             ) : (
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Left Pane - Experience List */}
-                <div className="w-full md:w-1/3 border-r border-[#23263a] px-2 sm:px-0 md:pr-4">
+                <div className="w-full md:w-1/3 border-r border-[#1e2d3d] px-2 sm:px-0 md:pr-4">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold text-white">Work Experience</h2>
                     <button 
@@ -432,12 +432,12 @@ export default function ExperiencePage() {
                       state.experiences.map((exp) => (
                         <div 
                           key={exp.id} 
-                          className={`p-3 rounded-md cursor-pointer transition-colors ${state.activeExperience?.id === exp.id ? 'bg-[#23263a] border-l-4 border-[#2563eb]' : 'bg-[#171923] hover:bg-[#1e2130]'}`}
+                          className={`p-3 rounded-md cursor-pointer transition-colors border border-gray-700 ${state.activeExperience?.id === exp.id ? 'bg-[#0d1b2a] border-l-4 border-l-[#2563eb]' : 'bg-[#0d1b2a] hover:bg-[#0d1b2a]'}`}
                           onClick={() => handleSelectExperience(exp)}
                         >
-                          <h3 className="font-medium text-white">{exp.role || exp['Job Title'] || 'Untitled Role'}</h3>
-                          <p className="text-sm text-gray-400">{exp.employer || exp.Company || 'No Company'}</p>
-                          <p className="text-xs text-gray-500 mt-1">{exp['Start/End Year'] || `${exp.startDate}${exp.endDate ? ` - ${exp.endDate}` : ' - Present'}`}</p>
+                          <h3 className="text-xl text-white font-normal">{exp.role || exp['Job Title'] || 'Untitled Role'}</h3>
+                          <p className="text-base text-gray-400 mt-1">{exp.employer || exp.Company || 'No Company'}</p>
+                          <p className="text-gray-500 mt-1 text-base">{exp['Start/End Year'] || `${exp.startDate}${exp.endDate ? ` - ${exp.endDate}` : ' - Present'}`}</p>
                         </div>
                       ))
                     )}
@@ -473,7 +473,7 @@ export default function ExperiencePage() {
                           </label>
                           <input 
                             type="text" 
-                            className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
+                            className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                             placeholder="Job Title"
                             value={state.activeExperience.role || state.activeExperience['Job Title'] || ''}
                             onChange={(e) => {
@@ -488,7 +488,7 @@ export default function ExperiencePage() {
                           <label className="block text-xs text-gray-300 mb-1 uppercase">FOR WHICH COMPANY DID YOU WORK? *</label>
                           <input 
                             type="text" 
-                            className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
+                            className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                             placeholder="Company Name"
                             value={state.activeExperience.employer || state.activeExperience.Company || ''}
                             onChange={(e) => {
@@ -507,7 +507,7 @@ export default function ExperiencePage() {
                             </label>
                             <input 
                               type="text" 
-                              className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
+                              className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                               placeholder="Sep 2020"
                               value={state.activeExperience.startDate || (state.activeExperience['Start/End Year'] ? state.activeExperience['Start/End Year'].split(/[-–]/)[0].trim() : '')}
                               onChange={(e) => handleUpdateField('startDate', e.target.value)}
@@ -531,7 +531,7 @@ export default function ExperiencePage() {
                             </div>
                             <input 
                               type="text" 
-                              className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
+                              className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                               placeholder="Present"
                               value={state.activeExperience.isCurrent ? 'Present' : (state.activeExperience.endDate || (state.activeExperience['Start/End Year'] && !state.activeExperience['Start/End Year'].toLowerCase().includes('present') ? state.activeExperience['Start/End Year'].split(/[-–]/)[1]?.trim() : '') || '')}
                               onChange={(e) => handleUpdateField('endDate', e.target.value)}
@@ -546,7 +546,7 @@ export default function ExperiencePage() {
                             </label>
                             <input 
                               type="text" 
-                              className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
+                              className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]" 
                               placeholder="New York, NY"
                               value={state.activeExperience.location || state.activeExperience.Location || ''}
                               onChange={(e) => {
@@ -592,7 +592,7 @@ export default function ExperiencePage() {
                                 }
                               });
                             }}
-                            className="w-full bg-[#171923] border border-[#23263a] rounded-md px-3 py-2 font-medium text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] h-48 resize-y"
+                            className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 font-medium text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] h-48 resize-y"
                             placeholder="Enter each bullet point on a new line..."
                           />
                         </div>
@@ -602,7 +602,7 @@ export default function ExperiencePage() {
                       <div className="col-span-full flex justify-between items-center gap-4 mt-4">
 
                         <button
-                          className={`flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#0e0c12] text-white text-base font-semibold rounded-full border border-[#2563eb] px-6 h-10 shadow-sm hover:from-[#1d4ed8] hover:to-[#23263a] transition-colors duration-150 whitespace-nowrap ${loadingBullets ? 'animate-pulse ring-2 ring-blue-400 ring-offset-2' : ''}`}
+                          className={`flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#0d1b2a] text-white text-base font-semibold rounded-full border border-[#2563eb] px-6 h-10 shadow-sm hover:from-[#1d4ed8] hover:to-[#0d1b2a] transition-colors duration-150 whitespace-nowrap ${loadingBullets ? 'animate-pulse ring-2 ring-blue-400 ring-offset-2' : ''}`}
                           style={{ width: '200px', justifyContent: 'center' }}
                           type="button"
                           onClick={async () => {
@@ -693,7 +693,7 @@ export default function ExperiencePage() {
                         </button>
                         <button
                           onClick={handleSaveExperience}
-                          className="bg-black text-white text-base font-bold rounded-lg border border-[#434354] px-7 py-2 transition-colors duration-150 hover:bg-[#18181c]"
+                          className="border border-[#1e2d3d] text-white text-base font-bold rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#0d1b2a] hover:border-[#2563eb]"
                         >
                           SAVE
                         </button>

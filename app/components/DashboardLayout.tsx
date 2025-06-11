@@ -36,11 +36,11 @@ export default function DashboardLayout({
   }
 
   if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen bg-[#12101a]">Loading...</div>;
+    return <div className="flex items-center justify-center min-h-screen bg-[#0a192f]">Loading...</div>;
   }
 
   return (
-    <div className="flex min-h-screen bg-[#0e0c12] text-white overflow-x-hidden relative p-0 w-full">
+    <div className="flex min-h-screen bg-[#0a192f] text-white overflow-x-hidden relative p-0 w-full">
       {/* Mobile Toggle Button - Vertical Tab */}
       {!isSidebarOpen && (
         <button 
@@ -88,7 +88,7 @@ export default function DashboardLayout({
         body {
           margin: 0;
           font-family: 'Inter', sans-serif;
-          background: #0e0c12;
+          background: #0a192f;
         }
         
         @media (max-width: 1023px) {

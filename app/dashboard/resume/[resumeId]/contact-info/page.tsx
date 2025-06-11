@@ -22,9 +22,8 @@ export default function ContactInfoPage() {
 
   return (
     <DashboardLayout>
-      {/* Main Content */}
-      <div className="overflow-y-auto pt-4 lg:pt-0">
-        <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-8 lg:p-10">
+      <div className="bg-[#0a192f] min-h-screen w-full">
+        <div className="max-w-7xl mx-auto px-1 sm:p-4 md:p-8 lg:p-10">
           {/* Resume Name Box */}
           {/* Resume Name Box with Dropdown */}
           {(() => {
@@ -73,7 +72,7 @@ export default function ContactInfoPage() {
             });
 
             return (
-              <div ref={boxRef} className="relative inline-flex items-center justify-between mb-4 border border-[#23263a] rounded-lg bg-[#0e0c12] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]">
+              <div ref={boxRef} className="relative inline-flex items-center justify-between mb-4 border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]">
                 <span className="truncate text-white font-medium text-sm max-w-[100px]">
                   {isLoading ? (
                     <span className="inline-block bg-gray-700 rounded w-20 h-4 animate-pulse" />
@@ -86,7 +85,7 @@ export default function ContactInfoPage() {
                 </button>
                 {/* Dropdown menu (right-aligned) */}
                 {dropdownOpen && (
-                  <div className="absolute left-0 top-full mt-1 bg-[#171923] border border-[#23263a] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
+                  <div className="absolute left-0 top-full mt-1 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
                     {resumes.length === 0 ? (
                       <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
                     ) : (
@@ -128,7 +127,7 @@ export default function ContactInfoPage() {
           <div className="flex flex-col gap-2 mb-4">
             {/* Button-style nav: each section is a button, matching the action buttons below */}
             {/* All nav buttons inside a single container, always two lines, matching screenshot */}
-            <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-2 py-1 lg:flex lg:flex-wrap overflow-x-auto whitespace-nowrap mb-4 shadow-md" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-2 py-1 lg:flex lg:flex-wrap overflow-x-auto whitespace-nowrap mb-4 shadow-md" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <div className="flex flex-nowrap lg:flex-wrap gap-x-2 gap-y-1 pb-1 lg:pb-0" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {[
                 "Contact",
@@ -171,7 +170,7 @@ export default function ContactInfoPage() {
           </div>
 
           {/* Contact Info Box */}
-          <div className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-3 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
+          <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
              {/* Autofill Contact Info Form */}
             {(() => {
               const React = require('react');
@@ -312,57 +311,57 @@ export default function ContactInfoPage() {
                   {/* Full Name */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Full Name</label>
-                    <input type="text" name="fullName" value={contactInfo.fullName} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="Full Name" />
+                    <input type="text" name="fullName" value={contactInfo.fullName} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="Full Name" />
                   </div>
                   {/* Email Address */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Email Address</label>
-                    <input type="email" name="emailAddress" value={contactInfo.emailAddress} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="Email Address" />
+                    <input type="email" name="emailAddress" value={contactInfo.emailAddress} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="Email Address" />
                   </div>
                   {/* Phone Number */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Phone Number</label>
-                    <input type="tel" name="phoneNumber" value={contactInfo.phoneNumber} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="Phone Number" />
+                    <input type="tel" name="phoneNumber" value={contactInfo.phoneNumber} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="Phone Number" />
                   </div>
                   {/* LinkedIn URL */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">LinkedIn URL</label>
-                    <input type="text" name="linkedinUrl" value={contactInfo.linkedinUrl} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="LinkedIn URL" />
+                    <input type="text" name="linkedinUrl" value={contactInfo.linkedinUrl} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="LinkedIn URL" />
                   </div>
 
                   {/* State */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">State</label>
-                    <input type="text" name="state" value={contactInfo.state} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="State" />
+                    <input type="text" name="state" value={contactInfo.state} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="State" />
                   </div>
                   {/* City */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">City</label>
-                    <input type="text" name="city" value={contactInfo.city} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="City" />
+                    <input type="text" name="city" value={contactInfo.city} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="City" />
                   </div>
                   {/* Address */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">Address</label>
-                    <input type="text" name="address" value={contactInfo.address} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="Street Address" />
+                    <input type="text" name="address" value={contactInfo.address} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="Street Address" />
                   </div>
                   {/* ZIP Code */}
                   <div className="flex flex-col">
                     <label className="text-xs font-bold text-gray-300 mb-1 uppercase">ZIP Code</label>
-                    <input type="text" name="zipCode" value={contactInfo.zipCode} onChange={handleChange} className="bg-[#191a23] border border-[#23243a] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-blue-500 transition shadow-inner w-full" placeholder="ZIP Code" />
+                    <input type="text" name="zipCode" value={contactInfo.zipCode} onChange={handleChange} className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full" placeholder="ZIP Code" />
                   </div>
 
                   {/* Action Buttons Row */}
                   <div className="col-span-full flex justify-between items-center gap-4 mt-4">
                     <button
                       type="button"
-                      className="border border-[#434354] text-white text-base font-medium rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#18181c] hover:border-[#63636f]"
+                      className="border border-[#1e2d3d] text-white text-base font-medium rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#0d1b2a] hover:border-[#2563eb]"
                       onClick={() => window.history.back()}
                     >
                       BACK
                     </button>
                     <button
                       type="submit"
-                      className="bg-black text-white text-base font-bold rounded-lg border border-[#434354] px-7 py-2 transition-colors duration-150 hover:bg-[#18181c]"
+                      className="border border-[#1e2d3d] text-white text-base font-bold rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#0d1b2a] hover:border-[#2563eb]"
                     >
                       SAVE
                     </button>

@@ -28,7 +28,7 @@ export default function ResumeNavigation({ resumeId, currentSection }: ResumeNav
 
   return (
     <div 
-      className="border border-[#23263a] rounded-lg bg-[#0e0c12] px-2 py-1 lg:flex lg:flex-wrap overflow-x-auto whitespace-nowrap mb-4 shadow-md" 
+      className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-2 py-1 lg:flex lg:flex-wrap overflow-x-auto whitespace-nowrap mb-4 shadow-md" 
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
       <div 
@@ -51,7 +51,7 @@ export default function ResumeNavigation({ resumeId, currentSection }: ResumeNav
                 const path = section === 'Contact' ? 'contact-info' : section.toLowerCase();
                 router.push(`/dashboard/resume/${resumeId}/${path}`);
               }}
-              className={`text-xs font-bold px-4 py-2 rounded-md uppercase tracking-wide transition-colors duration-150 ${section.toLowerCase() === currentSection ? "border border-[#2563eb] text-gray-300 bg-transparent hover:bg-[#2563eb] hover:bg-opacity-10" : "border border-[#363b4d] text-gray-300 bg-transparent hover:bg-[#23263a] hover:text-white"}`}
+              className={`text-xs font-bold px-4 py-2 rounded-md uppercase tracking-wide transition-colors duration-150 ${section.toLowerCase() === currentSection ? "border border-[#2563eb] text-gray-300 bg-transparent hover:bg-[#2563eb] hover:bg-opacity-10" : "border border-[#1e2d3d] text-gray-300 bg-transparent hover:bg-[#0d1b2a] hover:border-[#2563eb] hover:text-white"}`}
               style={{ userSelect: "none", minWidth: 'fit-content' }}
             >
               {section}

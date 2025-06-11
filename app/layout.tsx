@@ -45,7 +45,7 @@ export default function RootLayout({
     // Set theme color based on the current page
     // White only for main homepage, dark for all other pages including dashboard
     const isMainPage = pathname === '/';
-    const themeColor = isMainPage ? '#ffffff' : '#0e0c12';
+    const themeColor = isMainPage ? '#ffffff' : '#0a192f';
     
     // Create or update the theme-color meta tag
     let themeMetaTag = document.querySelector('meta[name="theme-color"]');
