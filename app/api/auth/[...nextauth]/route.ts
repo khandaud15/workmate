@@ -154,7 +154,7 @@ export const authOptions: AuthOptions = {
       // Use the current domain for redirects
       const currentDomain = isLocalhost ? baseUrl : 'https://www.talexus.ai';
       
-      // Always redirect to onboarding after successful auth
+      // Always redirect to dashboard after successful auth
       const isAuthCallback = [
         '/api/auth/callback',
         '/signin',
@@ -166,7 +166,7 @@ export const authOptions: AuthOptions = {
       ].some(path => url.includes(path));
 
       if (isAuthCallback) {
-        return `${currentDomain}/onboarding`;
+        return `${currentDomain}/dashboard`;
       }
 
       // Allow other redirects to proceed as normal

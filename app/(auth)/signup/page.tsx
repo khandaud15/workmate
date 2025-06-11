@@ -52,7 +52,7 @@ export default function SignUp() {
           redirect: false,
         });
         if (!result?.error) {
-          window.location.href = '/onboarding';
+          window.location.href = '/dashboard';
         } else {
           setError('Authentication failed. Please sign in.');
         }
@@ -92,7 +92,7 @@ export default function SignUp() {
           {/* Social Sign Up Buttons */}
           <button
             onClick={() => signIn('google', { 
-              callbackUrl: '/onboarding',
+              callbackUrl: '/dashboard',
               redirect: true
             })}
             className="flex w-full items-center justify-center gap-3 rounded-[8px] border border-[#1e2d3d] bg-[#0d1b2a] px-4 py-3 text-[15px] font-medium text-white hover:border-[#2563eb] transition-all"
@@ -119,7 +119,7 @@ export default function SignUp() {
           </button>
 
           <button
-            onClick={() => signIn('github', { callbackUrl: '/onboarding', redirect: true })}
+            onClick={() => signIn('github', { callbackUrl: '/dashboard', redirect: true })}
             className="flex w-full items-center justify-center gap-3 rounded-[8px] border border-[#1e2d3d] bg-[#0d1b2a] px-4 py-3 text-[15px] font-medium text-white hover:border-[#2563eb] transition-all"
           >
             <svg className="h-5 w-5" aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
