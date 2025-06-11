@@ -47,7 +47,7 @@ html, body {
       left: -100vw;
       right: -100vw;
       bottom: -100vh;
-      background: linear-gradient(to bottom right, #0C111F, #000000);
+      background: #0a192f;
       z-index: -1;
     }
   }
