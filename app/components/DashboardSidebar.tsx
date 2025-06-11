@@ -214,10 +214,10 @@ export default function DashboardSidebar({
           </div>
         </div>
 
-        <div className="bottom-card" style={{ position: 'fixed', bottom: '20px', left: '20px', width: '240px' }}>
+        <div className="bottom-card" style={{ position: 'fixed', bottom: '20px', left: '20px', width: '240px', background: '#0d1b2a', border: '1px solid #1e2d3d' }}>
           <strong>Upgrade to Pro</strong>
           <p>Get unlimited sessions<br />and unlock all the job tools</p>
-          <button>Upgrade</button>
+          <button style={{ background: '#2563eb' }}>Upgrade</button>
         </div>
       </div>
 
@@ -380,10 +380,10 @@ export default function DashboardSidebar({
         </div>
 
         {!isSidebarCollapsed && (
-          <div className="bottom-card">
+          <div className="bottom-card" style={{ background: '#0d1b2a', border: '1px solid #1e2d3d' }}>
             <strong>Upgrade to Pro</strong>
             <p>Get unlimited sessions<br />and unlock all the job tools</p>
-            <button>Upgrade</button>
+            <button style={{ background: '#2563eb' }}>Upgrade</button>
           </div>
         )}
       </div>

@@ -14,7 +14,7 @@ export default function AccountSettings({ onClose }: { onClose: () => void }) {
 
       </div>
 
-      <div className="bg-[#1f1e22] rounded-xl p-4 mb-4">
+      <div className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-4 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <img 
@@ -36,10 +36,10 @@ export default function AccountSettings({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      <div className="bg-[#1f1e22] rounded-xl p-4 mb-6">
+      <div className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-4 mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-[#2a2830] rounded-lg">
+            <div className="p-2 bg-[#0a192f] rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
@@ -62,37 +62,37 @@ export default function AccountSettings({ onClose }: { onClose: () => void }) {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Trial Access Card */}
-          <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)]">
+          <div className="bg-[#0d1b2a] rounded-[14px] p-6 border border-[#1e2d3d] transition duration-300 hover:border-[#2563eb] hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)]">
             <div className="text-lg font-semibold mb-1">Trial Access</div>
             <div className="text-2xl font-bold mb-2">$2.95</div>
             <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>AI-powered job search</div>
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>Auto-fill your applications</div>
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>Full access with unlimited applications</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>AI-powered job search</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>Auto-fill your applications</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>Full access with unlimited applications</div>
             </div>
             <div className="text-xs text-gray-400 mt-2">Try it risk-free • Money-back guarantee • Cancel anytime</div>
           </div>
 
           {/* 3 Month Full Access Card */}
-          <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)] focus-within:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)]">
-            <div className="text-lg font-semibold mb-1 flex items-center">3 Month Full Access <span className="ml-2 bg-[#2ecc71] text-black text-[11px] px-2 py-0.5 rounded-full">RECOMMENDED</span></div>
+          <div className="bg-[#0d1b2a] rounded-[14px] p-6 border border-[#1e2d3d] transition duration-300 hover:border-[#2563eb] hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] focus-within:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)]">
+            <div className="text-lg font-semibold mb-1 flex items-center">3 Month Full Access <span className="ml-2 bg-[#2563eb] text-white text-[11px] px-2 py-0.5 rounded-full">RECOMMENDED</span></div>
             <div className="text-2xl font-bold mb-2">$13.95<span className="text-base font-normal">/mo</span></div>
             <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>AI-powered job search</div>
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>Auto-fill your applications</div>
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>Full access with unlimited applications</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>AI-powered job search</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>Auto-fill your applications</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>Full access with unlimited applications</div>
             </div>
             <div className="text-xs text-gray-400 mt-2">$41.85 up front • Cancel anytime</div>
           </div>
 
           {/* 6 Month Full Access Card */}
-          <div className="bg-[#1f1e22] rounded-[14px] p-6 border-2 border-transparent transition duration-300 hover:border-[#6f60e2] hover:shadow-[0_0_16px_2px_rgba(111,96,226,0.3)]">
+          <div className="bg-[#0d1b2a] rounded-[14px] p-6 border border-[#1e2d3d] transition duration-300 hover:border-[#2563eb] hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)]">
             <div className="text-lg font-semibold mb-1">6 Month Full Access</div>
             <div className="text-2xl font-bold mb-2">$10.95<span className="text-base font-normal">/mo</span></div>
             <div className="text-sm text-gray-300 mt-3 mb-2 space-y-1">
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>AI-powered job search</div>
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>Auto-fill your applications</div>
-              <div><span className="text-[#2ecc71] mr-2">&#10003;</span>Full access with unlimited applications</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>AI-powered job search</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>Auto-fill your applications</div>
+              <div><span className="text-[#2563eb] mr-2">&#10003;</span>Full access with unlimited applications</div>
             </div>
             <div className="text-xs text-gray-400 mt-2">$65.70 up front • Save 63% • Cancel anytime</div>
           </div>

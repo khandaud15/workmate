@@ -1641,7 +1641,8 @@ export default function DashboardPage() {
           }
 
           .bottom-card {
-            background: black;
+            background: #0d1b2a;
+            border: 1px solid #1e2d3d;
             border-radius: 20px;
             padding: 20px;
             text-align: center;
@@ -1657,7 +1658,7 @@ export default function DashboardPage() {
           .bottom-card button {
             margin-top: 12px;
             padding: 10px 18px;
-            background: #4b32d4;
+            background: #2563eb;
             border: none;
             color: white;
             font-size: 14px;
@@ -1668,7 +1669,7 @@ export default function DashboardPage() {
           }
 
           .bottom-card button:hover {
-            background: #3a27ad;
+            background: #1d4ed8;
           }
 
           .sidebar-tooltip {

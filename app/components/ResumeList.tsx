@@ -241,7 +241,7 @@ const ResumeList: React.FC = () => {
 
       {/* Add Section Button */}
       <div className="flex justify-center mt-8 font-helvetica">
-        <button className="flex items-center bg-[#181b23] border border-dotted border-2 border-[#23263a] rounded-md px-4 py-2 text-sm text-gray-400 hover:text-purple-400 gap-2 font-semibold shadow-lg font-helvetica">
+        <button className="flex items-center bg-[#0d1b2a] border border-dotted border-2 border-[#1e2d3d] rounded-md px-4 py-2 text-sm text-gray-400 hover:text-[#2563eb] gap-2 font-semibold shadow-lg font-helvetica">
           <FaPlus size={14} /> ADD SECTION
         </button>
       </div>

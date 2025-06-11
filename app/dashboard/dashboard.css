@@ -55,7 +55,8 @@
 }
 
 .bottom-card {
-  background: #000000;
+  background: #0d1b2a;
+  border: 1px solid #1e2d3d;
   border-radius: 1rem;
   padding: 1.25rem;
   text-align: center;
