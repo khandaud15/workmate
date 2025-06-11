@@ -279,7 +279,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <div className="flex h-screen bg-[#0a192f] relative overflow-x-hidden">
+      <div className="flex h-screen bg-[#0d1b2a] relative overflow-x-hidden">
         {/* Mobile Toggle Button - Vertical Tab */}
         {!isSidebarOpen && (
           <button 
@@ -554,30 +554,21 @@ export default function DashboardPage() {
             </div>
           ) : showProfile ? (
             <div className="w-full max-w-full md:max-w-4xl mx-auto mt-6">
-              {/* Back button */}
-              <button 
-                onClick={() => setShowProfile(false)} 
-                className="flex items-center text-blue-400 hover:text-blue-300 mb-4 transition-colors"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                Back to Dashboard
-              </button>
+              {/* Back button removed - using sidebar navigator instead */}
               
               {/* Header - Outside container */}
               <div className="w-full max-w-full md:max-w-4xl mx-auto mb-6">
-                <div className="w-full bg-[#1f1b2e] p-6 rounded-t-xl border border-[#2e2a3d] text-center">
+                <div className="w-full bg-[#0d1b2a] p-6 rounded-t-xl border border-[#1e2d3d] text-center">
                   <h2 className="text-xl font-semibold text-white">My Profile</h2>
                   <p className="text-gray-400 text-sm">Manage your personal information and career details</p>
                 </div>
               </div>
               
               {/* Profile container */}
-              <div className="w-full max-w-full md:max-w-4xl text-center border border-gray-700 rounded-t-xl rounded-b-none pt-6 pb-10 px-2 md:px-6 bg-[#12101a]/50 mx-auto mt-2">
+              <div className="w-full max-w-full md:max-w-4xl text-center border border-[#1e2d3d] rounded-t-xl rounded-b-none pt-6 pb-10 px-2 md:px-6 bg-[#0d1b2a] mx-auto mt-2">
                 
                 {/* Contact Information Section */}
-                <div className="w-full bg-[#1a1625] p-6 border border-[#2e2a3d] mb-6 text-left">
+                <div className="w-full bg-[#0d1b2a] p-6 border border-[#1e2d3d] mb-6 text-left">
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold text-white">Contact Information</h3>
                     {isEditingContactInfo ? (
@@ -628,7 +619,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.firstName} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, firstName: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div>
@@ -637,7 +628,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.lastName} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, lastName: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div>
@@ -646,7 +637,7 @@ export default function DashboardPage() {
                           type="email" 
                           value={editedContactInfo.email} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, email: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div>
@@ -655,7 +646,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.phone} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, phone: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div>
@@ -664,7 +655,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.address} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, address: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div>
@@ -673,7 +664,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.city} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, city: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div>
@@ -682,7 +673,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.state} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, state: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div>
@@ -691,7 +682,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.postalCode} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, postalCode: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                       <div className="md:col-span-2">
@@ -700,7 +691,7 @@ export default function DashboardPage() {
                           type="text" 
                           value={editedContactInfo.linkedin} 
                           onChange={(e) => setEditedContactInfo({...editedContactInfo, linkedin: e.target.value})}
-                          className="w-full bg-[#12101a] border border-gray-700 rounded p-2 text-white"
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded p-2 text-white"
                         />
                       </div>
                     </div>
@@ -733,7 +724,7 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* Experience Section */}
-                <div className="w-full bg-[#1a1625] p-6 border border-[#2e2a3d] mb-6 text-left">
+                <div className="w-full bg-[#0d1b2a] p-6 border border-[#1e2d3d] mb-6 text-left">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-white">Experience</h3>
                     <button className="text-blue-400 hover:text-blue-300 transition-colors">
@@ -746,7 +737,7 @@ export default function DashboardPage() {
                   {/* Experience Items Container */}
                   <div className="space-y-4">
                     {workExperience.map((exp: WorkExperience, index: number) => (
-                      <div key={exp.id} className="bg-[#12101a]/50 border border-gray-700 p-4 text-left">
+                      <div key={exp.id} className="bg-[#0d1b2a] border border-[#1e2d3d] p-4 text-left">
                         {exp.isEditing ? (
                           /* Edit Form */
                           <div className="text-left">
@@ -757,7 +748,7 @@ export default function DashboardPage() {
                                 <label className="block text-gray-300 mb-1 text-sm">Position Title</label>
                                 <input 
                                   type="text" 
-                                  className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                  className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                   value={exp.jobTitle || ''}
                                   onChange={(e) => {
                                     setWorkExperience(prev => 
@@ -773,7 +764,7 @@ export default function DashboardPage() {
                                 <label className="block text-gray-300 mb-1 text-sm">Company</label>
                                 <input 
                                   type="text" 
-                                  className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                  className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                   value={exp.company || ''}
                                   onChange={(e) => {
                                     setWorkExperience(prev => 
@@ -789,7 +780,7 @@ export default function DashboardPage() {
                                 <label className="block text-gray-300 mb-1 text-sm">Location</label>
                                 <input 
                                   type="text" 
-                                  className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                  className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                   value={exp.location || ''}
                                   onChange={(e) => {
                                     setWorkExperience(prev => 
@@ -806,7 +797,7 @@ export default function DashboardPage() {
                                   <label className="block text-gray-300 mb-1 text-sm">Start Date</label>
                                   <input 
                                     type="text" 
-                                    className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                    className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                     value={exp.startDate || ''}
                                     onChange={(e) => {
                                       setWorkExperience(prev => 
@@ -822,7 +813,7 @@ export default function DashboardPage() {
                                   <label className="block text-gray-300 mb-1 text-sm">End Date</label>
                                   <input 
                                     type="text" 
-                                    className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                    className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                     placeholder="Leave empty for 'Present'"
                                     value={exp.endDate || ''}
                                     onChange={(e) => {
@@ -842,7 +833,7 @@ export default function DashboardPage() {
                                   <div key={respIndex} className="mb-2">
                                     <input 
                                       type="text" 
-                                      className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                      className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                       value={resp}
                                       onChange={(e) => {
                                         const newResponsibilities = [...exp.responsibilities];
@@ -858,7 +849,7 @@ export default function DashboardPage() {
                                 ))}
                                 
                                 <button 
-                                  className="mt-2 px-3 py-1 text-sm bg-[#2a292e] text-purple-400 hover:bg-purple-900/20 transition-colors flex items-center gap-1"
+                                  className="mt-2 px-3 py-1 text-sm bg-[#0d1b2a] text-[#2563eb] hover:bg-[#2563eb]/10 transition-colors flex items-center gap-1"
                                   onClick={() => {
                                     const newResponsibilities = [...exp.responsibilities, ''];
                                     setWorkExperience(prev => 
@@ -875,7 +866,7 @@ export default function DashboardPage() {
                             
                             <div className="mt-6 flex justify-between">
                               <button 
-                                className="px-4 py-2 bg-[#12101a] border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors text-sm"
+                                className="px-4 py-2 bg-[#0d1b2a] border border-[#1e2d3d] text-gray-300 hover:bg-[#0d1b2a] transition-colors text-sm"
                                 onClick={() => {
                                   // Cancel editing - revert to previous state
                                   setWorkExperience(prev => 
@@ -888,7 +879,7 @@ export default function DashboardPage() {
                                 Cancel
                               </button>
                               <button 
-                                className="px-4 py-2 bg-purple-900/30 border border-purple-500 text-purple-100 hover:bg-purple-800/40 transition-colors text-sm"
+                                className="px-4 py-2 bg-[#2563eb]/80 border border-[#2563eb] text-white hover:bg-[#1d4ed8] transition-colors text-sm"
                                 onClick={() => {
                                   // Save changes, exit editing mode, and collapse the card
                                   setWorkExperience(prev => {
@@ -976,7 +967,7 @@ export default function DashboardPage() {
                     
                     {/* Add Another Position Button */}
                     <button 
-                      className="w-full p-4 border border-dashed border-purple-500 text-purple-400 hover:bg-purple-900/20 transition-colors flex items-center justify-center gap-2"
+                      className="w-full p-4 border border-dashed border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb]/10 transition-colors flex items-center justify-center gap-2"
                       onClick={() => {
                         const newExperience = {
                           id: `exp-${Date.now()}`,
@@ -998,10 +989,10 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* Education Section */}
-                <div className="w-full bg-[#1a1625] p-6 border border-[#2e2a3d] mb-6 text-left">
+                <div className="w-full bg-[#0d1b2a] p-6 border border-[#1e2d3d] mb-6 text-left">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-white">Education</h3>
-                    <button className="text-purple-400 hover:text-purple-300 transition-colors">
+                    <button className="text-[#2563eb] hover:text-blue-400 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
@@ -1011,7 +1002,7 @@ export default function DashboardPage() {
                   {/* Education Items Container */}
                   <div className="space-y-4">
                     {education.map((edu: Education, index: number) => (
-                      <div key={edu.id} className="bg-[#12101a]/50 border border-gray-700 p-4 text-left">
+                      <div key={edu.id} className="bg-[#0d1b2a] border border-[#1e2d3d] p-4 text-left">
                         {edu.isEditing ? (
                           /* Edit Form */
                           <div className="text-left">
@@ -1022,7 +1013,7 @@ export default function DashboardPage() {
                                 <label className="block text-gray-300 mb-1 text-sm">School/Institution</label>
                                 <input 
                                   type="text" 
-                                  className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                  className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                   value={edu.school || ''}
                                   onChange={(e) => {
                                     setEducation(prev => 
@@ -1038,7 +1029,7 @@ export default function DashboardPage() {
                                 <label className="block text-gray-300 mb-1 text-sm">Degree</label>
                                 <input 
                                   type="text" 
-                                  className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                  className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                   value={edu.degree || ''}
                                   onChange={(e) => {
                                     setEducation(prev => 
@@ -1054,7 +1045,7 @@ export default function DashboardPage() {
                                 <label className="block text-gray-300 mb-1 text-sm">Field of Study</label>
                                 <input 
                                   type="text" 
-                                  className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                  className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                   value={edu.fieldOfStudy || ''}
                                   onChange={(e) => {
                                     setEducation(prev => 
@@ -1071,7 +1062,7 @@ export default function DashboardPage() {
                                   <label className="block text-gray-300 mb-1 text-sm">Start Date</label>
                                   <input 
                                     type="text" 
-                                    className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                    className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                     value={edu.startDate || ''}
                                     onChange={(e) => {
                                       setEducation(prev => 
@@ -1087,7 +1078,7 @@ export default function DashboardPage() {
                                   <label className="block text-gray-300 mb-1 text-sm">End Date</label>
                                   <input 
                                     type="text" 
-                                    className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                                    className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                                     placeholder="Leave empty for 'Present'"
                                     value={edu.endDate || ''}
                                     onChange={(e) => {
@@ -1104,7 +1095,7 @@ export default function DashboardPage() {
                               <div>
                                 <label className="block text-gray-300 mb-1 text-sm">Description</label>
                                 <textarea 
-                                  className="w-full bg-[#2a292e] border border-gray-700 px-3 py-2 text-white min-h-[100px]"
+                                  className="w-full bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white min-h-[100px]"
                                   value={edu.description || ''}
                                   onChange={(e) => {
                                     setEducation(prev => 
@@ -1119,7 +1110,7 @@ export default function DashboardPage() {
                             
                             <div className="mt-6 flex justify-between">
                               <button 
-                                className="px-4 py-2 bg-[#12101a] border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors text-sm"
+                                className="px-4 py-2 bg-[#0d1b2a] border border-[#1e2d3d] text-gray-300 hover:bg-[#0d1b2a] transition-colors text-sm"
                                 onClick={() => {
                                   // Cancel editing - revert to previous state
                                   setEducation(prev => 
@@ -1132,7 +1123,7 @@ export default function DashboardPage() {
                                 Cancel
                               </button>
                               <button 
-                                className="px-4 py-2 bg-purple-900/30 border border-purple-500 text-purple-100 hover:bg-purple-800/40 transition-colors text-sm"
+                                className="px-4 py-2 bg-[#2563eb]/80 border border-[#2563eb] text-white hover:bg-[#1d4ed8] transition-colors text-sm"
                                 onClick={() => {
                                   // Save changes, exit editing mode, and collapse the card
                                   setEducation(prev => {
@@ -1216,7 +1207,7 @@ export default function DashboardPage() {
                     
                     {/* Add Another Education Button */}
                     <button 
-                      className="w-full p-4 border border-dashed border-purple-500 text-purple-400 hover:bg-purple-900/20 transition-colors flex items-center justify-center gap-2"
+                      className="w-full p-4 border border-dashed border-[#2563eb] text-[#2563eb] hover:bg-[#2563eb]/10 transition-colors flex items-center justify-center gap-2"
                       onClick={() => {
                         const newEducation = {
                           id: `edu-${Date.now()}`,
@@ -1238,7 +1229,7 @@ export default function DashboardPage() {
                 </div>
                 
                 {/* Skills Section */}
-                <div className="w-full bg-[#1a1625] p-6 border border-[#2e2a3d] mb-6 text-left">
+                <div className="w-full bg-[#0d1b2a] p-6 border border-[#1e2d3d] mb-6 text-left">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-white">Skills</h3>
                     <div className="flex space-x-2">
@@ -1277,7 +1268,7 @@ export default function DashboardPage() {
                     <div className="space-y-4">
                       <div className="flex flex-wrap gap-2">
                         {skills.map((skill, index) => (
-                          <div key={index} className="group relative bg-purple-900/30 border border-purple-500 px-3 py-1.5 rounded-full text-purple-100 text-sm flex items-center gap-2">
+                          <div key={index} className="group relative bg-[#0d1b2a] border border-[#2563eb] px-3 py-1.5 rounded-full text-blue-100 text-sm flex items-center gap-2">
                             <span>{skill}</span>
                             <button 
                               className="text-gray-500 hover:text-red-400 transition-colors"
@@ -1297,7 +1288,7 @@ export default function DashboardPage() {
                       <div className="mt-4 flex items-center gap-2">
                         <input
                           type="text"
-                          className="flex-1 bg-[#2a292e] border border-gray-700 px-3 py-2 text-white"
+                          className="flex-1 bg-[#0d1b2a] border border-[#1e2d3d] px-3 py-2 text-white"
                           placeholder="Add a new skill"
                           value={newSkill}
                           onChange={(e) => setNewSkill(e.target.value)}
@@ -1355,7 +1346,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">My Profile</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Manage your personal information and career preferences.</p>
-                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0d1b2a] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     Edit Profile
                   </div>
                 </div>
@@ -1377,7 +1368,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Resume</h3>
                   </div>
                   <p className="text-gray-400 text-sm">View and update your professional resume.</p>
-                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0d1b2a] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     View Resume
                   </div>
                 </div>
@@ -1403,7 +1394,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Jobs</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Discover job opportunities tailored to your skills and preferences.</p>
-                  <button className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all">
+                  <button className="mt-4 w-full py-2 bg-[#0d1b2a] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all">
                     Browse Jobs
                   </button>
                 </div>
@@ -1432,7 +1423,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Applications</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Track your job applications and manage your application process.</p>
-                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0d1b2a] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     View Applications
                   </div>
                 </div>
@@ -1457,7 +1448,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">Networking Copilot</h3>
                   </div>
                   <p className="text-gray-400 text-sm">Build and manage your professional network with AI assistance.</p>
-                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0d1b2a] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     Open Copilot
                   </div>
                 </div>
@@ -1483,7 +1474,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-white ml-3">SmartPrep</h3>
                   </div>
                   <p className="text-gray-400 text-sm">AI-powered interview preparation and skill assessment tools.</p>
-                  <div className="mt-4 w-full py-2 bg-[#0a192f] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
+                  <div className="mt-4 w-full py-2 bg-[#0d1b2a] text-white rounded-lg border border-[#1e2d3d] hover:border-[#2563eb] transition-all text-center">
                     Start Prep
                   </div>
                 </div>
