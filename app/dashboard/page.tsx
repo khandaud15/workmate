@@ -283,7 +283,7 @@ export default function DashboardPage() {
         {/* Mobile Toggle Button - Vertical Tab */}
         {!isSidebarOpen && (
           <button 
-            className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#7a64c2] text-white p-2 rounded-r-lg shadow-lg lg:hidden sidebar-toggle"
+            className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 bg-[#2563eb] text-white p-2 rounded-r-lg shadow-lg lg:hidden sidebar-toggle"
             onClick={() => setIsSidebarOpen(true)}
             aria-label="Open sidebar"
           >
