@@ -11,7 +11,7 @@ export default function AuthLayout({
   useEffect(() => {
     document.documentElement.classList.add('auth-page');
     document.body.classList.add('auth-page');
-    document.body.style.backgroundColor = '#05070A';
+    document.body.style.backgroundColor = '#0a192f';
     
     return () => {
       document.documentElement.classList.remove('auth-page');
@@ -21,7 +21,7 @@ export default function AuthLayout({
   }, []);
 
   return (
-    <div className="auth-layout fixed inset-0 min-h-screen w-full overflow-y-auto" style={{ backgroundColor: '#05070A' }}>
+    <div className="auth-layout fixed inset-0 min-h-screen w-full overflow-y-auto" style={{ backgroundColor: '#0a192f' }}>
       <div className="relative min-h-screen w-full">
         <div className="w-full max-w-[800px] mx-auto px-6 pt-[env(safe-area-inset-top)] pb-8">
           {children}
