@@ -19,8 +19,24 @@ export function useResumeName(resumeId: string) {
       const resumesRaw = localStorage.getItem('resumeList');
       if (resumesRaw) {
         const resumes = JSON.parse(resumesRaw);
-        const match = resumes.find((r: any) => r.id === resumeId || r.storageName === resumeId);
+        console.log('DEBUG useResumeName: Looking for resumeId:', resumeId);
+        console.log('DEBUG useResumeName: Available resumes:', resumes);
+        
+        // Try to match by id, storageName, or numeric part of id
+        const match = resumes.find((r: any) => {
+          // Normalize IDs for comparison
+          const normalizedResumeId = resumeId.match(/^\d+/)?.[0] || resumeId;
+          const normalizedStorageName = r.storageName ? (r.storageName.match(/^\d+/)?.[0] || r.storageName) : '';
+          const normalizedId = r.id ? (r.id.match(/^\d+/)?.[0] || r.id) : '';
+          
+          return r.id === resumeId || 
+                 r.storageName === resumeId || 
+                 normalizedId === normalizedResumeId || 
+                 normalizedStorageName === normalizedResumeId;
+        });
+        
         if (match && match.name) {
+          console.log('DEBUG useResumeName: Found match:', match);
           setResumeName(match.name);
           found = true;
         }
@@ -31,10 +47,27 @@ export function useResumeName(resumeId: string) {
       fetch(`/api/resume/list?t=${Date.now()}`)
         .then(res => res.json())
         .then(data => {
-          const match = (data.resumes || []).find((r: any) => r.id === resumeId || r.storageName === resumeId);
+          console.log('DEBUG useResumeName API: Looking for resumeId:', resumeId);
+          console.log('DEBUG useResumeName API: Available resumes:', data.resumes);
+          
+          // Try to match by id, storageName, or numeric part of id
+          const match = (data.resumes || []).find((r: any) => {
+            // Normalize IDs for comparison
+            const normalizedResumeId = resumeId.match(/^\d+/)?.[0] || resumeId;
+            const normalizedStorageName = r.storageName ? (r.storageName.match(/^\d+/)?.[0] || r.storageName) : '';
+            const normalizedId = r.id ? (r.id.match(/^\d+/)?.[0] || r.id) : '';
+            
+            return r.id === resumeId || 
+                   r.storageName === resumeId || 
+                   normalizedId === normalizedResumeId || 
+                   normalizedStorageName === normalizedResumeId;
+          });
+          
           if (match && match.name) {
+            console.log('DEBUG useResumeName API: Found match:', match);
             setResumeName(match.name);
           } else {
+            console.log('DEBUG useResumeName API: No match found for', resumeId);
             setResumeName('Resume');
           }
         })

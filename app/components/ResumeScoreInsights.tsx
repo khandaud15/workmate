@@ -39,22 +39,29 @@ const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
   const scorePosition = `${Math.min(100, Math.max(0, overallScore))}%`;
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-      <div className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center border-b border-[#1e2d3d] p-4">
-          <h2 className="text-xl font-bold text-white">Talexus Score</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-8">
+      <div className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg w-full max-w-7xl max-h-[95vh] overflow-y-auto">
+        <div className="flex justify-between items-center border-b border-[#1e2d3d] p-6">
+          <h2 className="text-2xl font-bold text-white">Talexus Score</h2>
           <button 
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
           >
-            <FaTimes size={20} />
+            <FaTimes size={24} />
           </button>
         </div>
         
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 [&>div]:h-[240px] md:[&>div]:h-auto">
+        {/* Add a summary section at the top that spans the full width */}
+        <div className="px-8 pt-6">
+          <div className="mb-6 p-5 bg-[#121f2e] border border-[#1e2d3d] rounded-lg">
+            <p className="text-center text-base">{summary || "Strong resume with relevant skills highlighted."}</p>
+          </div>
+        </div>
+        
+        <div className="px-8 pb-6 grid grid-cols-1 md:grid-cols-2 gap-8 [&>div]:h-[240px] md:[&>div]:h-auto">
           {/* Left column - Score and gauge */}
-          <div className="border border-[#1e2d3d] rounded-lg p-3 w-full">
-            <p className="text-gray-400 mb-2">[Targeted] {resumeName}</p>
+          <div className="border border-[#1e2d3d] rounded-lg p-5 w-full">
+            <p className="text-gray-400 mb-3 text-lg">[Targeted] {resumeName}</p>
             
             {/* Circular gauge */}
             <div className="flex flex-col items-center justify-center">
@@ -107,17 +114,15 @@ const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
                 <span className="text-gray-400">100</span>
               </div>
               
-              {/* Summary text in fixed container */}
-              <div className="mt-2 max-w-[300px] mx-auto text-center h-[50px] overflow-hidden">
-                <p className="text-sm text-gray-300 line-clamp-2">{summary || "Strong resume with relevant skills highlighted."}</p>
-              </div>
+              {/* Extra spacing at the bottom */}
+              <div className="mt-4"></div>
             </div>
           </div>
           
           {/* Right column - Distribution chart */}
-          <div className="border border-[#1e2d3d] rounded-lg p-3">
-            <h3 className="text-white text-lg mb-2">How You Compare</h3>
-            <p className="text-gray-400 text-sm mb-2">See how your resume compares to others.</p>
+          <div className="border border-[#1e2d3d] rounded-lg p-5">
+            <h3 className="text-white text-lg font-semibold mb-3">How You Compare</h3>
+            <p className="text-gray-400 text-sm mb-4">See how your resume compares to others.</p>
             
             {/* Distribution chart */}
             <div className="h-24 relative mb-3">
@@ -157,9 +162,9 @@ const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
         </div>
         
         {/* Improvements section */}
-        <div className="p-4 border-t border-[#1e2d3d]">
-          <h3 className="text-xl font-bold text-white mb-2">Improvements</h3>
-          <p className="text-gray-400 mb-3">Improve your Talexus Score by making the suggested adjustments in each category.</p>
+        <div className="px-8 py-6 border-t border-[#1e2d3d]">
+          <h3 className="text-2xl font-bold text-white mb-3">Improvements</h3>
+          <p className="text-gray-400 mb-5 text-lg">Improve your Talexus Score by making the suggested adjustments in each category.</p>
           
           {/* Category scores */}
           <div className="flex flex-row overflow-x-auto pb-2 mb-4 hide-scrollbar justify-between w-full">

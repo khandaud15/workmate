@@ -8,6 +8,7 @@ import ResumeNameDropdown from '../../../../components/ResumeBuilder/ResumeNameD
 import ResumeNavigation from '../../../../components/ResumeBuilder/ResumeNavigation';
 import ScoreIndicator from '../../../../components/ScoreIndicator';
 import ResumeScoreInsights from '../../../../components/ResumeScoreInsights';
+import { useResumeName } from '../../../../hooks/useResumeName';
 
 interface WorkExperience {
   id?: string;
@@ -96,6 +97,15 @@ export default function ExperiencePage() {
   const params = useParams();
   const router = useRouter();
   const resumeId = params.resumeId as string;
+  
+  // Get resume name from the same hook used by the dropdown
+  const { resumeName, isLoading: resumeNameLoading } = useResumeName(resumeId);
+  
+  // Debug resume name
+  useEffect(() => {
+    console.log('DEBUG: Resume name from hook:', resumeName);
+    console.log('DEBUG: Resume ID:', resumeId);
+  }, [resumeName, resumeId]);
 
   // Loading state for BulletGen button
   const [loadingBullets, setLoadingBullets] = useState(false);
@@ -109,7 +119,7 @@ export default function ExperiencePage() {
     showMobileForm: false, // Hide form on mobile by default
     experienceScore: 0, // Will be updated from analysis
     showScoreInsights: false,
-    resumeName: 'Resume',
+    resumeName: resumeName || 'Resume', // Use the name from the dropdown
     scoreAnalysis: null,
     isAnalysisLoading: false,
     analysisError: null, // Initialize error state
@@ -223,6 +233,39 @@ export default function ExperiencePage() {
     }
   };
 
+  // Update state when resume name changes
+  useEffect(() => {
+    if (resumeName) {
+      setState(prev => ({
+        ...prev,
+        resumeName: resumeName
+      }));
+    }
+  }, [resumeName]);
+  
+  // Fetch specific resume details to get the name
+  useEffect(() => {
+    async function fetchResumeDetails() {
+      try {
+        const response = await fetch(`/api/resume/details?resumeId=${resumeId}&t=${Date.now()}`);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('DEBUG: Resume details:', data);
+          if (data.name) {
+            setState(prev => ({
+              ...prev,
+              resumeName: data.name
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching resume details:', error);
+      }
+    }
+    
+    fetchResumeDetails();
+  }, [resumeId]);
+
   // Fetch all experiences from Firestore
   useEffect(() => {
     async function fetchExperiences() {
@@ -287,6 +330,11 @@ export default function ExperiencePage() {
         }
         
         console.log('DEBUG: Mapped experiences:', workExperiences);
+        
+        // Extract resume name from the API response
+        const resumeName = parsedData.resumeName || parsedData.name || parsedData.title || parsedData.fileName || 'Resume';
+        console.log('DEBUG: Resume name:', resumeName);
+        
         setState(prev => ({
           ...prev,
           experiences: workExperiences,
@@ -294,7 +342,9 @@ export default function ExperiencePage() {
           activeExperience: workExperiences.length > 0 ? workExperiences[0] : null,
           isLoading: false,
           // Only enter editing mode if there's an experience to edit.
-          isEditing: workExperiences.length > 0
+          isEditing: workExperiences.length > 0,
+          // Set the resume name from the API response
+          resumeName: resumeName
         }));
       } catch (error) {
         console.error('Error fetching experiences:', error);
@@ -597,11 +647,14 @@ export default function ExperiencePage() {
           
           {/* Score Insights Modal */}
           {state.showScoreInsights && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4">
-              <div className="p-6 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg max-w-4xl w-full text-white relative overflow-y-auto max-h-[90vh]">
-                <div className="flex justify-between items-start">
-                  <h2 className="text-2xl font-bold mb-4">Talexus Score</h2>
-                  <button onClick={() => setState(prev => ({ ...prev, showScoreInsights: false, analysisError: null }))} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-1 sm:p-6">
+              <div className="px-2 sm:px-11 py-6 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg max-w-5xl w-full text-white relative overflow-y-auto max-h-[90vh]">
+                <div className="flex justify-between items-center relative mb-4">
+                  <div className="absolute left-0">
+                    {/* Empty div for spacing */}
+                  </div>
+                  <h2 className="text-2xl font-bold mx-auto">Talexus Score</h2>
+                  <button onClick={() => setState(prev => ({ ...prev, showScoreInsights: false, analysisError: null }))} className="text-gray-400 hover:text-white text-2xl absolute right-0">&times;</button>
                 </div>
                 {state.isAnalysisLoading ? (
                   <div className="text-center py-8">
@@ -616,10 +669,15 @@ export default function ExperiencePage() {
                 ) : state.scoreAnalysis ? (
                   <div>
                     {/* Top section with two panels */}
-                    <div className="flex flex-col md:flex-row gap-4 mb-4 [&>div]:h-[220px] md:[&>div]:h-auto">
+                    {/* Summary text - Now outside the panels */}
+                    <div className="mb-4 p-3 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg">
+                      <p className="text-center text-sm">{state.scoreAnalysis.summary}</p>
+                    </div>
+                    
+                    <div className="flex flex-col md:flex-row gap-6 mb-6 [&>div]:h-[220px] md:[&>div]:h-auto">
                       {/* Left panel - Score gauge */}
-                      <div className="flex-1 border border-[#1e2d3d] rounded-lg p-3">
-                        <p className="text-sm text-gray-400 mb-1">[Targeted] {state.resumeName || 'Your Resume'}</p>
+                      <div className="flex-1 border border-[#1e2d3d] rounded-lg p-5">
+                        <p className="text-sm text-gray-400 mb-1">{resumeName || state.resumeName || 'Your Resume'}</p>
                         <div className="flex justify-center items-center h-32 relative">
                           {/* Circular gauge */}
                           <div className="relative w-28 h-28">
@@ -654,7 +712,6 @@ export default function ExperiencePage() {
                             </div>
                           </div>
                         </div>
-                        <p className="text-center text-sm mt-2">{state.scoreAnalysis.summary}</p>
                         <div className="flex justify-between text-xs text-gray-400 mt-2">
                           <span>0</span>
                           <span>100</span>
@@ -706,23 +763,23 @@ export default function ExperiencePage() {
                             })}
                           </div>
                         </div>
-                           <div className="flex text-xs text-gray-400 mt-2 relative w-full">
-                            <span className="absolute left-0">0</span>
-                            <span className="absolute" style={{ left: '20%' }}>20</span>
-                            <span className="absolute" style={{ left: '40%' }}>40</span>
-                            <span className="absolute" style={{ left: '60%' }}>60</span>
-                            <span className="absolute" style={{ left: '80%' }}>80</span>
-                            <span className="absolute right-0">100</span>
+                           <div className="flex text-xs text-gray-400 mt-4 relative w-full h-6 border-t border-[#1e2d3d] pt-2">
+                            <span className="absolute left-0 bg-[#0d1b2a] px-1">0</span>
+                            <span className="absolute bg-[#0d1b2a] px-1" style={{ left: '20%', transform: 'translateX(-50%)' }}>20</span>
+                            <span className="absolute bg-[#0d1b2a] px-1" style={{ left: '40%', transform: 'translateX(-50%)' }}>40</span>
+                            <span className="absolute bg-[#0d1b2a] px-1" style={{ left: '60%', transform: 'translateX(-50%)' }}>60</span>
+                            <span className="absolute bg-[#0d1b2a] px-1" style={{ left: '80%', transform: 'translateX(-50%)' }}>80</span>
+                            <span className="absolute right-0 bg-[#0d1b2a] px-1">100</span>
                           </div>
                       </div>
                     </div>
                     {/* Improvements section */}
-                    <div className="mt-4">
-                      <h3 className="text-xl font-bold mb-2">Improvements</h3>
-                      <p className="text-sm text-gray-400 mb-3">Improve your Talexus Score by making the suggested adjustments in each category.</p>
+                    <div className="mt-8">
+                      <h3 className="text-2xl font-bold mb-4">Improvements</h3>
+                      <p className="text-base text-gray-400 mb-5">Improve your Talexus Score by making the suggested adjustments in each category.</p>
                       
-                      {/* Category scores */}
-                      <div className="flex flex-row overflow-x-auto hide-scrollbar pb-2 mb-4 justify-between w-full">
+                      {/* Category scores - scrollable on mobile, normal on desktop */}
+                      <div className="flex flex-row overflow-x-auto sm:overflow-x-visible pb-4 mb-8 justify-between w-full gap-4 sm:gap-2 px-1 sm:px-0 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
                         {state.scoreAnalysis.categories.map(cat => (
                           <div key={cat.name} className="flex flex-col items-center flex-shrink-0">
                             <div className="relative w-12 h-12 mb-1">
@@ -749,9 +806,9 @@ export default function ExperiencePage() {
                       
                       {/* Issues list */}
                       {state.scoreAnalysis.issues && state.scoreAnalysis.issues.length > 0 && (
-                        <div className="space-y-4">
+                        <div className="space-y-8">
                           {state.scoreAnalysis.issues.map((issue, index) => (
-                            <div key={index} className="border-b border-[#1e2d3d] pb-4 last:border-0">
+                            <div key={index} className="border-b border-[#1e2d3d] pb-6 last:border-0">
                               <div className="flex items-start gap-2">
                                 <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${issue.type === 'error' ? 'bg-red-500' : issue.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'}`}>
                                   {issue.type === 'error' ? '!' : issue.type === 'warning' ? '!' : 'i'}
