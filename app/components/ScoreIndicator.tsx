@@ -14,8 +14,8 @@ interface ScoreIndicatorProps {
 const ScoreIndicator: React.FC<ScoreIndicatorProps> = ({
   score,
   maxScore = 100,
-  size = 80,
-  strokeWidth = 8,
+  size = 60, // Reduced from 80 to 60
+  strokeWidth = 6, // Reduced from 8 to 6
   primaryColor = '#FFC107', // Amber color like in the screenshot
   backgroundColor = '#1e2d3d',
   label = 'Your Rezi Score',

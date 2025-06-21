@@ -37,6 +37,11 @@ class BulletGenRequest(BaseModel):
     description: str = ''
 
 
+class ResumeAnalysisRequest(BaseModel):
+    resume_data: dict = Field(...)
+    user_id: str = Field(default='')
+
+
 @app.post('/generate-bullets')
 async def generate_bullets(req: BulletGenRequest):
     if not req.description.strip() and not req.existing_bullets:
@@ -199,7 +204,106 @@ def clean_json_response(text):
     return text.strip()
 
 
-@app.post("/parse-resume")
+@app.post('/analyze-resume')
+async def analyze_resume(req: ResumeAnalysisRequest):
+    try:
+        logger.info(f"Analyzing resume for user: {req.user_id}")
+        
+        # Extract the resume data
+        resume_data = req.resume_data
+        
+        # Create the analysis prompt
+        analysis_prompt = f"""
+You are an expert resume reviewer trained in technical, academic, and industry resume evaluation. 
+
+Please analyze the resume below and return a structured evaluation across the following categories:
+
+1. **Content (Score out of 100)**  
+   - Assess relevance, completeness, and depth of information.  
+   - Flag vague or passive bullet points.  
+   - Check if achievements are measurable (quantified results, percentages, numbers, impact).  
+
+2. **Format (Score out of 100)**  
+   - Evaluate visual layout, bullet count per section, spacing, alignment, and punctuation consistency.  
+   - Highlight missing periods, long sections, or inconsistent capitalization.  
+
+3. **Optimization (Score out of 100)**  
+   - Evaluate keyword usage relevant to the domain (e.g. tools, techniques, platforms, programming languages).  
+   - Assess match to typical job descriptions in the candidate's field.  
+
+4. **Best Practices (Score out of 100)**  
+   - Check if the resume follows common resume writing standards:  
+     - 3-6 bullet points per job  
+     - Strong action verbs  
+     - Clean structure  
+     - Avoids unnecessary jargon or fluff  
+
+5. **Application Readiness (Score out of 100)**  
+   - A final evaluation that considers all of the above and answers:  
+     "Is this resume ready to be submitted today for a competitive job?"
+
+---
+
+### Required Output:
+
+1. A **table** summarizing each category with:
+   - `score`
+   - `status` (Excellent / Needs Improvement / Poor)
+   - `short explanation`
+
+2. A list of **specific issues found**, grouped by type:
+   - Weak verbs
+   - Lack of metrics
+   - Bullet count problems
+   - Formatting errors
+   - Punctuation inconsistencies
+
+3. A **brief summary** with:
+   - Overall strengths
+   - Areas for improvement
+   - Estimated percentile ranking (e.g. "top 30% of technical resumes")
+
+4. A final **Overall Score out of 100** based on the following weights:
+   - Content: 30%
+   - Format: 20%
+   - Optimization: 20%
+   - Best Practices: 20%
+   - Application Readiness: 10%
+
+---
+
+Resume data to analyze:
+{json.dumps(resume_data, indent=2)}
+"""
+        
+        # Call OpenAI for analysis
+        response = client.chat.completions.create(
+            model=OPENAI_API_MODEL,
+            messages=[{"role": "user", "content": analysis_prompt}],
+            temperature=0.2,
+            max_tokens=4000
+        )
+        
+        # Extract and clean the response
+        content = response.choices[0].message.content
+        cleaned_content = clean_json_response(content)
+        
+        try:
+            # Parse the JSON response
+            analysis_result = json.loads(cleaned_content)
+            logger.info(f"Successfully analyzed resume with overall score: {analysis_result.get('overallScore')}")
+            return analysis_result
+        except json.JSONDecodeError as e:
+            logger.error(f"Error parsing JSON response: {str(e)}")
+            logger.error(f"Raw content: {cleaned_content}")
+            return {"error": "Failed to parse analysis response"}
+            
+    except Exception as e:
+        logger.error(f"Error analyzing resume: {str(e)}")
+        return {"error": str(e)}
+
+
+@app.post('/parse-resume')
 async def parse_resume(req: ParseRequest):
     try:
         logger.info(f"Received request to parse resume from: {req.firebase_pdf_path}")

@@ -21,6 +21,7 @@ interface ResumeScoreInsightsProps {
   overallScore: number;
   categories: ScoreCategory[];
   issues: ScoreIssue[];
+  summary?: string;
 }
 
 const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
@@ -28,6 +29,7 @@ const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
   onClose,
   resumeName,
   overallScore,
+  summary,
   categories,
   issues
 }) => {
@@ -49,14 +51,14 @@ const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
           </button>
         </div>
         
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 [&>div]:h-[240px] md:[&>div]:h-auto">
           {/* Left column - Score and gauge */}
-          <div className="border border-[#1e2d3d] rounded-lg p-3">
+          <div className="border border-[#1e2d3d] rounded-lg p-3 w-full">
             <p className="text-gray-400 mb-2">[Targeted] {resumeName}</p>
             
             {/* Circular gauge */}
-            <div className="flex flex-col items-center justify-center py-2">
-              <div className="relative w-36 h-36">
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative w-28 h-28">
                 {/* Semi-circle background */}
                 <div className="absolute inset-0">
                   <svg viewBox="0 0 100 50" className="w-full">
@@ -103,6 +105,11 @@ const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
               <div className="flex justify-between w-full mt-2">
                 <span className="text-gray-400">0</span>
                 <span className="text-gray-400">100</span>
+              </div>
+              
+              {/* Summary text in fixed container */}
+              <div className="mt-2 max-w-[300px] mx-auto text-center h-[50px] overflow-hidden">
+                <p className="text-sm text-gray-300 line-clamp-2">{summary || "Strong resume with relevant skills highlighted."}</p>
               </div>
             </div>
           </div>
@@ -155,9 +162,9 @@ const ResumeScoreInsights: React.FC<ResumeScoreInsightsProps> = ({
           <p className="text-gray-400 mb-3">Improve your Talexus Score by making the suggested adjustments in each category.</p>
           
           {/* Category scores */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+          <div className="flex flex-row overflow-x-auto pb-2 mb-4 hide-scrollbar justify-between w-full">
             {categories.map((category) => (
-              <div key={category.name} className="flex flex-col items-center">
+              <div key={category.name} className="flex flex-col items-center flex-shrink-0">
                 <div className="relative w-14 h-14 mb-1">
                   <svg viewBox="0 0 36 36" className="w-full">
                     {/* Background circle */}

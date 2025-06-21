@@ -37,6 +37,15 @@ interface ExperienceState {
   experienceScore: number; // Score for work experience quality
   showScoreInsights: boolean; // Whether to show the score insights modal
   resumeName: string; // Name of the resume
+  scoreAnalysis: {
+    overallScore: number;
+    categories: Array<{ name: string; score: number; color: string }>;
+    issues: Array<{ type: "warning" | "error" | "info"; message: string; detail: string; relatedExperiences?: string[] }>;
+    summary?: string;
+  } | null;
+  isAnalysisLoading: boolean;
+  analysisError: string | null;
+  suggestedBullets: string[]; // Store AI-generated bullets awaiting approval
 }
 
 // TypingText component for typing animation
@@ -98,11 +107,15 @@ export default function ExperiencePage() {
     isEditing: false,
     bulletCount: 3,
     showMobileForm: false, // Hide form on mobile by default
-    experienceScore: 39, // Default score, can be calculated based on experiences
+    experienceScore: 0, // Will be updated from analysis
     showScoreInsights: false,
-    resumeName: 'Resume'
+    resumeName: 'Resume',
+    scoreAnalysis: null,
+    isAnalysisLoading: false,
+    analysisError: null, // Initialize error state
+    suggestedBullets: []
   });
-  
+
   // Create a new blank experience
   const createNewExperience = (): WorkExperience => ({
     id: `exp-${Math.random().toString(36).substr(2, 9)}`, // Add a unique ID
@@ -114,13 +127,109 @@ export default function ExperiencePage() {
     bullets: [],
     isCurrent: false
   });
-  
+
+  // Function to fetch resume analysis from GPT
+  const fetchResumeAnalysis = async () => {
+    try {
+      setState(prev => ({ ...prev, isAnalysisLoading: true, analysisError: null })); // Clear previous errors
+
+      const minLoadingTime = new Promise(resolve => setTimeout(resolve, 1500));
+      
+      const responsePromise = fetch('/api/resume/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeId }),
+      });
+      
+      const [response] = await Promise.all([responsePromise, minLoadingTime]);
+
+      if (!response.ok) {
+        let errorDetail = `Failed to analyze resume. Status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData && typeof errorData.message === 'string') {
+            errorDetail = errorData.message;
+          } else if (typeof errorData === 'string') {
+            errorDetail = errorData;
+          }
+        } catch (jsonError) {
+          try {
+            const textError = await response.text();
+            if (textError) errorDetail = textError.substring(0, 200); // Limit length for display
+          } catch (textParseError) { /* Ignore, errorDetail already has status */ }
+        }
+        throw new Error(errorDetail);
+      }
+
+      const analysis = await response.json(); // analysis can be null if API returns null
+
+      if (analysis && typeof analysis.overallScore === 'number') { // Actual analysis data
+        setState(prev => ({
+          ...prev,
+          scoreAnalysis: analysis,
+          experienceScore: analysis.overallScore,
+          isAnalysisLoading: false,
+          analysisError: null
+        }));
+      } else {
+        // Handles API returning null (like our test API) or unexpected JSON
+        // For the test API returning null, this means success in reaching it.
+        console.log('API returned null or non-standard analysis structure:', analysis);
+        setState(prev => ({
+          ...prev,
+          scoreAnalysis: null,
+          isAnalysisLoading: false,
+          analysisError: null // No error if API returned 200 OK with null
+        }));
+      }
+    } catch (error: any) {
+      console.error('Error analyzing resume:', error);
+      
+      // If it's a 404 error (resume not found), we'll handle it gracefully
+      if (error.message && error.message.includes('404')) {
+        console.log('Resume not found in database, analysis not available');
+        setState(prev => ({ 
+          ...prev, 
+          scoreAnalysis: {
+            overallScore: 0,
+            categories: [
+              { name: "Content", score: 0, color: "#888888" },
+              { name: "Format", score: 0, color: "#888888" },
+              { name: "Optimization", score: 0, color: "#888888" },
+              { name: "Best Practices", score: 0, color: "#888888" },
+              { name: "Application Ready", score: 0, color: "#888888" }
+            ],
+            issues: [
+              { 
+                type: "info", 
+                message: "Resume analysis not available", 
+                detail: "Your resume needs to be fully processed before analysis is available. Please complete your resume information and try again.",
+                relatedExperiences: []
+              }
+            ],
+            summary: "Complete your resume to get a detailed analysis."
+          },
+          isAnalysisLoading: false,
+          analysisError: null // Don't show as an error
+        }));
+      } else {
+        // For other errors, show the error message
+        setState(prev => ({ 
+          ...prev, 
+          analysisError: error.message || 'An unexpected error occurred.', 
+          isAnalysisLoading: false 
+        }));
+      }
+    }
+  };
+
   // Fetch all experiences from Firestore
   useEffect(() => {
     async function fetchExperiences() {
       try {
         console.log('DEBUG: Fetching resume data for resumeId:', resumeId);
         setState(prev => ({ ...prev, isLoading: true }));
+
         
         const response = await fetch(`/api/resume/experience?resumeId=${resumeId}&t=${Date.now()}`);
         const parsedData = await response.json();
@@ -194,6 +303,8 @@ export default function ExperiencePage() {
     }
     
     fetchExperiences();
+    // Automatically fetch resume analysis when the page loads
+    fetchResumeAnalysis();
   }, [resumeId]);
   
   // Handle selecting an experience
@@ -257,6 +368,42 @@ export default function ExperiencePage() {
         ...prev.activeExperience!,
         bullets: updatedBullets
       }
+    }));
+  };
+  
+  // Handle accepting a suggested bullet
+  const handleAcceptBullet = (index: number) => {
+    if (!state.activeExperience || !state.suggestedBullets.length) return;
+    
+    const bulletToAccept = state.suggestedBullets[index];
+    const updatedBullets = [...state.activeExperience.bullets, `• ${bulletToAccept}`];
+    
+    // Remove the accepted bullet from suggestions
+    const updatedSuggestions = state.suggestedBullets.filter((_, i) => i !== index);
+    
+    setState(prev => ({
+      ...prev,
+      activeExperience: {
+        ...prev.activeExperience!,
+        bullets: updatedBullets
+      },
+      suggestedBullets: updatedSuggestions
+    }));
+    
+    // Also update the Description field for compatibility
+    handleUpdateField('Description', updatedBullets);
+  };
+  
+  // Handle denying a suggested bullet
+  const handleDenyBullet = (index: number) => {
+    if (!state.suggestedBullets.length) return;
+    
+    // Simply remove the bullet from suggestions
+    const updatedSuggestions = state.suggestedBullets.filter((_, i) => i !== index);
+    
+    setState(prev => ({
+      ...prev,
+      suggestedBullets: updatedSuggestions
     }));
   };
   
@@ -341,6 +488,9 @@ export default function ExperiencePage() {
         isEditing: false,
         isLoading: false,
       }));
+      
+      // Refresh the score analysis after saving changes
+      fetchResumeAnalysis();
 
     } catch (error) {
       console.error('Error saving experience:', error);
@@ -392,6 +542,9 @@ export default function ExperiencePage() {
           isLoading: false,
           isEditing: updatedExperiences.length > 0
         }));
+        
+        // Refresh the score analysis after deleting an experience
+        fetchResumeAnalysis();
       } else {
         console.error('Failed to delete experience:', data.error);
         // Optionally, revert state if API call fails
@@ -417,10 +570,25 @@ export default function ExperiencePage() {
           <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-4 py-4 mt-2 mb-4 w-full shadow-lg">
             <div 
               className="cursor-pointer" 
-              onClick={() => setState(prev => ({ ...prev, showScoreInsights: true }))}
+              onClick={() => {
+                // First set the modal to visible with any existing analysis
+                setState(prev => ({ 
+                  ...prev, 
+                  showScoreInsights: true,
+                  // If we have cached analysis, use it immediately
+                  // Otherwise we'll show the loading state
+                }));
+                
+                // Then fetch analysis if not already loaded
+                if (!state.scoreAnalysis && !state.isAnalysisLoading) {
+                  fetchResumeAnalysis();
+                }
+              }}
             >
               <ScoreIndicator 
                 score={state.experienceScore} 
+                size={50}
+                strokeWidth={4}
                 label="Your Experience" 
                 description={state.experienceScore < 50 ? "Needs improvement" : "Looking good!"}
               />
@@ -428,45 +596,234 @@ export default function ExperiencePage() {
           </div>
           
           {/* Score Insights Modal */}
-          <ResumeScoreInsights 
-            isOpen={state.showScoreInsights}
-            onClose={() => setState(prev => ({ ...prev, showScoreInsights: false }))}
-            resumeName={`${state.resumeName} - Bioinformatician`}
-            overallScore={state.experienceScore}
-            categories={[
-              { name: 'Content', score: 43, color: '#FFC107' },
-              { name: 'Format', score: 15, color: '#f44336' },
-              { name: 'Optimization', score: 99, color: '#4caf50' },
-              { name: 'Best Practices', score: 54, color: '#FFC107' },
-              { name: 'Application Ready', score: 39, color: '#FFC107' }
-            ]}
-            issues={[
-              {
-                type: 'warning',
-                message: 'Your resume has 3 experiences with weak bullet points',
-                detail: 'Weak verbs will fail to explain your experience with meaningful language.',
-                relatedExperiences: state.experiences.slice(0, 3).map(exp => 
-                  `${exp.role || exp['Job Title'] || 'Untitled Role'}, ${exp.employer || exp.Company || 'No Company'}`
-                )
-              },
-              {
-                type: 'error',
-                message: 'Your resume has 2 experiences with an incorrect number of bullet points.',
-                detail: 'It\'s critical to include between 3-6 bullet points.',
-                relatedExperiences: state.experiences.slice(0, 2).map(exp => 
-                  `${exp.role || exp['Job Title'] || 'Untitled Role'}, ${exp.employer || exp.Company || 'No Company'}`
-                )
-              },
-              {
-                type: 'warning',
-                message: 'Your resume has 5 experiences without measured responsibilities or achievements',
-                detail: 'It\'s critical to give context to the size and scope of the work that you did.',
-                relatedExperiences: state.experiences.map(exp => 
-                  `${exp.role || exp['Job Title'] || 'Untitled Role'}, ${exp.employer || exp.Company || 'No Company'}`
-                ).slice(0, 5)
-              }
-            ]}
-          />
+          {state.showScoreInsights && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4">
+              <div className="p-6 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg max-w-4xl w-full text-white relative overflow-y-auto max-h-[90vh]">
+                <div className="flex justify-between items-start">
+                  <h2 className="text-2xl font-bold mb-4">Talexus Score</h2>
+                  <button onClick={() => setState(prev => ({ ...prev, showScoreInsights: false, analysisError: null }))} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+                </div>
+                {state.isAnalysisLoading ? (
+                  <div className="text-center py-8">
+                    <p className="text-lg">Analyzing your resume against the job description...</p>
+                    <p className="text-sm text-gray-400 mt-2">This may take a moment. We're providing real-time, GPT-powered feedback.</p>
+                  </div>
+                ) : state.analysisError ? (
+                  <div className="text-center py-8 text-red-400">
+                    <p className="font-bold text-lg">Analysis Failed</p>
+                    <p className="mt-2">{state.analysisError}</p>
+                  </div>
+                ) : state.scoreAnalysis ? (
+                  <div>
+                    {/* Top section with two panels */}
+                    <div className="flex flex-col md:flex-row gap-4 mb-4 [&>div]:h-[220px] md:[&>div]:h-auto">
+                      {/* Left panel - Score gauge */}
+                      <div className="flex-1 border border-[#1e2d3d] rounded-lg p-3">
+                        <p className="text-sm text-gray-400 mb-1">[Targeted] {state.resumeName || 'Your Resume'}</p>
+                        <div className="flex justify-center items-center h-32 relative">
+                          {/* Circular gauge */}
+                          <div className="relative w-28 h-28">
+                            <svg viewBox="0 0 70 70" className="w-full h-full">
+                              {/* Background arc */}
+                              <path 
+                                d="M 35,35 m 0,-30 a 30,30 0 1 1 0,60 a 30,30 0 1 1 0,-60" 
+                                stroke="#333" 
+                                strokeWidth="10" 
+                                fill="none"
+                              />
+                              {/* Score arc - red to yellow to green gradient based on score */}
+                              <path 
+                                d="M 35,35 m 0,-30 a 30,30 0 1 1 0,60 a 30,30 0 1 1 0,-60" 
+                                stroke={state.scoreAnalysis?.overallScore < 40 ? '#f44336' : 
+                                        state.scoreAnalysis?.overallScore < 70 ? '#ffa726' : '#4caf50'} 
+                                strokeWidth="10" 
+                                strokeDasharray={`${state.scoreAnalysis?.overallScore * 2.1}, 210`} 
+                                fill="none"
+                              />
+                              {/* Indicator dot - reduced size from r=5 to r=2 */}
+                              <circle 
+                                cx={35 + 30 * Math.cos(((state.scoreAnalysis?.overallScore || 0) / 100 * 360 - 90) * Math.PI / 180)} 
+                                cy={35 + 30 * Math.sin(((state.scoreAnalysis?.overallScore || 0) / 100 * 360 - 90) * Math.PI / 180)} 
+                                r="2" 
+                                fill="#fff" 
+                              />
+                            </svg>
+                            {/* Score in center */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-3xl font-bold">{state.scoreAnalysis.overallScore}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-center text-sm mt-2">{state.scoreAnalysis.summary}</p>
+                        <div className="flex justify-between text-xs text-gray-400 mt-2">
+                          <span>0</span>
+                          <span>100</span>
+                        </div>
+                      </div>
+                      
+                      {/* Right panel - Comparison chart */}
+                      <div className="flex-1 border border-[#1e2d3d] rounded-lg p-3 h-[240px] md:h-auto">
+                        <h3 className="text-lg font-bold mb-1">How You Compare</h3>
+                        <p className="text-sm text-gray-400 mb-2">See how your resume compares to others.</p>
+                        <div className="h-32 flex items-end">
+                          {/* Simple bar chart visualization */}
+                          <div className="w-full h-28 flex items-end">
+                            {/* Generate 20 bars with a fixed distribution curve */}
+                            {Array.from({ length: 20 }).map((_, i) => {
+                              // Each bar represents a 5-point range on the 0-100 scale
+                              
+                              // Calculate bar height - higher in middle, lower at edges
+                              let height;
+                              const midPoint = 10; // Middle bar (20 bars total, so index 10 is middle)
+                              const distance = Math.abs(i - midPoint);
+                              height = 80 - (distance * 4); // Start at 80% height, decrease by 4% per step from middle
+                              height = Math.max(20, height); // Minimum height of 20%
+                              
+                              // Get the actual score from the API response
+                              const score = state.scoreAnalysis?.overallScore || 0;
+                              
+                              // Each bar represents a 5-point range: 0-4, 5-9, 10-14, etc.
+                              const barMinValue = i * 5;
+                              const barMaxValue = barMinValue + 4;
+                              
+                              // Highlight the bar that contains the user's score
+                              const isUserScore = (score >= barMinValue && score <= barMaxValue) || 
+                                                (score === 100 && i === 19); // Special case for score 100
+                              
+                              // Adjust bar color based on score position
+                              let barColor = 'bg-gray-600';
+                              if (isUserScore) {
+                                barColor = 'bg-[#ffa726]';
+                              }
+                              
+                              return (
+                                <div 
+                                  key={i} 
+                                  className={`flex-1 mx-px ${barColor}`}
+                                  style={{ height: `${height}%` }}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+                           <div className="flex text-xs text-gray-400 mt-2 relative w-full">
+                            <span className="absolute left-0">0</span>
+                            <span className="absolute" style={{ left: '20%' }}>20</span>
+                            <span className="absolute" style={{ left: '40%' }}>40</span>
+                            <span className="absolute" style={{ left: '60%' }}>60</span>
+                            <span className="absolute" style={{ left: '80%' }}>80</span>
+                            <span className="absolute right-0">100</span>
+                          </div>
+                      </div>
+                    </div>
+                    {/* Improvements section */}
+                    <div className="mt-4">
+                      <h3 className="text-xl font-bold mb-2">Improvements</h3>
+                      <p className="text-sm text-gray-400 mb-3">Improve your Talexus Score by making the suggested adjustments in each category.</p>
+                      
+                      {/* Category scores */}
+                      <div className="flex flex-row overflow-x-auto hide-scrollbar pb-2 mb-4 justify-between w-full">
+                        {state.scoreAnalysis.categories.map(cat => (
+                          <div key={cat.name} className="flex flex-col items-center flex-shrink-0">
+                            <div className="relative w-12 h-12 mb-1">
+                              <svg viewBox="0 0 100 100" className="w-full h-full">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#333" strokeWidth="10" />
+                                <circle 
+                                  cx="50" 
+                                  cy="50" 
+                                  r="45" 
+                                  fill="none" 
+                                  stroke={cat.color} 
+                                  strokeWidth="10"
+                                  strokeDasharray={`${cat.score * 2.83}, 283`} 
+                                />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-xs font-bold">{cat.score}</span>
+                              </div>
+                            </div>
+                            <span className="text-xs text-center">{cat.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {/* Issues list */}
+                      {state.scoreAnalysis.issues && state.scoreAnalysis.issues.length > 0 && (
+                        <div className="space-y-4">
+                          {state.scoreAnalysis.issues.map((issue, index) => (
+                            <div key={index} className="border-b border-[#1e2d3d] pb-4 last:border-0">
+                              <div className="flex items-start gap-2">
+                                <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${issue.type === 'error' ? 'bg-red-500' : issue.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'}`}>
+                                  {issue.type === 'error' ? '!' : issue.type === 'warning' ? '!' : 'i'}
+                                </div>
+                                <div>
+                                  <p 
+                                    className="font-semibold cursor-pointer hover:text-blue-400 transition-colors"
+                                    onClick={() => {
+                                      // Find the related experience if available
+                                      if (issue.relatedExperiences && issue.relatedExperiences.length > 0) {
+                                        const targetExp = state.experiences.find(exp => 
+                                          issue.relatedExperiences?.includes(exp.employer) || 
+                                          issue.relatedExperiences?.includes(exp.role));
+                                        
+                                        if (targetExp) {
+                                          // Select this experience to edit
+                                          handleSelectExperience(targetExp);
+                                          // Scroll to the experience section
+                                          document.getElementById('experience-section')?.scrollIntoView({ behavior: 'smooth' });
+                                        }
+                                      } else if (issue.message.toLowerCase().includes('education')) {
+                                        // Navigate to education section if it exists
+                                        window.location.href = `/dashboard/resume/${resumeId}/education`;
+                                      } else if (issue.message.toLowerCase().includes('skill')) {
+                                        // Navigate to skills section if it exists
+                                        window.location.href = `/dashboard/resume/${resumeId}/skills`;
+                                      }
+                                    }}
+                                  >
+                                    {issue.message}
+                                  </p>
+                                  <p className="text-sm text-gray-400 mt-1">{issue.detail}</p>
+                                  {issue.relatedExperiences && issue.relatedExperiences.length > 0 && (
+                                    <div className="mt-2 text-sm">
+                                      {issue.relatedExperiences.map((exp, i) => {
+                                        // Find the matching experience in our list
+                                        const matchingExp = state.experiences.find(experience => 
+                                          experience.employer === exp || 
+                                          experience.role === exp);
+                                        
+                                        return (
+                                          <p 
+                                            key={i} 
+                                            className="text-blue-400 cursor-pointer hover:underline"
+                                            onClick={() => {
+                                              if (matchingExp) {
+                                                handleSelectExperience(matchingExp);
+                                              }
+                                            }}
+                                          >
+                                            {exp}
+                                          </p>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p>No analysis available. Click the score indicator to fetch analysis.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Main Experience Content - Two-part layout */}
           <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-1 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
@@ -620,12 +977,43 @@ export default function ExperiencePage() {
                           </div>
                         </div>
                         
+                        {/* Suggested Bullets - Only show if there are suggestions */}
+                        {state.suggestedBullets.length > 0 && (
+                          <div className="mt-6 border border-blue-500 bg-blue-900/20 rounded-md p-4">
+                            <h3 className="text-lg font-semibold text-blue-300 mb-3">AI-Generated Bullet Points</h3>
+                            <p className="text-sm text-gray-300 mb-4">Review each suggestion and click ✓ to accept or ✗ to reject.</p>
+                            
+                            <div className="space-y-3">
+                              {state.suggestedBullets.map((bullet, index) => (
+                                <div key={index} className="flex items-start gap-2 bg-[#0d1b2a] border border-gray-700 rounded-md p-3">
+                                  <div className="flex-grow">
+                                    <p className="text-white">• {bullet}</p>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <button 
+                                      onClick={() => handleAcceptBullet(index)}
+                                      className="text-green-400 hover:text-green-300 transition-colors bg-green-900/20 hover:bg-green-800/30 w-8 h-8 rounded-full flex items-center justify-center"
+                                      title="Accept bullet point"
+                                    >
+                                      <FaCheck size={14} />
+                                    </button>
+                                    <button 
+                                      onClick={() => handleDenyBullet(index)}
+                                      className="text-red-400 hover:text-red-300 transition-colors bg-red-900/20 hover:bg-red-800/30 w-8 h-8 rounded-full flex items-center justify-center"
+                                      title="Reject bullet point"
+                                    >
+                                      <FaTimes size={14} />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
                         {/* Bullet Points */}
-                        <div className="mt-4">
-                          <label className="block text-xs text-gray-300 mb-1 uppercase">
-                            WHAT DID YOU DO AT THIS COMPANY?
-                          </label>
-                          <label className="block text-xs text-gray-300 mb-1 uppercase">BULLET POINTS *</label>
+                        <div className="mt-6">
+                          <label className="block text-xs text-gray-300 mb-1 uppercase">WHAT DID YOU DO AT THIS COMPANY? *</label>
                           <textarea
                             value={(state.activeExperience.bullets || state.activeExperience.Description || []).map(b => {
                               // Ensure each line starts with a bullet point
@@ -711,34 +1099,15 @@ export default function ExperiencePage() {
                               // Remove any existing bullet points from the text
                               const cleanBullets: string[] = data.bullets.map((bullet: string) => bullet.replace(/^[•\-\*]\s*/, '').trim());
                               
-                              // Live typing animation for each new bullet
-                              for (const bullet of cleanBullets) {
-                                await new Promise((resolve) => {
-                                  let i = 0;
-                                  const interval = setInterval(() => {
-                                    i++;
-                                    // Show typing animation by updating only the new bullet being typed
-                                    const inProgressBullet = bullet.slice(0, i);
-                                    const displayBullets = [
-                                      ...existing_bullets,
-                                      `• ${inProgressBullet}` // Add bullet point to in-progress text
-                                    ];
-                                    
-                                    handleUpdateField('bullets', displayBullets);
-                                    handleUpdateField('Description', displayBullets);
-                                    
-                                    if (i >= bullet.length) {
-                                      clearInterval(interval);
-                                      // Add the completed bullet
-                                      const finalBullets = [...existing_bullets, `• ${bullet}`];
-                                      handleUpdateField('bullets', finalBullets);
-                                      handleUpdateField('Description', finalBullets);
-                                      setTimeout(resolve, 350); // Pause before next bullet
-                                    }
-                                  }, 35); // Slower typing speed for better visibility
-                                });
-                                existing_bullets.push(bullet);
-                              }
+                              // Store the generated bullets for approval
+                              setState(prev => ({
+                                ...prev,
+                                suggestedBullets: cleanBullets
+                              }));
+                              
+                              // Show a toast notification
+                              alert('AI has generated bullet points! Review and accept/deny them below.');
+                              
                             }
                             catch (error) {
                               console.error(error);
