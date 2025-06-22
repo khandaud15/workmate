@@ -8,7 +8,7 @@ export default function Home() {
     <div style={{ backgroundColor: '#fefcf9' }}>
       <main>
         {/* Hero Section */}
-        <div className="py-8 sm:py-12">
+        <div className="pt-24 pb-8 sm:pt-28 sm:pb-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center md:items-center md:grid md:grid-cols-2 gap-16 lg:gap-20">
               {/* Hero Text */}
