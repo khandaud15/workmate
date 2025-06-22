@@ -17,6 +17,11 @@ export async function GET(request: Request) {
   }
 
   try {
+    // Check if user exists in session
+    if (!session.user?.email) {
+      return NextResponse.json({ error: 'User email not found in session' }, { status: 401 });
+    }
+    
     // Fetch resume data from Firestore using Admin SDK in parsed_resumes/{email}/resumes/{resumeId}
     const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
     const resumeSnapshot = await resumeRef.get();
