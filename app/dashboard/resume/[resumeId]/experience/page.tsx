@@ -457,62 +457,50 @@ function ExperiencePageContent() {
     }
   };
 
-  // Handle deleting an experience
-  const handleDeleteExperience = async () => {
+  // Simple delete experience function
+  const handleDeleteExperience = () => {
     if (!state.activeExperience || !state.activeExperience.id) return;
+    
+    // Remove the experience from local state first for immediate feedback
+    const updatedExperiences = state.experiences.filter(exp => exp.id !== state.activeExperience?.id);
+    
+    setState(prev => ({
+      ...prev,
+      experiences: updatedExperiences,
+      activeExperience: updatedExperiences.length > 0 ? updatedExperiences[0] : createNewExperience(),
+      isEditing: updatedExperiences.length > 0,
+    }));
+    
+    // Then update the backend without waiting
+    const experiencesToSave = updatedExperiences.map(exp => ({
+      id: exp.id,
+      'Job Title': exp.role,
+      Company: exp.employer,
+      'Start/End Year': exp.isCurrent ? `${exp.startDate}- Present` : `${exp.startDate}- ${exp.endDate}`,
+      Location: exp.location,
+      Description: exp.bullets,
+    }));
 
-    try {
-      setState(prev => ({ ...prev, isLoading: true }));
-
-      // Filter out the experience to be deleted
-      const updatedExperiences = state.experiences.filter(exp => exp.id !== state.activeExperience?.id);
-
-      // Convert to Firestore format
-      const experiencesToSave = updatedExperiences.map(exp => ({
-        id: exp.id,
-        'Job Title': exp.role,
-        Company: exp.employer,
-        'Start/End Year': exp.isCurrent ?
-          `${exp.startDate}- Present` :
-          `${exp.startDate}- ${exp.endDate}`,
-        Location: exp.location,
-        Description: exp.bullets,
-      }));
-
-      // Call the update API with the modified list
-      const response = await fetch('/api/resume/update-experience', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resumeId,
-          'Work Experience': experiencesToSave,
-        }),
-      });
-
-      const data = await response.json();
-
+    fetch(`/api/resume/update-experience?t=${Date.now()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        resumeId,
+        'Work Experience': experiencesToSave,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
       if (data.success) {
-        setState(prev => ({
-          ...prev,
-          experiences: updatedExperiences,
-          activeExperience: updatedExperiences.length > 0 ? updatedExperiences[0] : createNewExperience(),
-          isLoading: false,
-          isEditing: updatedExperiences.length > 0,
-        }));
-
-        // Refresh the score analysis after deleting an experience
-        fetchAnalysis();
+        console.log('Experience deleted successfully');
+        fetchAnalysis(); // Update score
       } else {
         console.error('Failed to delete experience:', data.error);
-        // Optionally, revert state if API call fails
-        setState(prev => ({ ...prev, isLoading: false }));
       }
-    } catch (error) {
+    })
+    .catch(error => {
       console.error('Error deleting experience:', error);
-      setState(prev => ({ ...prev, isLoading: false }));
-    }
+    });
   };
 
   return (

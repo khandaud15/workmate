@@ -304,55 +304,48 @@ function ProjectsPageContent() {
   };
 
   // Function to handle deleting a project
-  const handleDeleteProject = async (projectId: string) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      setState(prev => ({ ...prev, isLoading: true }));
-      
-      try {
-        // Filter out the project to be deleted
-        const updatedProjects = state.projects.filter(proj => proj.id !== projectId);
-        
-        // Map the data to the format expected by Firestore - include all fields
-        const projectsToSave = updatedProjects.map(proj => ({
-          Title: proj.title,
-          Description: proj.bullets,
-          Organization: proj.organization || '',
-          URL: proj.url || '',
-          StartDate: proj.startDate || '',
-          EndDate: proj.endDate || ''
-        }));
-        
-        // Call the API to update Firestore with the project removed
-        const response = await fetch(`/api/resume/projects?resumeId=${resumeId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            resumeId,
-            Projects: projectsToSave,
-          }),
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to delete project');
-        }
-        
-        // Update local state after successful deletion
-        setState(prev => ({
-          ...prev,
-          projects: updatedProjects,
-          activeProject: updatedProjects.length > 0 ? updatedProjects[0] : null,
-          isEditing: updatedProjects.length > 0,
-          isLoading: false,
-        }));
-        
-      } catch (error) {
-        console.error('Error deleting project:', error);
-        setState(prev => ({ ...prev, isLoading: false }));
+  const handleDeleteProject = (projectId: string) => {
+    // Filter out the project to be deleted
+    const updatedProjects = state.projects.filter(proj => proj.id !== projectId);
+    
+    // Update local state immediately for responsive UI
+    setState(prev => ({
+      ...prev,
+      projects: updatedProjects,
+      activeProject: updatedProjects.length > 0 ? updatedProjects[0] : null,
+      isEditing: updatedProjects.length > 0,
+    }));
+    
+    // Then update the backend
+    const projectsToSave = updatedProjects.map(proj => ({
+      id: proj.id,
+      Title: proj.title,
+      Description: proj.bullets,
+      Organization: proj.organization || '',
+      URL: proj.url || '',
+      StartDate: proj.startDate || '',
+      EndDate: proj.endDate || ''
+    }));
+    
+    // Send the update to the server in the background
+    fetch(`/api/resume/projects?resumeId=${resumeId}&t=${Date.now()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        resumeId,
+        Projects: projectsToSave,
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.error('Failed to delete project, server returned:', response.status);
+      } else {
+        console.log('Project deleted successfully');
       }
-    }
+    })
+    .catch(error => {
+      console.error('Error deleting project:', error);
+    });
   };
 
   // Function to handle canceling edit

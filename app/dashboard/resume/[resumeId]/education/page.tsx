@@ -324,55 +324,47 @@ function EducationPageContent() {
   };
   
   // Function to handle deleting an education entry
-  const handleDeleteEducation = async (educationId: string) => {
-    if (window.confirm('Are you sure you want to delete this education entry?')) {
-      setState(prev => ({ ...prev, isLoading: true }));
-      
-      try {
-        // Filter out the education to be deleted
-        const updatedEducations = state.educations.filter(edu => edu.id !== educationId);
-        
-        // Map the data to the format expected by the API
-        const educationsToSave = updatedEducations.map(edu => ({
-          School: edu.school,
-          Degree: edu.degree,
-          FieldOfStudy: edu.fieldOfStudy,
-          StartDate: edu.startDate,
-          EndDate: edu.endDate,
-          GPA: edu.gpa
-        }));
-        
-        // Call the API to update the education data
-        const response = await fetch(`/api/resume/education?resumeId=${resumeId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            resumeId,
-            Education: educationsToSave,
-          }),
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to delete education');
-        }
-        
-        // Update local state after successful deletion
-        setState(prev => ({
-          ...prev,
-          educations: updatedEducations,
-          activeEducation: updatedEducations.length > 0 ? updatedEducations[0] : null,
-          isEditing: updatedEducations.length > 0,
-          isLoading: false,
-        }));
-        
-      } catch (error) {
-        console.error('Error deleting education:', error);
-        setState(prev => ({ ...prev, isLoading: false }));
+  const handleDeleteEducation = (educationId: string) => {
+    // Filter out the education to be deleted
+    const updatedEducations = state.educations.filter(edu => edu.id !== educationId);
+    
+    // Update local state immediately for responsive UI
+    setState(prev => ({
+      ...prev,
+      educations: updatedEducations,
+      activeEducation: updatedEducations.length > 0 ? updatedEducations[0] : null,
+      isEditing: updatedEducations.length > 0,
+    }));
+    
+    // Then update the backend
+    const educationsToSave = updatedEducations.map(edu => ({
+      School: edu.school,
+      Degree: edu.degree,
+      FieldOfStudy: edu.fieldOfStudy,
+      StartDate: edu.startDate,
+      EndDate: edu.endDate,
+      GPA: edu.gpa
+    }));
+    
+    // Send the update to the server in the background
+    fetch(`/api/resume/education?resumeId=${resumeId}&t=${Date.now()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        resumeId,
+        Education: educationsToSave,
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        console.error('Failed to delete education, server returned:', response.status);
+      } else {
+        console.log('Education entry deleted successfully');
       }
-    }
+    })
+    .catch(error => {
+      console.error('Error deleting education:', error);
+    });
   };
 
   return (
