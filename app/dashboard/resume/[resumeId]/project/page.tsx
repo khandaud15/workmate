@@ -3,6 +3,47 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaPlus, FaTrash, FaPencilAlt, FaChevronDown, FaEdit, FaCheck, FaTimes, FaChevronUp, FaExternalLinkAlt } from 'react-icons/fa';
+import React from 'react';
+
+// TypingText component for typing animation
+type TypingTextProps = { text: string; speed?: number };
+function TypingText({ text, speed = 100 }: TypingTextProps) {
+  const [displayed, setDisplayed] = React.useState('');
+  const [index, setIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (index < text.length) {
+      timeout = setTimeout(() => {
+        setDisplayed(text.slice(0, index + 1));
+        setIndex(index + 1);
+      }, speed);
+    } else {
+      // Pause, then restart
+      timeout = setTimeout(() => {
+        setDisplayed('');
+        setIndex(0);
+      }, 1200);
+    }
+    return () => clearTimeout(timeout);
+  }, [index, text, speed]);
+
+  // Only show cursor while typing
+  const isTyping = index < text.length;
+  return (
+    <span>
+      {displayed}
+      {isTyping && (
+        <span
+          className="animate-pulse"
+          style={{ fontWeight: 400, color: '#a3a3a3', fontSize: '1em', marginLeft: '-2px', lineHeight: '1' }}
+        >
+          |
+        </span>
+      )}
+    </span>
+  );
+}
 import DashboardLayout from '../../../../components/DashboardLayout';
 import ResumeNameDropdown from '../../../../components/ResumeBuilder/ResumeNameDropdown';
 import ResumeNavigation from '../../../../components/ResumeBuilder/ResumeNavigation';
@@ -33,6 +74,7 @@ interface ProjectsState {
   projectScore: number;
   resumeName: string;
   showScoreInsights: boolean;
+  suggestedBullets: string[];
 }
 
 // Wrapper component that provides the ResumeAnalysisContext
@@ -69,7 +111,11 @@ function ProjectsPageContent() {
     projectScore: 0,
     resumeName: resumeName || 'Resume',
     showScoreInsights: false,
+    suggestedBullets: [],
   });
+
+  // State for bullet generation loading
+  const [loadingBullets, setLoadingBullets] = useState(false);
 
   // Update state when resume name changes
   useEffect(() => {
@@ -181,7 +227,8 @@ function ProjectsPageContent() {
       ...prev,
       activeProject: { ...project },
       isEditing: true,
-      bulletCount: project.bullets?.length || 3
+      bulletCount: project.bullets?.length || 3,
+      showMobileForm: true // Ensure details panel shows on mobile
     }));
   };
 
@@ -379,6 +426,124 @@ function ProjectsPageContent() {
     const techArray = value.split(',').map(tech => tech.trim()).filter(tech => tech !== '');
     handleInputChange('technologies', techArray);
   };
+  
+  // Function to handle bullet generation
+  const handleGenerateBullets = async () => {
+    if (!state.activeProject) return;
+    
+    try {
+      setLoadingBullets(true);
+      
+      // Extract project details for the API call
+      const title = state.activeProject.title || '';
+      const organization = state.activeProject.organization || '';
+      const description = state.activeProject.description || '';
+      const existing_bullets = state.activeProject.bullets || [];
+      
+      console.log('Sending project bullet generation request:', {
+        title,
+        organization,
+        description: description.slice(0, 100) + '...',  // Log truncated description
+        existing_bullets_count: existing_bullets.length
+      });
+      
+      const res = await fetch('/api/generate-bullets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          job_title: title, 
+          company: organization, 
+          description, 
+          existing_bullets 
+        }),
+      });
+      
+      const data = await res.json();
+      console.log('Received bullet generation response:', data);
+      
+      if (!res.ok) {
+        console.error('API error:', data);
+        throw new Error(data.error || `Failed to generate bullets: ${res.status}`);
+      }
+      
+      if (!data.bullets || !Array.isArray(data.bullets)) {
+        console.error('Invalid response format:', data);
+        throw new Error('Invalid response format from bullet generation');
+      }
+      
+      if (data.bullets.length === 0) {
+        console.error('No bullets in response:', data);
+        throw new Error('No bullets were generated. Please try again.');
+      }
+      
+      // Remove any existing bullet points from the text
+      const cleanBullets: string[] = data.bullets.map((bullet: string) => bullet.replace(/^[•\-\*]\s*/, '').trim());
+      
+      // Store the generated bullets for approval
+      setState(prev => ({
+        ...prev,
+        suggestedBullets: cleanBullets
+      }));
+      
+      // Show a toast notification
+      alert('AI has generated bullet points! Review and accept/deny them below.');
+    }
+    catch (error) {
+      console.error(error);
+      alert(`Error generating bullets: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoadingBullets(false);
+    }
+  };
+  
+  // Function to accept a single bullet
+  const handleAcceptBullet = (index: number) => {
+    if (!state.activeProject || index >= state.suggestedBullets.length) return;
+    
+    const bulletToAccept = state.suggestedBullets[index];
+    const currentBullets = state.activeProject.bullets || [];
+    
+    setState(prev => ({
+      ...prev,
+      activeProject: {
+        ...prev.activeProject!,
+        bullets: [...currentBullets, bulletToAccept],
+        description: [...currentBullets, bulletToAccept].join('\n')
+      },
+      suggestedBullets: prev.suggestedBullets.filter((_, i) => i !== index)
+    }));
+  };
+  
+  // Function to reject a single bullet
+  const handleDenyBullet = (index: number) => {
+    setState(prev => ({
+      ...prev,
+      suggestedBullets: prev.suggestedBullets.filter((_, i) => i !== index)
+    }));
+  };
+  
+  // Function to accept all bullets
+  const handleAcceptBullets = () => {
+    if (state.suggestedBullets.length === 0 || !state.activeProject) return;
+    
+    setState(prev => ({
+      ...prev,
+      activeProject: {
+        ...prev.activeProject!,
+        bullets: [...prev.suggestedBullets],
+        description: prev.suggestedBullets.join('\n')
+      },
+      suggestedBullets: []
+    }));
+  };
+  
+  // Function to reject all bullets
+  const handleRejectBullets = () => {
+    setState(prev => ({
+      ...prev,
+      suggestedBullets: []
+    }));
+  };
 
   return (
     <DashboardLayout>
@@ -557,37 +722,40 @@ function ProjectsPageContent() {
                     
                     {/* Description / Bullet Points */}
                     <div className="col-span-full">
-                      <label className="block text-xs text-gray-300 mb-1 uppercase">NOW DESCRIBE WHAT YOU DID</label>
+                      <div className="flex justify-between items-center mb-1">
+                        <label className="block text-xs text-gray-300 uppercase">NOW DESCRIBE WHAT YOU DID</label>
+                      </div>
                       {state.isEditing ? (
-                        <textarea
-                          value={(state.activeProject?.bullets || []).map(b => {
-                            // Ensure each line starts with a bullet point
-                            const text = b.replace(/^[\u2022\-\*]\s*/, '').trim();
-                            return text ? `•    ${text}` : '';
-                          }).filter(Boolean).join('\n')}
-                          onChange={(e) => {
-                            const cursorPos = e.target.selectionStart;
-                            
-                            // Split into lines
-                            const lines = e.target.value.split('\n');
-                            
-                            // Process each line
-                            const newBullets = lines.map(line => {
-                              // Remove existing bullet points and trim
-                              return line.replace(/^[\u2022\-\*]\s*/, '').trim();
-                            }).filter(line => line.length > 0); // Remove empty lines
-                            
-                            handleInputChange('bullets', newBullets);
-                            handleInputChange('description', newBullets.join('\n'));
-                            
-                            // Restore cursor position
-                            requestAnimationFrame(() => {
-                              if (e.target) {
-                                e.target.selectionStart = cursorPos;
-                                e.target.selectionEnd = cursorPos;
-                              }
-                            });
-                          }}
+                        <>
+                          <textarea
+                            value={(state.activeProject?.bullets || []).map(b => {
+                              // Ensure each line starts with a bullet point
+                              const text = b.replace(/^[\u2022\-\*]\s*/, '').trim();
+                              return text ? `•    ${text}` : '';
+                            }).filter(Boolean).join('\n')}
+                            onChange={(e) => {
+                              const cursorPos = e.target.selectionStart;
+                              
+                              // Split into lines
+                              const lines = e.target.value.split('\n');
+                              
+                              // Process each line
+                              const newBullets = lines.map(line => {
+                                // Remove existing bullet points and trim
+                                return line.replace(/^[\u2022\-\*]\s*/, '').trim();
+                              }).filter(line => line.length > 0); // Remove empty lines
+                              
+                              handleInputChange('bullets', newBullets);
+                              handleInputChange('description', newBullets.join('\n'));
+                              
+                              // Restore cursor position
+                              requestAnimationFrame(() => {
+                                if (e.target) {
+                                  e.target.selectionStart = cursorPos;
+                                  e.target.selectionEnd = cursorPos;
+                                }
+                              });
+                            }}
                           onKeyPress={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
@@ -657,6 +825,19 @@ function ProjectsPageContent() {
                           className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 font-medium text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] h-48 resize-y"
                           placeholder="Enter each bullet point on a new line..."
                         />
+                        <div className="relative">
+                          <div className="absolute bottom-4 right-2">
+                            <button
+                              className={`flex items-center gap-2 bg-gradient-to-r from-[#2563eb] to-[#0d1b2a] text-white text-sm font-semibold rounded-full border border-[#2563eb] px-4 py-1 shadow-sm hover:from-[#1d4ed8] hover:to-[#0d1b2a] transition-colors duration-150 ${loadingBullets ? 'animate-pulse ring-2 ring-blue-400 ring-offset-2' : ''}`}
+                              type="button"
+                              onClick={handleGenerateBullets}
+                              disabled={loadingBullets || !state.activeProject}
+                            >
+                              {loadingBullets ? 'Generating...' : <TypingText text="Generate with AI" speed={80} />}
+                            </button>
+                          </div>
+                        </div>
+                        </>
                       ) : (
                         <ul className="list-disc pl-6 text-white">
                           {(state.activeProject?.bullets || []).filter(line => line.trim() !== '').map((bullet, idx) => (
@@ -665,7 +846,43 @@ function ProjectsPageContent() {
                         </ul>
                       )}
                     </div>
+                    
+                    {/* Suggested Bullets Section */}
+                    {state.suggestedBullets.length > 0 && (
+                      <div className="mt-6 border border-blue-500 bg-blue-900/20 rounded-md p-4">
+                        <h3 className="text-lg font-semibold text-blue-300 mb-3">AI-Generated Bullet Points</h3>
+                        <p className="text-sm text-gray-300 mb-4">Review each suggestion and click ✓ to accept or ✗ to reject.</p>
+                        
+                        <div className="space-y-3">
+                          {state.suggestedBullets.map((bullet, index) => (
+                            <div key={index} className="flex items-start gap-2 bg-[#0d1b2a] border border-gray-700 rounded-md p-3">
+                              <div className="flex-grow">
+                                <p className="text-white">• {bullet}</p>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <button 
+                                  onClick={() => handleAcceptBullet(index)}
+                                  className="text-green-400 hover:text-green-300 transition-colors bg-green-900/20 hover:bg-green-800/30 w-8 h-8 rounded-full flex items-center justify-center"
+                                  title="Accept bullet point"
+                                >
+                                  <FaCheck size={14} />
+                                </button>
+                                <button 
+                                  onClick={() => handleDenyBullet(index)}
+                                  className="text-red-400 hover:text-red-300 transition-colors bg-red-900/20 hover:bg-red-800/30 w-8 h-8 rounded-full flex items-center justify-center"
+                                  title="Reject bullet point"
+                                >
+                                  <FaTimes size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
+                  
+
                   
                   {/* Save and Cancel Buttons */}
                   <div className="col-span-full flex justify-between items-center gap-4 mt-6">
