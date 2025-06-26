@@ -7,12 +7,14 @@ import DashboardLayout from '../../../../components/DashboardLayout';
 import ResumeNameDropdown from '../../../../components/ResumeBuilder/ResumeNameDropdown';
 import ResumeNavigation from '../../../../components/ResumeBuilder/ResumeNavigation';
 import ScoreIndicator from '../../../../components/ScoreIndicator';
-import ResumeScoreInsights from '../../../../components/ResumeScoreInsights';
+import ResumeScoreInsightsModal from '../../../../components/ResumeBuilder/ResumeScoreInsightsModal';
+import { ResumeAnalysisProvider, useResumeAnalysis } from '../../../../context/ResumeAnalysisContext';
 import { useResumeName } from '../../../../hooks/useResumeName';
 
 interface Project {
   id: string;
   title: string;
+  organization: string;
   description: string;
   technologies: string[];
   url: string;
@@ -31,23 +33,31 @@ interface ProjectsState {
   projectScore: number;
   resumeName: string;
   showScoreInsights: boolean;
-  scoreAnalysis: {
-    overallScore: number;
-    categories: Array<{ name: string; score: number; color: string }>;
-    issues: Array<{ type: "warning" | "error" | "info"; message: string; detail: string; relatedProjects?: string[] }>;
-    summary?: string;
-  } | null;
-  isAnalysisLoading: boolean;
-  analysisError: string | null;
 }
 
+// Wrapper component that provides the ResumeAnalysisContext
 export default function ProjectsPage() {
+  const params = useParams();
+  const resumeId = params.resumeId as string;
+  
+  return (
+    <ResumeAnalysisProvider resumeId={resumeId}>
+      <ProjectsPageContent />
+    </ResumeAnalysisProvider>
+  );
+}
+
+// Inner component that consumes the ResumeAnalysisContext
+function ProjectsPageContent() {
   const params = useParams();
   const router = useRouter();
   const resumeId = params.resumeId as string;
   
   // Get resume name from the same hook used by the dropdown
   const { resumeName } = useResumeName(resumeId);
+  
+  // Use the shared resume analysis context
+  const { analysis, isLoading: isAnalysisLoading, error: analysisError, fetchAnalysis } = useResumeAnalysis();
 
   const [state, setState] = useState<ProjectsState>({
     projects: [],
@@ -59,9 +69,6 @@ export default function ProjectsPage() {
     projectScore: 0,
     resumeName: resumeName || 'Resume',
     showScoreInsights: false,
-    scoreAnalysis: null,
-    isAnalysisLoading: false,
-    analysisError: null
   });
 
   // Update state when resume name changes
@@ -79,15 +86,50 @@ export default function ProjectsPage() {
     async function fetchProjects() {
       setState(prev => ({ ...prev, isLoading: true }));
       try {
-        const response = await fetch(`/api/resume/projects?resumeId=${resumeId}`);
+        const response = await fetch(`/api/resume/projects?resumeId=${resumeId}&t=${Date.now()}`);
         if (!response.ok) {
           throw new Error('Failed to fetch projects');
         }
-        const projects = await response.json();
+        const parsedData = await response.json();
+        console.log('DEBUG: Received parsed resume data:', parsedData);
+        console.log('DEBUG: Keys in parsedData:', Object.keys(parsedData));
+        
+        let projectsList: Project[] = [];
+        
+        // Robustly find the projects array from the parsed data
+        const rawProjects = parsedData['Projects'] || parsedData.projects || [];
+        
+        if (Array.isArray(rawProjects)) {
+          projectsList = rawProjects.map((proj: any, index: number) => {
+            console.log('DEBUG: Processing project:', proj);
+            
+            const bullets = Array.isArray(proj.Description) ? proj.Description :
+              Array.isArray(proj.bullets) ? proj.bullets : [];
+              
+            return {
+              id: proj.id || `project-${index}`,
+              title: proj.Title || proj.title || '',
+              organization: proj.Organization || proj.organization || '',
+              description: Array.isArray(proj.Description) ? proj.Description.join('\n') : (proj.description || ''),
+              technologies: proj.Technologies || proj.technologies || [],
+              url: proj.URL || proj.url || '',
+              startDate: proj.StartDate || proj.startDate || '',
+              endDate: proj.EndDate || proj.endDate || '',
+              bullets: bullets
+            };
+          });
+        }
+        
+        console.log('DEBUG: Mapped projects:', projectsList);
+        
+        // Select the first project by default if available
+        const firstProject = projectsList.length > 0 ? projectsList[0] : null;
         
         setState(prev => ({
           ...prev,
-          projects: projects || [],
+          projects: projectsList || [],
+          activeProject: firstProject,
+          isEditing: true, // Always default to edit mode
           isLoading: false
         }));
       } catch (error) {
@@ -101,11 +143,22 @@ export default function ProjectsPage() {
     }
   }, [resumeId]);
 
+  // Fetch analysis using the context when component mounts
+  useEffect(() => {
+    if (analysis) {
+      setState(prev => ({
+        ...prev,
+        projectScore: analysis.overallScore || 0,
+      }));
+    }
+  }, [analysis]);
+
   // Function to handle creating a new project
   const handleCreateProject = () => {
     const newProject: Project = {
       id: `project-${Date.now()}`,
       title: '',
+      organization: '',
       description: '',
       technologies: [],
       url: '',
@@ -138,30 +191,69 @@ export default function ProjectsPage() {
     
     setState(prev => ({ ...prev, isLoading: true }));
     
-    // Filter out empty bullets
-    const bullets = state.activeProject.bullets.filter(bullet => bullet.trim() !== '');
-    
-    const updatedProject = {
-      ...state.activeProject,
-      bullets
-    };
-    
-    // Here you would typically save to your backend
-    // For now, we'll just update the local state
-    setState(prev => {
-      const isNewProject = !prev.projects.some(p => p.id === updatedProject.id);
-      const updatedProjects = isNewProject 
-        ? [...prev.projects, updatedProject]
-        : prev.projects.map(p => p.id === updatedProject.id ? updatedProject : p);
-        
-      return {
+    try {
+      // Filter out empty bullets
+      const bullets = state.activeProject.bullets.filter(bullet => bullet.trim() !== '');
+      
+      const updatedProject = {
+        ...state.activeProject,
+        bullets
+      };
+      
+      // Create a copy of the projects to avoid direct mutation
+      let updatedProjects = [...state.projects];
+      
+      // Find the index of the project being edited
+      const index = updatedProjects.findIndex(p => p.id === updatedProject.id);
+      
+      if (index > -1) {
+        // If found, update it
+        updatedProjects[index] = updatedProject;
+      } else {
+        // If not found (it's a new one), add it to the array
+        updatedProjects.push(updatedProject);
+      }
+      
+      // Map the data to the format expected by Firestore - include all fields
+      const projectsToSave = updatedProjects.map(proj => ({
+        Title: proj.title,
+        Description: proj.bullets,
+        Organization: proj.organization || '',
+        URL: proj.url || '',
+        StartDate: proj.startDate || '',
+        EndDate: proj.endDate || ''
+      }));
+      
+      // Call the API to save to Firestore
+      const response = await fetch(`/api/resume/projects?resumeId=${resumeId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resumeId,
+          Projects: projectsToSave,
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save project');
+      }
+      
+      // On successful save, update the main state and exit editing mode
+      setState(prev => ({
         ...prev,
         projects: updatedProjects,
         activeProject: null,
         isEditing: false,
-        isLoading: false
-      };
-    });
+        isLoading: false,
+      }));
+      
+    } catch (error) {
+      console.error('Error saving project:', error);
+      setState(prev => ({ ...prev, isLoading: false }));
+    }
   };
 
   // Function to handle deleting a project
@@ -169,13 +261,50 @@ export default function ProjectsPage() {
     if (window.confirm('Are you sure you want to delete this project?')) {
       setState(prev => ({ ...prev, isLoading: true }));
       
-      // Here you would typically delete from your backend
-      // For now, we'll just update the local state
-      setState(prev => ({
-        ...prev,
-        projects: prev.projects.filter(p => p.id !== projectId),
-        isLoading: false
-      }));
+      try {
+        // Filter out the project to be deleted
+        const updatedProjects = state.projects.filter(proj => proj.id !== projectId);
+        
+        // Map the data to the format expected by Firestore - include all fields
+        const projectsToSave = updatedProjects.map(proj => ({
+          Title: proj.title,
+          Description: proj.bullets,
+          Organization: proj.organization || '',
+          URL: proj.url || '',
+          StartDate: proj.startDate || '',
+          EndDate: proj.endDate || ''
+        }));
+        
+        // Call the API to update Firestore with the project removed
+        const response = await fetch(`/api/resume/projects?resumeId=${resumeId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resumeId,
+            Projects: projectsToSave,
+          }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to delete project');
+        }
+        
+        // Update local state after successful deletion
+        setState(prev => ({
+          ...prev,
+          projects: updatedProjects,
+          activeProject: updatedProjects.length > 0 ? updatedProjects[0] : null,
+          isEditing: updatedProjects.length > 0,
+          isLoading: false,
+        }));
+        
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        setState(prev => ({ ...prev, isLoading: false }));
+      }
     }
   };
 
@@ -266,131 +395,98 @@ export default function ProjectsPage() {
             <div 
               className="cursor-pointer" 
               onClick={() => {
-                setState(prev => ({ 
-                  ...prev, 
-                  showScoreInsights: true
-                }));
+                setState(prev => ({ ...prev, showScoreInsights: true }));
+                fetchAnalysis();
               }}
             >
               <ScoreIndicator 
-                score={state.projectScore} 
+                score={analysis?.overallScore || 0} 
                 size={50}
                 strokeWidth={4}
-                label="Your Projects" 
-                description={state.projectScore < 50 ? "Needs improvement" : "Looking good!"}
+                label="Talexus AI Score" 
+                description={(analysis?.overallScore || 0) < 50 ? "Needs improvement" : "Looking good!"}
               />
             </div>
           </div>
           
           {/* Score Insights Modal */}
-          {state.showScoreInsights && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-1 sm:p-6">
-              <div className="px-2 sm:px-11 py-6 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg max-w-5xl w-full text-white relative overflow-y-auto max-h-[90vh]">
-                <div className="flex justify-between items-center relative mb-4">
-                  <div className="absolute left-0">
-                    {/* Empty div for spacing */}
-                  </div>
-                  <h2 className="text-2xl font-bold mx-auto">Talexus Score</h2>
-                  <button onClick={() => setState(prev => ({ ...prev, showScoreInsights: false, analysisError: null }))} className="text-gray-400 hover:text-white text-2xl absolute right-0">&times;</button>
-                </div>
-                {state.isAnalysisLoading ? (
-                  <div className="text-center py-8">
-                    <p className="text-lg">Analyzing your resume against the job description...</p>
-                    <p className="text-sm text-gray-400 mt-2">This may take a moment. We're providing real-time, GPT-powered feedback.</p>
-                  </div>
-                ) : state.analysisError ? (
-                  <div className="text-center py-8 text-red-400">
-                    <p className="font-bold text-lg">Analysis Failed</p>
-                    <p className="mt-2">{state.analysisError}</p>
-                  </div>
-                ) : state.scoreAnalysis ? (
-                  <div>
-                    {/* Score analysis content would go here */}
-                    <p className="text-center">Project score analysis will be available soon.</p>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-lg">Project analysis not available yet</p>
-                    <p className="text-sm text-gray-400 mt-2">Complete your projects to get detailed feedback.</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <ResumeScoreInsightsModal
+            open={state.showScoreInsights}
+            onClose={() => setState(prev => ({ ...prev, showScoreInsights: false }))}
+            isLoading={isAnalysisLoading}
+            error={analysisError}
+            scoreAnalysis={analysis}
+            resumeName={resumeName || state.resumeName}
+            experiences={state.projects}
+            resumeId={resumeId}
+          />
           
-          <div className="bg-[#0a1624] rounded-lg p-6 mt-6">
-          {/* Two column layout */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Left Column - Project List */}
-            <div className="w-full md:w-1/3">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-white">Your Projects</h2>
-                <button
-                  onClick={handleCreateProject}
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center gap-2 transition-colors"
-                  disabled={state.isEditing}
-                  type="button"
-                >
-                  <FaPlus /> Add Project
-                </button>
+          <div className="border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-1 sm:px-4 md:px-6 py-4 sm:py-6 mt-1 sm:mt-2 w-full max-w-full shadow-lg min-h-[400px]">
+            {state.isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#2563eb]" />
               </div>
-              
-              <div className="space-y-3">
-                {state.isLoading ? (
-                  <div className="flex justify-center items-center h-32">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-                  </div>
-                ) : state.projects.length === 0 ? (
-                  <p className="text-gray-400 text-sm">No projects yet. Click the + button to add your first project.</p>
-                ) : (
-                  state.projects.map((project) => (
-                    <div 
-                      key={project.id} 
-                      className={`p-3 rounded-md cursor-pointer transition-colors border border-gray-700 ${state.activeProject?.id === project.id ? 'bg-[#0d1b2a] border-l-4 border-l-[#2563eb]' : 'bg-[#0d1b2a] hover:bg-[#0d1b2a]'}`}
-                      onClick={() => handleSelectProject(project)}
+            ) : (
+              <div className="flex flex-col md:flex-row gap-4">
+                {/* Left Column - Project List */}
+                <div className="w-full md:w-1/3 border-r border-[#1e2d3d] px-2 sm:px-0 md:pr-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-bold text-white">Your Projects</h2>
+                    <button
+                      onClick={handleCreateProject}
+                      className="bg-[#2563eb] hover:bg-[#2563eb]/90 text-white p-1 rounded-md transition-colors"
+                      disabled={state.isEditing}
+                      type="button"
                     >
-                      <h3 className="text-xl text-white font-normal">{project.title || 'Untitled Project'}</h3>
-                      <p className="text-base text-gray-400 mt-1">{project.description || 'No Description'}</p>
-                      <p className="text-gray-500 mt-1 text-base">{project.startDate}{project.endDate ? ` - ${project.endDate}` : ''}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-            
-            {/* Right Column - Project Form */}
-            <div className="w-full md:w-2/3">
-              {state.isEditing && state.activeProject ? (
-                <div className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg p-6">
-                  {/* Form Header */}
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-white">
-                      {state.activeProject.id ? 'Edit Project' : 'Add New Project'}
-                    </h2>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={handleCancelEdit}
-                        className="border border-[#1e2d3d] hover:bg-[#1e2d3d] text-white py-2 px-4 rounded-md flex items-center gap-2 transition-colors"
-                        type="button"
-                      >
-                        <FaTimes /> Cancel
-                      </button>
-                      <button
-                        onClick={handleSaveProject}
-                        className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md flex items-center gap-2 transition-colors"
-                        type="button"
-                      >
-                        <FaCheck /> Save to Project List
-                      </button>
-                    </div>
+                      <FaPlus size={16} />
+                    </button>
                   </div>
+                  
+                  <div className="space-y-2">
+                    {state.projects.length === 0 ? (
+                      <p className="text-gray-400 text-sm">No projects yet. Click the + button to add your first project.</p>
+                    ) : (
+                      state.projects.map((project) => (
+                        <div 
+                          key={project.id} 
+                          className={`p-3 rounded-md cursor-pointer transition-colors border border-gray-700 min-h-[120px] ${state.activeProject?.id === project.id ? 'bg-[#0d1b2a] border-l-4 border-l-[#2563eb]' : 'bg-[#0d1b2a] hover:bg-[#0d1b2a]'}`}
+                          onClick={() => handleSelectProject(project)}
+                        >
+                          <h3 className="text-xl text-white font-normal">{project.title || 'Untitled Project'}</h3>
+                          <p className="text-base text-gray-400 mt-1">{project.organization || 'No Organization'}</p>
+                          <p className="text-gray-500 mt-1 text-base">{project.startDate}{project.endDate ? ` - ${project.endDate}` : ''}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+            
+                {/* Right Column - Project Form */}
+                <div className={`w-full md:w-2/3 px-2 sm:px-0 md:pl-4 ${state.showMobileForm ? 'block' : 'hidden md:block'}`}>
+                  {state.isEditing && state.activeProject ? (
+                    <div>
+                      {/* Form Header */}
+                      <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-xl font-bold text-white">
+                          Edit Project
+                        </h2>
+                        {state.activeProject?.id && (
+                          <button
+                            onClick={() => state.activeProject?.id && handleDeleteProject(state.activeProject.id)}
+                            className="text-red-400 hover:text-red-300 transition-colors"
+                            title="Delete Project"
+                          >
+                            <FaTrash size={16} />
+                          </button>
+                        )}
+                      </div>
                   
                   {/* Form Fields */}
                   <div className="space-y-6">
                     {/* Title */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
-                        GIVE YOUR PROJECT A TITLE
+                      <label className="block text-xs font-medium text-gray-400 mb-1">
+                        GIVE YOUR PROJECT A TITLE *
                       </label>
                       <input
                         type="text"
@@ -403,21 +499,23 @@ export default function ProjectsPage() {
 
                     {/* Organization */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
+                      <label className="block text-xs font-medium text-gray-400 mb-1">
                         IN WHICH ORGANIZATION DID YOU DO YOUR PROJECT?
                       </label>
                       <input
                         type="text"
                         className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
                         placeholder="e.g. Personal Project, Habitat for Humanity"
-                        value={state.activeProject.description}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
+                        value={state.activeProject.organization}
+                        onChange={(e) => handleInputChange('organization', e.target.value)}
                       />
                     </div>
 
+
+
                     {/* Date Range */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
+                      <label className="block text-xs font-medium text-gray-400 mb-1">
                         WHEN DID YOU DO YOUR PROJECT?
                       </label>
                       <div className="flex gap-4">
@@ -425,7 +523,7 @@ export default function ProjectsPage() {
                           <input
                             type="text"
                             className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
-                            placeholder="June 2023"
+                            placeholder="June 2025"
                             value={state.activeProject.startDate}
                             onChange={(e) => handleInputChange('startDate', e.target.value)}
                           />
@@ -435,7 +533,7 @@ export default function ProjectsPage() {
                           <input
                             type="text"
                             className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
-                            placeholder="Present"
+                            placeholder="June 2025"
                             value={state.activeProject.endDate || ''}
                             onChange={(e) => handleInputChange('endDate', e.target.value)}
                           />
@@ -445,87 +543,188 @@ export default function ProjectsPage() {
 
                     {/* Project URL */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
+                      <label className="block text-xs font-medium text-gray-400 mb-1">
                         PROJECT URL
                       </label>
                       <input
                         type="text"
                         className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
-                        placeholder="https://myproject.com"
+                        placeholder="https://www.talexus.ai/"
                         value={state.activeProject.url || ''}
                         onChange={(e) => handleInputChange('url', e.target.value)}
                       />
                     </div>
-
-                    {/* Technologies */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-400 mb-1">
-                        TECHNOLOGIES USED (COMMA SEPARATED)
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
-                        placeholder="React, TypeScript, Firebase"
-                        value={state.activeProject.technologies?.join(', ') || ''}
-                        onChange={(e) => handleTechnologiesChange(e.target.value)}
-                      />
-                    </div>
-
-                    {/* Bullet Points */}
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="block text-sm font-medium text-gray-400">
-                          PROJECT HIGHLIGHTS
-                        </label>
-                        <button
-                          onClick={handleAddBullet}
-                          className="text-blue-400 hover:text-blue-300 p-1"
-                          type="button"
-                        >
-                          <FaPlus size={14} /> Add Bullet
-                        </button>
-                      </div>
-                      
-                      {state.activeProject.bullets?.map((bullet, index) => (
-                        <div key={index} className="flex items-start gap-2 mb-2">
-                          <input
-                            type="text"
-                            className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
-                            placeholder="• Developed a responsive web application with React"
-                            value={bullet}
-                            onChange={(e) => handleBulletChange(index, e.target.value)}
-                          />
-                          <button
-                            onClick={() => handleRemoveBullet(index)}
-                            className="text-red-400 hover:text-red-300 p-2"
-                            type="button"
-                          >
-                            <FaTrash size={14} />
-                          </button>
-                        </div>
-                      ))}
-                      
-                      <p className="text-sm text-gray-400 mt-2">
-                        <span className="inline-flex items-center gap-2">
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-                          </svg>
-                          Aim for a balanced mix of descriptive and key number bullet points.
-                        </span>
-                      </p>
+                    
+                    {/* Description / Bullet Points */}
+                    <div className="col-span-full">
+                      <label className="block text-xs text-gray-300 mb-1 uppercase">NOW DESCRIBE WHAT YOU DID</label>
+                      {state.isEditing ? (
+                        <textarea
+                          value={(state.activeProject?.bullets || []).map(b => {
+                            // Ensure each line starts with a bullet point
+                            const text = b.replace(/^[\u2022\-\*]\s*/, '').trim();
+                            return text ? `•    ${text}` : '';
+                          }).filter(Boolean).join('\n')}
+                          onChange={(e) => {
+                            const cursorPos = e.target.selectionStart;
+                            
+                            // Split into lines
+                            const lines = e.target.value.split('\n');
+                            
+                            // Process each line
+                            const newBullets = lines.map(line => {
+                              // Remove existing bullet points and trim
+                              return line.replace(/^[\u2022\-\*]\s*/, '').trim();
+                            }).filter(line => line.length > 0); // Remove empty lines
+                            
+                            handleInputChange('bullets', newBullets);
+                            handleInputChange('description', newBullets.join('\n'));
+                            
+                            // Restore cursor position
+                            requestAnimationFrame(() => {
+                              if (e.target) {
+                                e.target.selectionStart = cursorPos;
+                                e.target.selectionEnd = cursorPos;
+                              }
+                            });
+                          }}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              
+                              const textArea = e.target as HTMLTextAreaElement;
+                              const cursorPos = textArea.selectionStart;
+                              const value = textArea.value;
+                              
+                              // Insert a new line with bullet point
+                              const newValue = value.substring(0, cursorPos) + '\n•    ' + value.substring(cursorPos);
+                              textArea.value = newValue; // Directly update the textarea value
+                              
+                              // Update the state
+                              const lines = newValue.split('\n');
+                              const newBullets = lines.map(line => {
+                                return line.replace(/^[\u2022\-\*]\s*/, '').trim();
+                              }).filter(line => line.length > 0);
+                              
+                              handleInputChange('bullets', newBullets);
+                              handleInputChange('description', newBullets.join('\n'));
+                              
+                              // Set cursor position after the new bullet
+                              setTimeout(() => {
+                                if (textArea) {
+                                  const newCursorPos = cursorPos + 6; // 6 = length of '\n•    '
+                                  textArea.selectionStart = newCursorPos;
+                                  textArea.selectionEnd = newCursorPos;
+                                  textArea.focus();
+                                }
+                              }, 0);
+                              
+                              return false;
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              
+                              const textArea = e.target as HTMLTextAreaElement;
+                              const cursorPos = textArea.selectionStart;
+                              const value = textArea.value;
+                              
+                              // Insert a new line with bullet point
+                              const newValue = value.substring(0, cursorPos) + '\n•    ' + value.substring(cursorPos);
+                              textArea.value = newValue; // Directly update the textarea value
+                              
+                              // Update the state
+                              const lines = newValue.split('\n');
+                              const newBullets = lines.map(line => {
+                                return line.replace(/^[\u2022\-\*]\s*/, '').trim();
+                              }).filter(line => line.length > 0);
+                              
+                              handleInputChange('bullets', newBullets);
+                              handleInputChange('description', newBullets.join('\n'));
+                              
+                              // Set cursor position after the new bullet
+                              setTimeout(() => {
+                                if (textArea) {
+                                  const newCursorPos = cursorPos + 6; // 6 = length of '\n•    '
+                                  textArea.selectionStart = newCursorPos;
+                                  textArea.selectionEnd = newCursorPos;
+                                  textArea.focus();
+                                }
+                              }, 0);
+                            }
+                          }}
+                          className="w-full bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 py-2 font-medium text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] h-48 resize-y"
+                          placeholder="Enter each bullet point on a new line..."
+                        />
+                      ) : (
+                        <ul className="list-disc pl-6 text-white">
+                          {(state.activeProject?.bullets || []).filter(line => line.trim() !== '').map((bullet, idx) => (
+                            <li key={idx} style={{ marginBottom: 4 }}>{bullet}</li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </div>
+                  
+                  {/* Save and Cancel Buttons */}
+                  <div className="col-span-full flex justify-between items-center gap-4 mt-6">
+                    <button
+                      onClick={handleCancelEdit}
+                      className="border border-[#1e2d3d] text-white text-base font-bold rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#0d1b2a] hover:border-[#2563eb]"
+                      type="button"
+                    >
+                      CANCEL
+                    </button>
+                    <button
+                      onClick={handleSaveProject}
+                      className="border border-[#1e2d3d] text-white text-base font-bold rounded-lg px-7 py-2 transition-colors duration-150 hover:bg-[#0d1b2a] hover:border-[#2563eb]"
+                      type="button"
+                    >
+                      SAVE
+                    </button>
+                  </div>
                 </div>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-400 text-center">
-                    Select a project from the list or add a new one to edit details.
-                  </p>
+                  ) : (
+                    state.activeProject ? (
+                      <div className="space-y-6">
+                        <div>
+                          <h2 className="text-2xl font-semibold text-white mb-1">{state.activeProject.title || 'Untitled Project'}</h2>
+                          <div className="text-gray-400 text-base mb-2">{state.activeProject.organization || 'No Organization'}</div>
+                          <div className="text-gray-500 text-sm mb-4">{state.activeProject.startDate}{state.activeProject.endDate ? ` - ${state.activeProject.endDate}` : ''}</div>
+                        </div>
+                        {/* Bullets Display */}
+                        <div>
+                          <ul className="list-disc pl-6 text-white">
+                            {((state.activeProject.bullets && state.activeProject.bullets.length > 0)
+                              ? state.activeProject.bullets
+                              : (state.activeProject.description ? state.activeProject.description.split('\n') : [])
+                            ).filter(line => line.trim() !== '').map((bullet, idx) => (
+                              <li key={idx} style={{ marginBottom: 4 }}>{bullet}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        {state.activeProject.url && (
+                          <div className="mt-2">
+                            <a href={state.activeProject.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
+                              <FaExternalLinkAlt size={14} />
+                              {state.activeProject.url}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="hidden md:flex justify-center items-center h-64 text-gray-400">
+                        <p>
+                          Select a project from the list or add a new one to edit details.
+                        </p>
+                      </div>
+                    )
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
-        </div>
         </div>
       </div>
     </DashboardLayout>

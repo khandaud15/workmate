@@ -19,7 +19,7 @@ app = FastAPI()
 
 # Environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_API_MODEL = os.getenv("OPENAI_API_MODEL", "gpt-3.5-turbo")
+OPENAI_API_MODEL = os.getenv("OPENAI_API_MODEL", "gpt-3.5-turbo-16k")
 FIREBASE_BUCKET = os.getenv("FIREBASE_BUCKET")
 
 # Initialize OpenAI client
@@ -152,6 +152,8 @@ def parse_with_openai(text, model=OPENAI_API_MODEL):
 You are a resume parser. Extract the following structured data from the resume text below and return in JSON format.
 Do not include markdown formatting or code blocks. Return only the raw JSON object.
 
+IMPORTANT: Resumes can vary widely in format, section names, and structure. When extracting information, be flexible and comprehensive. Do not rely strictly on section headers or formatting—use your best judgment to identify and extract all relevant data, even if it appears in unexpected places or formats.
+
 Extract these fields in a JSON object:
 - Full Name
 - Email
@@ -170,6 +172,23 @@ Extract these fields in a JSON object:
   * Start/End Year
   * Location (if available)
   * Description (IMPORTANT: Include ALL bullet points and details for each position as an array of strings)
+- Projects (list of objects with these properties):
+  * Title
+  * Description
+  * Technologies (if mentioned)
+  * Start/End Year (if available)
+  * URL or Link (if available)
+  * IMPORTANT: Extract any projects regardless of how or where they are listed in the resume. 
+    - Include projects from any section whose header contains the word "project" (case-insensitive, e.g., "Projects", "PROJECTS", "Technical Projects", "Personal Projects", "Selected Projects", "Research Projects", etc.).
+    - Also extract projects that are described within other sections, such as Work Experience, Research Experience, Education, or any other part of the resume, if they are clearly described as standalone projects.
+    - Do not rely on formatting, bullet points, or section headers—use your best judgment to identify and extract all relevant projects, even if the format is unusual or the section is unnamed.
+    - Be flexible and comprehensive: if in doubt, include the entry as a project.
+- Publications (list of objects with these properties):
+  * Title
+  * Publication Venue (journal, conference, etc.)
+  * Year
+  * Authors (if available)
+  * URL or DOI (if available)
 
 IMPORTANT: Pay special attention to the header/top section of the resume where contact information is typically located. Look for address information that may be formatted like "555 W Madison St. Apt-3303, Chicago, IL-60661" and extract the full address, city, state and postal code separately.
 

@@ -22,6 +22,52 @@ function getColorForScore(score: number): string {
  * Resume analysis API endpoint that uses OpenAI to analyze resume content
  * This provides a detailed score and feedback for resumes
  */
+export async function GET(request: Request) {
+  try {
+    // Check if user is authenticated
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get the resume ID from the URL params
+    const url = new URL(request.url);
+    const resumeId = url.searchParams.get('resumeId');
+
+    if (!resumeId) {
+      return NextResponse.json({ error: 'Resume ID is required' }, { status: 400 });
+    }
+
+    console.log(`GET: Fetching cached analysis for resumeId: ${resumeId}`);
+
+    // Check if analysis already exists in Firestore
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'User email not found in session' }, { status: 400 });
+    }
+
+    const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
+    const resumeSnapshot = await resumeRef.get();
+    const resumeDoc = resumeSnapshot.exists ? resumeSnapshot.data() : null;
+    const lastAnalysis = resumeDoc?.lastAnalysis || null;
+
+    // If analysis exists, return it
+    if (lastAnalysis && lastAnalysis.analysis) {
+      console.log('GET: Returning cached analysis result');
+      return NextResponse.json(lastAnalysis.analysis);
+    }
+
+    // If no cached analysis, return a 404
+    return NextResponse.json({ error: 'No analysis found for this resume' }, { status: 404 });
+  } catch (error) {
+    console.error('Error in GET resume analysis:', error);
+    return NextResponse.json({ error: 'Error fetching resume analysis' }, { status: 500 });
+  }
+}
+
+/**
+ * Resume analysis API endpoint that uses OpenAI to analyze resume content
+ * This provides a detailed score and feedback for resumes
+ */
 export async function POST(request: Request) {
   try {
     // Check if user is authenticated
@@ -180,6 +226,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Error fetching resume data' }, { status: 500 });
     }
 
+    // Caching: Check if analysis already exists and is up-to-date
+    const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
+    const resumeSnapshot = await resumeRef.get();
+    const resumeDoc = resumeSnapshot.exists ? resumeSnapshot.data() : null;
+    const lastModified = resumeDoc?.updatedAt || resumeDoc?.lastModified || resumeDoc?.last_updated || null;
+    const lastAnalysis = resumeDoc?.lastAnalysis || null;
+    const lastAnalysisTimestamp = lastAnalysis?.timestamp || null;
+
+    // If analysis exists and is up-to-date, return cached analysis
+    if (lastAnalysis && lastModified && lastAnalysisTimestamp && lastAnalysisTimestamp >= lastModified) {
+      console.log('Returning cached analysis result');
+      return NextResponse.json(lastAnalysis.analysis || lastAnalysis);
+    }
+
     // Prepare resume data for analysis
     const resumeData = {
       ...resume,
@@ -189,7 +249,15 @@ export async function POST(request: Request) {
     // Analyze resume using OpenAI
     console.log(`Sending resume data to OpenAI for analysis with ${resumeData.experiences?.length || 0} experiences`);
     const analysis = await analyzeResumeWithOpenAI(resumeData, resumeId);
-    
+
+    // Store analysis in Firestore with timestamp
+    await resumeRef.update({
+      lastAnalysis: {
+        analysis,
+        timestamp: Date.now()
+      }
+    });
+
     console.log(`Analysis complete. Overall score: ${analysis.overallScore}`);
     return NextResponse.json(analysis);
   } catch (error) {
