@@ -220,7 +220,7 @@ function EducationPageContent() {
       ...prev,
       activeEducation: education,
       isEditing: true,
-      showMobileForm: true
+      showMobileForm: true // Show the form in mobile view when a card is clicked
     }));
   };
   
@@ -471,7 +471,7 @@ function EducationPageContent() {
                 </div>
 
                 {/* Right Column - Education Form */}
-                <div className="w-full md:w-2/3 md:pl-4">
+                <div className={`w-full md:w-2/3 md:pl-4 ${state.showMobileForm ? 'block' : 'hidden md:block'}`}>
                   {state.isEditing && state.activeEducation ? (
                     <div>
                       {/* Form Header */}
