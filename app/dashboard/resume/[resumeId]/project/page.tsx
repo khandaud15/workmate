@@ -201,8 +201,9 @@ function ProjectsPageContent() {
 
   // Function to handle creating a new project
   const handleCreateProject = () => {
+    // Create a new project with a unique ID
     const newProject: Project = {
-      id: `project-${Date.now()}`,
+      id: `project-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
       title: '',
       organization: '',
       description: '',
@@ -213,11 +214,14 @@ function ProjectsPageContent() {
       bullets: ['', '', '']
     };
 
+    console.log('Creating new project:', newProject);
+
     setState(prev => ({
       ...prev,
       activeProject: newProject,
       isEditing: true,
-      bulletCount: 3
+      bulletCount: 3,
+      showMobileForm: true // Show form when creating new project
     }));
   };
 
@@ -237,6 +241,7 @@ function ProjectsPageContent() {
     if (!state.activeProject) return;
     
     setState(prev => ({ ...prev, isLoading: true }));
+    console.log('Saving project:', state.activeProject);
     
     try {
       // Filter out empty bullets
@@ -252,18 +257,21 @@ function ProjectsPageContent() {
       
       // Find the index of the project being edited
       const index = updatedProjects.findIndex(p => p.id === updatedProject.id);
+      console.log('Project index in array:', index);
       
       if (index > -1) {
         // If found, update it
+        console.log('Updating existing project');
         updatedProjects[index] = updatedProject;
       } else {
         // If not found (it's a new one), add it to the array
+        console.log('Adding new project to array');
         updatedProjects.push(updatedProject);
       }
       
       // Map the data to the format expected by Firestore - include all fields
       const projectsToSave = updatedProjects.map(proj => ({
-        Title: proj.title,
+        Title: proj.title || 'Untitled Project',
         Description: proj.bullets,
         Organization: proj.organization || '',
         URL: proj.url || '',
@@ -271,8 +279,13 @@ function ProjectsPageContent() {
         EndDate: proj.endDate || ''
       }));
       
+      console.log('Projects to save:', projectsToSave);
+      
+      // Add cache-busting parameter to prevent stale data
+      const timestamp = Date.now();
+      
       // Call the API to save to Firestore
-      const response = await fetch(`/api/resume/projects?resumeId=${resumeId}`, {
+      const response = await fetch(`/api/resume/projects?resumeId=${resumeId}&t=${timestamp}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -288,6 +301,9 @@ function ProjectsPageContent() {
         throw new Error(errorData.error || 'Failed to save project');
       }
       
+      const responseData = await response.json();
+      console.log('Save project response:', responseData);
+      
       // On successful save, update the main state and exit editing mode
       setState(prev => ({
         ...prev,
@@ -297,9 +313,13 @@ function ProjectsPageContent() {
         isLoading: false,
       }));
       
+      // Refresh analysis to update scores
+      if (fetchAnalysis) fetchAnalysis();
+      
     } catch (error) {
       console.error('Error saving project:', error);
       setState(prev => ({ ...prev, isLoading: false }));
+      alert('Failed to save project. Please try again.');
     }
   };
 
@@ -591,9 +611,11 @@ function ProjectsPageContent() {
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-lg font-bold text-white">Your Projects</h2>
                     <button
-                      onClick={handleCreateProject}
+                      onClick={() => {
+                        console.log('Add button clicked');
+                        handleCreateProject();
+                      }}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1 transition duration-200"
-                      disabled={state.isEditing}
                       type="button"
                     >
                       <FaPlus size={12} />
@@ -621,7 +643,7 @@ function ProjectsPageContent() {
                 </div>
             
                 {/* Right Column - Project Form */}
-                <div className={`w-full md:w-2/3 px-2 sm:px-0 md:pl-4 ${state.showMobileForm ? 'block' : 'hidden md:block'}`}>
+                <div className="w-full md:w-2/3 px-2 sm:px-0 md:pl-4">
                   {state.isEditing && state.activeProject ? (
                     <div>
                       {/* Form Header */}
@@ -925,9 +947,9 @@ function ProjectsPageContent() {
                         )}
                       </div>
                     ) : (
-                      <div className="hidden md:flex justify-center items-center h-64 text-gray-400">
-                        <p>
-                          Select a project from the list or add a new one to edit details.
+                      <div className="flex flex-col justify-center items-center h-64 text-gray-400">
+                        <p className="text-center">
+                          Click the <span className="text-blue-500">Add</span> button to create a new project
                         </p>
                       </div>
                     )

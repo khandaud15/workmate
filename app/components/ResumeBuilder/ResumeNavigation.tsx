@@ -48,10 +48,17 @@ export default function ResumeNavigation({ resumeId, currentSection }: ResumeNav
             <button
               key={section}
               onClick={() => {
-                const path = section === 'Contact' ? 'contact-info' : section.toLowerCase();
+                let path;
+                if (section === 'Contact') {
+                  path = 'contact-info';
+                } else if (section === 'Awards & Honors') {
+                  path = 'awards-and-honors';
+                } else {
+                  path = section.toLowerCase();
+                }
                 router.push(`/dashboard/resume/${resumeId}/${path}`);
               }}
-              className={`text-xs font-bold px-4 py-2 rounded-md uppercase tracking-wide transition-colors duration-150 ${section.toLowerCase() === currentSection ? "border border-[#2563eb] text-gray-300 bg-transparent hover:bg-[#2563eb] hover:bg-opacity-10" : "border border-[#1e2d3d] text-gray-300 bg-transparent hover:bg-[#0d1b2a] hover:border-[#2563eb] hover:text-white"}`}
+              className={`text-xs font-bold px-4 py-2 rounded-md uppercase tracking-wide transition-colors duration-150 ${(section === 'Awards & Honors' ? 'awards-and-honors' : section.toLowerCase()) === currentSection ? "border border-[#2563eb] text-gray-300 bg-transparent hover:bg-[#2563eb] hover:bg-opacity-10" : "border border-[#1e2d3d] text-gray-300 bg-transparent hover:bg-[#0d1b2a] hover:border-[#2563eb] hover:text-white"}`}
               style={{ userSelect: "none", minWidth: 'fit-content' }}
             >
               {section}
