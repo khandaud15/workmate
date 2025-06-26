@@ -574,9 +574,10 @@ function ExperiencePageContent() {
                     <h2 className="text-lg font-bold text-white">Work Experience</h2>
                     <button 
                       onClick={handleCreateExperience}
-                      className="bg-[#2563eb] hover:bg-[#2563eb]/90 text-white p-1 rounded-md transition-colors"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-sm flex items-center gap-1 transition duration-200"
                     >
-                      <FaPlus size={16} />
+                      <FaPlus size={12} />
+                      <span>Add</span>
                     </button>
                   </div>
                   

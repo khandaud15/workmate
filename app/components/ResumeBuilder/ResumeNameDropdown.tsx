@@ -41,7 +41,7 @@ export default function ResumeNameDropdown({ resumeId, currentSection }: ResumeN
   }, [dropdownOpen]);
 
   // Normalize resumeId for comparison (extract numeric part if present)
-  const normalizedResumeId = resumeId.match(/^\d+/)?.[0] || resumeId;
+  const normalizedResumeId = resumeId ? (resumeId.match(/^\d+/)?.[0] || resumeId) : '';
   
   // Find current resume by comparing normalized IDs
   const currentResume = resumes.find((r: { id?: string; storageName?: string; name?: string }) => {
