@@ -18,6 +18,7 @@ export default function CoverLetterPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const [showOutput, setShowOutput] = useState(false);
 
   // This ensures we're only rendering on the client side
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function CoverLetterPage() {
 
     setIsGenerating(true);
     setError('');
+    setShowOutput(true); // Show the output box when generating
     
     try {
       // For now, we'll use a local implementation to generate the cover letter
@@ -146,11 +148,11 @@ ${applicantName}`;
   return (
     <DashboardLayout>
       <div className="w-full px-4 py-8 md:max-w-7xl md:mx-auto cover-letter-page" id="cover-letter-page">
-        <h1 className="text-xl font-bold text-white mb-8">Talexus Cover Letter Generator</h1>
+        <h1 className="text-xl font-bold text-white mb-8 cover-letter-title">Talexus Cover Letter Generator</h1>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Input Form */}
-          <div className="bg-[#112240] rounded-lg p-6 shadow-lg">
+          <div className="bg-[#0d1b2a] rounded-lg p-6 shadow-lg border border-gray-700">
             <h2 className="text-xl font-semibold text-white mb-4">Job Details</h2>
             
             <div className="mb-4">
@@ -159,7 +161,7 @@ ${applicantName}`;
                 type="text"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full"
                 placeholder="Enter company name"
               />
             </div>
@@ -170,7 +172,7 @@ ${applicantName}`;
                 type="text"
                 value={position}
                 onChange={(e) => setPosition(e.target.value)}
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full"
                 placeholder="Enter job position"
               />
             </div>
@@ -180,7 +182,7 @@ ${applicantName}`;
               <textarea
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
-                className="w-full bg-[#1e293b] border border-gray-700 rounded-md py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
+                className="bg-[#0d1b2a] border border-[#1e2d3d] rounded-md px-3 sm:px-4 py-3 text-gray-100 text-base focus:outline-none focus:border-[#2563eb] transition shadow-inner w-full h-40"
                 placeholder="Paste job description here"
               />
             </div>
@@ -203,8 +205,8 @@ ${applicantName}`;
             </button>
           </div>
           
-          {/* Output */}
-          <div className="bg-[#112240] rounded-lg p-6 shadow-lg">
+          {/* Output - Hidden on mobile until generate button is clicked */}
+          <div className={`bg-[#0d1b2a] rounded-lg p-6 shadow-lg border border-gray-700 cover-letter-output ${!showOutput ? 'hidden lg:block' : 'block'}`}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-white">Your Cover Letter</h2>
               {coverLetter && (

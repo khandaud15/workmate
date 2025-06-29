@@ -6,6 +6,30 @@
   width: 100%;
 }
 
+/* Title styling */
+.cover-letter-title {
+  text-align: left;
+}
+
+/* Center title on mobile */
+@media (max-width: 768px) {
+  .cover-letter-title {
+    text-align: center;
+    margin-bottom: 1.5rem !important;
+    margin-top: 2rem !important;
+  }
+  
+  /* Add more top padding to the main container on mobile */
+  .cover-letter-page {
+    padding-top: 3.5rem !important;
+  }
+}
+
+/* Cover letter output container */
+.cover-letter-output {
+  transition: all 0.3s ease;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .cover-letter-page {
