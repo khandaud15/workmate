@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
 
 // OpenRouter API configuration
-// Temporarily hardcode the API key (move to .env later)
-const API_KEY = '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';
+const API_KEY = process.env.OPENROUTER_API_KEY;
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+// Check if API key is configured
+if (!API_KEY) {
+  console.error('OPENROUTER_API_KEY is not defined in environment variables');
+}
 
 export async function POST(request: Request) {
   try {

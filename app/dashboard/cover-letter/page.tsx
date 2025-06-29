@@ -55,24 +55,63 @@ export default function CoverLetterPage() {
     setShowOutput(true); // Show the output box when generating
     
     try {
-      // For now, we'll use a local implementation to generate the cover letter
-      // This simulates what an AI would do, but without external API calls
+      // Get user name for personalization
+      const userName = session?.user?.name || 'Applicant';
       
-      // Extract key skills from job description (simplified)
-      const skills = extractSkillsFromJobDescription(jobDescription);
+      try {
+        // Try the AI API first
+        // Create a prompt for the AI
+        const prompt = [
+          {
+            role: 'system',
+            content: `You are an expert cover letter writer. Create a professional, compelling cover letter for ${userName} who is applying for the position of ${position} at ${companyName}. \n\nThe cover letter should:\n- Be professionally formatted with date and proper salutation\n- Highlight relevant skills and experiences that match the job description\n- Show enthusiasm for the specific company and role\n- Be concise (around 300-400 words)\n- Have a professional closing\n- NOT include placeholder text like [Insert Experience Here]\n- NOT mention specific previous employers (keep it generic)\n- Focus on transferable skills and relevant qualifications`
+          },
+          {
+            role: 'user',
+            content: `Here is the job description for the ${position} role at ${companyName}:\n\n${jobDescription}\n\nPlease write me a customized cover letter that highlights my relevant skills and experiences for this position.`
+          }
+        ];
+        
+        // Call the AI API
+        const response = await fetch('/api/ai', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: prompt,
+            model: 'deepseek/deepseek-chat:free', // Use the free model that's working
+            temperature: 0.7, // Some creativity but still professional
+            max_tokens: 1000 // Enough for a full cover letter
+          }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('API call failed');
+        }
+        
+        const data = await response.json();
+        const generatedLetter = data.choices[0].message.content;
+        
+        setCoverLetter(generatedLetter);
+      } catch (apiError) {
+        console.log('API generation failed, falling back to template:', apiError);
+        
+        // Fallback to template-based generation
+        // Extract key skills from job description
+        const skills = extractSkillsFromJobDescription(jobDescription);
+        
+        // Generate a cover letter using a template
+        const generatedLetter = generateCoverLetterFromTemplate(
+          companyName,
+          position,
+          skills,
+          userName
+        );
+        
+        setCoverLetter(generatedLetter);
+      }
       
-      // Generate a cover letter using a template
-      const generatedLetter = generateCoverLetterFromTemplate(
-        companyName,
-        position,
-        skills,
-        session?.user?.name || 'Applicant'
-      );
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setCoverLetter(generatedLetter);
       setIsGenerating(false);
     } catch (err) {
       console.error('Error generating cover letter:', err);
@@ -81,7 +120,7 @@ export default function CoverLetterPage() {
     }
   };
   
-  // Helper function to extract skills from job description
+  // Helper function to extract skills from job description (fallback method)
   const extractSkillsFromJobDescription = (jobDesc: string): string[] => {
     const commonSkills = [
       'communication', 'teamwork', 'leadership', 'problem-solving',
@@ -101,7 +140,7 @@ export default function CoverLetterPage() {
       mentionedSkills : ['communication', 'problem-solving', 'adaptability'];
   };
   
-  // Helper function to generate cover letter from template
+  // Helper function to generate cover letter from template (fallback method)
   const generateCoverLetterFromTemplate = (company: string, position: string, skills: string[], applicantName: string): string => {
     const currentDate = new Date().toLocaleDateString('en-US', {
       year: 'numeric',
