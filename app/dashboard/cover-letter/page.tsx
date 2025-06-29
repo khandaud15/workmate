@@ -1,12 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '../../components/DashboardLayout';
-import { FaSpinner, FaDownload, FaCopy, FaRedo } from 'react-icons/fa';
+import { FaSpinner, FaDownload, FaCopy, FaRedo, FaFileAlt, FaChevronDown } from 'react-icons/fa';
 import './cover-letter-styles.css';
 import { initializeVercelEnvironment } from './vercel-fix';
+
+// Resume interface
+interface Resume {
+  id: string;
+  name: string;
+  storageName: string;
+  createdAt: string;
+  updatedAt: string;
+  url: string;
+  isTargeted?: boolean;
+}
 
 export default function CoverLetterPage() {
   const { data: session, status } = useSession();
@@ -19,6 +30,10 @@ export default function CoverLetterPage() {
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [selectedResumeId, setSelectedResumeId] = useState<string>('');
+  const [isLoadingResumes, setIsLoadingResumes] = useState(false);
+  const [resumeContent, setResumeContent] = useState<string>('');
 
   // This ensures we're only rendering on the client side
   useEffect(() => {
@@ -33,6 +48,72 @@ export default function CoverLetterPage() {
       router.push('/auth/signin');
     }
   }, [status, router]);
+  
+  // Fetch resumes when the component mounts
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchResumes();
+    }
+  }, [status]);
+  
+  // Function to fetch resumes from the API
+  const fetchResumes = async () => {
+    try {
+      setIsLoadingResumes(true);
+      const res = await fetch(`/api/resume/list?t=${Date.now()}`);
+      const data = await res.json();
+      
+      if (data.resumes && Array.isArray(data.resumes)) {
+        const formattedResumes = data.resumes.map((r: any) => ({
+          id: r.storageName || r.url,
+          name: r.name,
+          storageName: r.storageName,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          isTargeted: r.isTargeted === true,
+          url: r.url,
+        }));
+        
+        setResumes(formattedResumes);
+        
+        // If there are resumes, select the first one by default
+        if (formattedResumes.length > 0) {
+          setSelectedResumeId(formattedResumes[0].id);
+          // Fetch the content of the first resume
+          fetchResumeContent(formattedResumes[0].url);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching resumes:', error);
+      setError('Failed to load resumes');
+    } finally {
+      setIsLoadingResumes(false);
+    }
+  };
+  
+  // Function to fetch the content of a resume
+  const fetchResumeContent = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      const text = await response.text();
+      setResumeContent(text);
+    } catch (error) {
+      console.error('Error fetching resume content:', error);
+      setResumeContent('');
+    }
+  };
+  
+  // Handle resume selection change
+  const handleResumeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const resumeId = e.target.value;
+    setSelectedResumeId(resumeId);
+    
+    // Find the selected resume and fetch its content
+    const selectedResume = resumes.find(resume => resume.id === resumeId);
+    if (selectedResume) {
+      fetchResumeContent(selectedResume.url);
+    }
+  };
 
   // Show loading state during authentication check or before client-side hydration
   if (!isClient || status === 'loading') {
@@ -64,11 +145,11 @@ export default function CoverLetterPage() {
         const prompt = [
           {
             role: 'system',
-            content: `You are an expert cover letter writer. Create a professional, compelling cover letter for ${userName} who is applying for the position of ${position} at ${companyName}. \n\nThe cover letter should:\n- Be professionally formatted with date and proper salutation\n- Highlight relevant skills and experiences that match the job description\n- Show enthusiasm for the specific company and role\n- Be concise (around 300-400 words)\n- Have a professional closing\n- NOT include placeholder text like [Insert Experience Here]\n- NOT mention specific previous employers (keep it generic)\n- Focus on transferable skills and relevant qualifications`
+            content: `You are an expert cover letter writer. Create a professional, compelling cover letter for ${userName} who is applying for the position of ${position} at ${companyName}. \n\nThe cover letter should:\n- Be professionally formatted with date and proper salutation\n- Highlight relevant skills and experiences that match the job description\n- Show enthusiasm for the specific company and role\n- Be concise (around 300-400 words)\n- Have a professional closing\n- NOT include placeholder text like [Insert Experience Here]\n- NOT mention specific previous employers (keep it generic)\n- Focus on transferable skills and relevant qualifications\n- Tailor the content to match the selected resume`
           },
           {
             role: 'user',
-            content: `Here is the job description for the ${position} role at ${companyName}:\n\n${jobDescription}\n\nPlease write me a customized cover letter that highlights my relevant skills and experiences for this position.`
+            content: `Here is the job description for the ${position} role at ${companyName}:\n\n${jobDescription}\n\nHere is my resume content that should be used to tailor the cover letter:\n\n${resumeContent}\n\nPlease write me a customized cover letter that highlights my relevant skills and experiences from my resume that match this position.`
           }
         ];
         
@@ -98,14 +179,18 @@ export default function CoverLetterPage() {
         console.log('API generation failed, falling back to template:', apiError);
         
         // Fallback to template-based generation
-        // Extract key skills from job description
+        // Extract key skills from job description and resume
         const skills = extractSkillsFromJobDescription(jobDescription);
+        const resumeSkills = extractSkillsFromResume(resumeContent);
+        
+        // Combine skills from job description and resume, removing duplicates
+        const combinedSkills = [...new Set([...skills, ...resumeSkills])];
         
         // Generate a cover letter using a template
         const generatedLetter = generateCoverLetterFromTemplate(
           companyName,
           position,
-          skills,
+          combinedSkills,
           userName
         );
         
@@ -138,6 +223,31 @@ export default function CoverLetterPage() {
     // If no skills found, return some generic ones
     return mentionedSkills.length > 0 ? 
       mentionedSkills : ['communication', 'problem-solving', 'adaptability'];
+  };
+  
+  // Helper function to extract skills from resume content
+  const extractSkillsFromResume = (resumeText: string): string[] => {
+    // If resume content is empty, return empty array
+    if (!resumeText) return [];
+    
+    const commonSkills = [
+      'communication', 'teamwork', 'leadership', 'problem-solving',
+      'time management', 'adaptability', 'creativity', 'critical thinking',
+      'project management', 'attention to detail', 'customer service',
+      'technical skills', 'programming', 'data analysis', 'research',
+      'writing', 'presentation', 'negotiation', 'organization',
+      'javascript', 'python', 'java', 'c++', 'react', 'angular', 'vue',
+      'node.js', 'express', 'django', 'flask', 'sql', 'nosql', 'mongodb',
+      'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'ci/cd', 'agile',
+      'scrum', 'product management', 'ux/ui', 'design thinking'
+    ];
+    
+    // Find skills mentioned in the resume
+    const mentionedSkills = commonSkills.filter(skill => 
+      resumeText.toLowerCase().includes(skill.toLowerCase())
+    );
+    
+    return mentionedSkills;
   };
   
   // Helper function to generate cover letter from template (fallback method)
@@ -184,11 +294,78 @@ ${applicantName}`;
     document.body.removeChild(element);
   };
 
+  // Resume selector dropdown component
+  const ResumeSelector = () => {
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    
+    // Close dropdown on outside click
+    useEffect(() => {
+      function handleClickOutside(e: MouseEvent) {
+        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+          setDropdownOpen(false);
+        }
+      }
+      
+      if (dropdownOpen) {
+        document.addEventListener('mousedown', handleClickOutside);
+      }
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [dropdownOpen]);
+    
+    // Find the currently selected resume
+    const selectedResume = resumes.find(r => r.id === selectedResumeId);
+    
+    return (
+      <div className="mb-6">
+        <div 
+          ref={dropdownRef}
+          className="relative inline-flex items-center justify-between border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 py-1.5 shadow-md w-full md:w-auto max-w-xs min-w-[200px] cursor-pointer"
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+        >
+          <span className="truncate text-white font-medium text-sm max-w-[180px]">
+            {isLoadingResumes ? (
+              <span className="inline-block bg-gray-700 rounded w-20 h-4 animate-pulse" />
+            ) : (
+              selectedResume?.name || 'Select a resume'
+            )}
+          </span>
+          <span className="text-white ml-3 flex items-center">
+            <FaChevronDown size={16} />
+          </span>
+          
+          {dropdownOpen && (
+            <div className="absolute left-0 top-full mt-1 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg w-full z-50 overflow-hidden">
+              {resumes.length === 0 ? (
+                <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
+              ) : (
+                resumes.map((resume) => (
+                  <button
+                    key={resume.id}
+                    className={`block w-full text-left px-4 py-2 text-sm truncate hover:bg-[#1e2d3d] ${resume.id === selectedResumeId ? 'bg-[#1e2d3d] text-white font-semibold' : 'text-gray-200'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedResumeId(resume.id);
+                      fetchResumeContent(resume.url);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    <span className="truncate block w-full">{resume.name}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <DashboardLayout>
       <div className="w-full px-4 py-8 md:max-w-7xl md:mx-auto cover-letter-page" id="cover-letter-page">
         <h1 className="text-xl font-bold text-white mb-8 cover-letter-title">Talexus Cover Letter Generator</h1>
-        
+        <ResumeSelector />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Input Form */}
           <div className="bg-[#0d1b2a] rounded-lg p-6 shadow-lg border border-gray-700">
