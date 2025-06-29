@@ -30,6 +30,7 @@ export default function CoverLetterPage() {
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
+  const [isAIGenerated, setIsAIGenerated] = useState(true); // Track if AI or fallback was used
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [selectedResumeId, setSelectedResumeId] = useState<string>('');
   const [isLoadingResumes, setIsLoadingResumes] = useState(false);
@@ -135,6 +136,14 @@ export default function CoverLetterPage() {
     setError('');
     setShowOutput(true); // Show the output box when generating
     
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (isGenerating) {
+        setIsGenerating(false);
+        setError('Generation timed out. Please try again.');
+      }
+    }, 30000); // 30 second timeout
+    
     try {
       // Get user name for personalization
       const userName = session?.user?.name || 'Applicant';
@@ -142,10 +151,11 @@ export default function CoverLetterPage() {
       try {
         // Try the AI API first
         // Create a prompt for the AI
+        console.log('Starting AI-based cover letter generation');
         const prompt = [
           {
             role: 'system',
-            content: `You are an expert cover letter writer. Create a professional, compelling cover letter for ${userName} who is applying for the position of ${position} at ${companyName}. \n\nThe cover letter should:\n- Be professionally formatted with date and proper salutation\n- Highlight relevant skills and experiences that match the job description\n- Show enthusiasm for the specific company and role\n- Be concise (around 300-400 words)\n- Have a professional closing\n- NOT include placeholder text like [Insert Experience Here]\n- NOT mention specific previous employers (keep it generic)\n- Focus on transferable skills and relevant qualifications\n- Tailor the content to match the selected resume`
+            content: `You are an expert cover letter writer specializing in creating highly personalized, compelling cover letters. Create a professional cover letter for ${userName} who is applying for the position of ${position} at ${companyName}. \n\nThe cover letter MUST:\n- Be addressed to the company specifically (e.g., 'Dear [Company] Team' or similar)\n- Extract and highlight 2-3 SPECIFIC projects or achievements from the resume that directly align with the job requirements\n- Explain in detail HOW the candidate's past experience prepares them for the specific responsibilities mentioned in the job description\n- Reference specific skills, tools, or technologies mentioned in both the resume and job description\n- Include specific reasons why the candidate is interested in this particular company (based on company name and job description)\n- Have a professional but warm tone\n- Include the candidate's actual name in the signature (no placeholders like [Your Name])\n- Be concise but detailed (300-450 words)\n- Never use generic statements that could apply to any job - everything must be tailored to this specific position\n- Never include placeholder text or formatting instructions in the final output`
           },
           {
             role: 'user',
@@ -168,15 +178,21 @@ export default function CoverLetterPage() {
         });
         
         if (!response.ok) {
-          throw new Error('API call failed');
+          const errorText = await response.text();
+          console.error('API call failed with status:', response.status, errorText);
+          throw new Error(`API call failed with status: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log('AI API response received:', data);
         const generatedLetter = data.choices[0].message.content;
         
         setCoverLetter(generatedLetter);
-      } catch (apiError) {
-        console.log('API generation failed, falling back to template:', apiError);
+        setIsAIGenerated(true); // Mark as AI-generated
+      } catch (apiError: any) {
+        console.error('API generation failed, falling back to template:', apiError);
+        // Add a notification about falling back to template
+        setError(`AI generation failed: ${apiError?.message || 'Unknown error'}. Using template fallback.`);
         
         // Fallback to template-based generation
         // Extract key skills from job description and resume
@@ -195,12 +211,15 @@ export default function CoverLetterPage() {
         );
         
         setCoverLetter(generatedLetter);
+        setIsAIGenerated(false); // Mark as template-based fallback
       }
       
+      clearTimeout(timeoutId);
       setIsGenerating(false);
     } catch (err) {
       console.error('Error generating cover letter:', err);
       setError('Failed to generate cover letter. Please try again.');
+      clearTimeout(timeoutId);
       setIsGenerating(false);
     }
   };
@@ -424,7 +443,14 @@ ${applicantName}`;
           {/* Output - Hidden on mobile until generate button is clicked */}
           <div className={`bg-[#0d1b2a] rounded-lg p-6 shadow-lg border border-gray-700 cover-letter-output ${!showOutput ? 'hidden lg:block' : 'block'}`}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-white">Your Cover Letter</h2>
+              <div className="flex items-center">
+                <h2 className="text-xl font-semibold text-white">Your Cover Letter</h2>
+                {coverLetter && (
+                  <span className={`ml-3 text-xs px-2 py-1 rounded ${isAIGenerated ? 'bg-green-900 text-green-200' : 'bg-yellow-900 text-yellow-200'}`}>
+                    {isAIGenerated ? 'AI Generated' : 'Template Fallback'}
+                  </span>
+                )}
+              </div>
               {coverLetter && (
                 <div className="flex space-x-2">
                   <button
