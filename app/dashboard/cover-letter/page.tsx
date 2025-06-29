@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '../../components/DashboardLayout';
 import { FaSpinner, FaDownload, FaCopy, FaRedo } from 'react-icons/fa';
 import './cover-letter-styles.css';
+import { initializeVercelEnvironment } from './vercel-fix';
 
 export default function CoverLetterPage() {
   const { data: session, status } = useSession();
@@ -16,15 +17,30 @@ export default function CoverLetterPage() {
   const [coverLetter, setCoverLetter] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
+  const [isClient, setIsClient] = useState(false);
 
-  // Redirect to login if not authenticated
-  if (status === 'unauthenticated') {
-    router.push('/auth/signin');
-    return null;
+  // This ensures we're only rendering on the client side
+  useEffect(() => {
+    setIsClient(true);
+    // Initialize Vercel environment fixes
+    initializeVercelEnvironment();
+  }, []);
+
+  // Handle authentication redirects in useEffect to avoid hydration issues
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/signin');
+    }
+  }, [status, router]);
+
+  // Show loading state during authentication check or before client-side hydration
+  if (!isClient || status === 'loading') {
+    return <div className="flex items-center justify-center min-h-screen bg-[#0a192f]">Loading...</div>;
   }
 
-  if (status === 'loading') {
-    return <div className="flex items-center justify-center min-h-screen bg-[#0a192f]">Loading...</div>;
+  // Don't render anything if not authenticated (redirect will happen)
+  if (status === 'unauthenticated') {
+    return null;
   }
 
   const handleGenerateCoverLetter = async () => {
