@@ -1,0 +1,74 @@
+/* Cover Letter Page Styles */
+
+/* Main container */
+.cover-letter-page {
+  padding: 2rem;
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cover-letter-page {
+    padding: 0.25rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Increase width of form containers on mobile */
+  .cover-letter-page div[class*="bg-"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 1rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Ensure grid containers take full width */
+  .cover-letter-page .grid {
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+/* Ensure mobile sidebar is never hidden */
+@media (max-width: 1023px) {
+  .mobile-sidebar {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+  }
+}
+
+/* Allow expanded sidebar on cover letter page */
+/* These rules were previously hiding the mobile sidebar */
+
+/* Ensure collapsed sidebar is visible */
+.cover-letter-page .sidebar.collapsed {
+  display: block !important;
+}
+
+/* Form styling */
+.input-field {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+/* Button styling */
+.action-button {
+  background-color: #2563eb;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  background-color: #1d4ed8;
+}

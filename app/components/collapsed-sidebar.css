@@ -1,0 +1,46 @@
+/* Special CSS for collapsed sidebar on cover letter and resume pages */
+
+/* Force collapsed sidebar to be exactly 80px wide with no transitions */
+.sidebar.collapsed {
+  width: 80px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: block !important;
+  position: fixed !important;
+}
+
+/* Hide any expanded sidebar elements */
+.sidebar.collapsed .expanded-only {
+  display: none !important;
+}
+
+/* Ensure sidebar is visible on special pages */
+body:has([id="cover-letter-page"]) .sidebar.collapsed,
+body:has([class*="resume-page"]) .sidebar.collapsed {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Completely hide expanded sidebar on special pages */
+body:has([id="cover-letter-page"]) .sidebar:not(.collapsed),
+body:has([class*="resume-page"]) .sidebar:not(.collapsed) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+/* Prevent any transitions during page navigation */
+.page-transitioning *,
+body.page-transitioning * {
+  transition: none !important;
+  animation: none !important;
+}

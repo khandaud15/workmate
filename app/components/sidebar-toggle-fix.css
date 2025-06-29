@@ -1,0 +1,10 @@
+/* Ensure sidebar toggle button is always visible on mobile */
+@media (max-width: 1023px) {
+  .sidebar-toggle {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 9999 !important;
+  }
+}

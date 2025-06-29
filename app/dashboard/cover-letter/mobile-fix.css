@@ -1,0 +1,65 @@
+/* Mobile-specific fixes for cover letter page */
+
+/* Ensure mobile sidebar is visible and properly styled */
+@media (max-width: 1023px) {
+  /* Hide desktop sidebar on mobile */
+  .sidebar:not(.mobile-sidebar) {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
+  }
+  
+  /* Ensure main content takes full width */
+  .cover-letter-page {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Force mobile sidebar to be visible when open - CRITICAL FIX */
+  body .mobile-sidebar {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 280px !important;
+    min-width: 280px !important;
+    max-width: 280px !important;
+    height: 100% !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 99999 !important;
+    background-color: #0a192f !important;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8) !important;
+    transform: translateX(0) !important;
+    transition: none !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Make sure no other styles can hide the sidebar */
+  body .cover-letter-page .mobile-sidebar,
+  body .dashboard-layout .mobile-sidebar,
+  body #__next .mobile-sidebar {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* Ensure toggle button is visible */
+  .sidebar-toggle {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9998 !important;
+  }
+}

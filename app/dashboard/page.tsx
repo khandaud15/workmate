@@ -411,16 +411,8 @@ export default function DashboardPage() {
                 type="button" 
                 className={`menu-item w-full text-left relative ${showCoverLetter ? 'active' : ''}`}
                 onClick={() => {
-                  setShowDashboard(false);
-                  setShowResume(false);
-                  setShowCoverLetter(true);
-                  setShowJobTracker(false);
-                  setShowCopilot(false);
-                  setShowPlayground(false);
-                  setShowAccountSettings(false);
-                  setIsSidebarOpen(false);
-                  // Auto-collapse sidebar when section is clicked
-                  setIsSidebarCollapsed(true);
+                  // Navigate to the dedicated cover letter page instead of showing the dashboard section
+                  router.push('/dashboard/cover-letter');
                 }}
                 title="Cover Letter"
                 onMouseEnter={e => handleSidebarTooltip(e, 'Cover Letter')}

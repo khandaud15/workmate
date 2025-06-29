@@ -1,0 +1,66 @@
+/* CSS to prevent sidebar flicker during navigation */
+.sidebar {
+  /* Disable all transitions to prevent flicker */
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Force collapsed state for specific pages on desktop only */
+@media (min-width: 1024px) {
+  body:has([id="cover-letter-page"]) .sidebar,
+  body:has([class*="resume-page"]) .sidebar {
+    width: 80px !important;
+    max-width: 80px !important;
+  }
+}
+
+/* Hide expanded sidebar during page transitions */
+.page-transitioning .sidebar:not(.collapsed),
+body.page-transitioning .sidebar:not(.collapsed) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Hide sidebar completely on mobile for resume and cover letter pages */
+@media (max-width: 1023px) {
+  body:has([id="cover-letter-page"]) .sidebar:not(.mobile-sidebar),
+  body:has([class*="resume-page"]) .sidebar:not(.mobile-sidebar) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Ensure collapsed sidebar is always visible on specific pages - desktop only */
+@media (min-width: 1024px) {
+  body:has([id="cover-letter-page"]) .sidebar.collapsed,
+  body:has([class*="resume-page"]) .sidebar.collapsed {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Prevent any animations during transitions */
+.page-transitioning *,
+body.page-transitioning * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Force sidebar width during transitions */
+.sidebar.collapsed {
+  width: 80px !important;
+  max-width: 80px !important;
+}
+
+.sidebar.expanded {
+  width: 280px !important;
+  max-width: 280px !important;
+}

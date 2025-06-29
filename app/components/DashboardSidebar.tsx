@@ -1,6 +1,8 @@
 'use client';
 
 import './DashboardSidebar.css';
+import './sidebar-fix.css'; // Import the sidebar fix CSS
+import './collapsed-sidebar.css'; // Import specialized collapsed sidebar CSS
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -25,6 +27,7 @@ type DashboardSidebarProps = {
   setIsMobileSidebarOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   toggleSidebarCollapse?: () => void;
   isSidebarCollapsed?: boolean;
+  hideExpandedSidebar?: boolean;
 };
 
 export default function DashboardSidebar({ 
@@ -33,30 +36,30 @@ export default function DashboardSidebar({
   isMobileSidebarOpen,
   setIsMobileSidebarOpen,
   toggleSidebarCollapse,
-  isSidebarCollapsed: propIsSidebarCollapsed
+  isSidebarCollapsed: propIsSidebarCollapsed,
+  hideExpandedSidebar = false
 }: DashboardSidebarProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
   
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // Use the prop if provided, otherwise use local state
-  const [localIsSidebarCollapsed, setLocalIsSidebarCollapsed] = useState(defaultCollapsed);
-  const isSidebarCollapsed = propIsSidebarCollapsed !== undefined ? propIsSidebarCollapsed : localIsSidebarCollapsed;
+  // Check if we're on the cover letter or resume page
+  const isCoverLetterPage = pathname?.includes('/dashboard/cover-letter');
+  const isResumePage = pathname?.includes('/dashboard/resume');
+  
+  // Use prop for sidebar collapsed state
+  const isSidebarCollapsed = propIsSidebarCollapsed ?? defaultCollapsed;
   
   // Helper function to handle sidebar collapse state
-  const handleSidebarCollapse = (collapsed: boolean) => {
-    if (toggleSidebarCollapse && propIsSidebarCollapsed !== undefined) {
-      // If parent is controlling the state, call the parent's toggle function
+  const handleSidebarCollapse = () => {
+    if (toggleSidebarCollapse) {
       toggleSidebarCollapse();
-    } else {
-      // Otherwise use local state
-      setLocalIsSidebarCollapsed(collapsed);
     }
   };
   
   const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({ top: 0, left: 0, display: 'none', position: 'fixed' });
   const [tooltipContent, setTooltipContent] = useState('');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
   // DRY helper for sidebar tooltips
   const handleSidebarTooltip = (e: React.MouseEvent, label: string) => {
@@ -87,18 +90,64 @@ export default function DashboardSidebar({
     return false;
   };
 
+  // Force debug log for mobile sidebar state
+  console.log('DashboardSidebar rendering with:', {
+    isMobileSidebarOpen,
+    pathname,
+    isCoverLetterPage,
+    isResumePage
+  });
+
+  // Force debug log for the actual DOM element
+  useEffect(() => {
+    if (isMobileSidebarOpen) {
+      console.log('Mobile sidebar should be open now');
+      // Force a check of the DOM after render
+      setTimeout(() => {
+        const sidebarElement = document.querySelector('.mobile-sidebar');
+        console.log('Mobile sidebar element:', sidebarElement);
+      }, 100);
+    }
+  }, [isMobileSidebarOpen]);
+
   return (
     <>
       {/* Mobile Sidebar - only visible on mobile when open */}
-      <div 
-        className={`sidebar mobile-sidebar fixed top-0 left-0 h-full z-50 lg:hidden ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-        role="navigation"
-        aria-label="Mobile navigation"
-      >
+      {isMobileSidebarOpen && (
+        <div 
+          className="sidebar mobile-sidebar fixed top-0 left-0 h-full z-[9999] lg:hidden"
+          role="navigation"
+          aria-label="Mobile navigation"
+          style={{
+            display: 'block', 
+            visibility: 'visible', 
+            opacity: 1, 
+            zIndex: 9999,
+            backgroundColor: '#0a192f',
+            boxShadow: '0 0 15px rgba(0,0,0,0.7)',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '280px',
+            maxWidth: '280px',
+            height: '100%',
+            overflowY: 'auto',
+            transform: 'translateX(0)',
+            transition: 'transform 0.3s ease-in-out'
+          }}
+          onClick={(e) => {
+            // Prevent clicks inside the sidebar from closing it
+            e.stopPropagation();
+          }}
+        >
         {/* Close Button for Mobile */}
         <button 
           className="absolute right-4 top-4 text-white hover:text-gray-200 transition-colors"
-          onClick={() => setIsMobileSidebarOpen?.(false)}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent event bubbling
+            console.log('Close button clicked');
+            setIsMobileSidebarOpen?.(false);
+          }}
           aria-label="Close sidebar"
         >
           <FaTimes size={20} />
@@ -165,16 +214,26 @@ export default function DashboardSidebar({
             </Link>
             
             {/* Cover Letter */}
-            <Link 
-              href="/dashboard/cover-letter"
+            <div 
               className={`menu-item w-full text-left relative ${isActive('/dashboard/cover-letter') ? 'active' : ''}`}
               onClick={() => {
                 setIsMobileSidebarOpen?.(false);
+                // Set transitioning state to prevent flicker
+                setIsTransitioning(true);
+                // Force the sidebar to be collapsed immediately
+                document.body.classList.add('page-transitioning');
+                // Use Next.js router for smooth navigation
+                router.push('/dashboard/cover-letter');
+                // Remove transitioning class after navigation
+                setTimeout(() => {
+                  document.body.classList.remove('page-transitioning');
+                  setIsTransitioning(false);
+                }, 500);
               }}
             >
               <FaEnvelopeOpenText className="icon" />
               <span>Cover Letter</span>
-            </Link>
+            </div>
             
             {/* Job Tracker */}
             <Link 
@@ -220,18 +279,21 @@ export default function DashboardSidebar({
           <button style={{ background: '#2563eb' }}>Upgrade</button>
         </div>
       </div>
+      )}
 
       {/* Desktop Sidebar - only visible on lg and above, hidden when mobile sidebar is open */}
-      <div 
-        className={`sidebar ${isMobileSidebarOpen ? 'hidden' : 'hidden lg:block'} ${isSidebarCollapsed ? 'collapsed' : 'expanded'}`}
+      {!isMobileSidebarOpen && (
+        <div 
+          className={`sidebar ${isTransitioning ? 'page-transitioning' : ''} hidden lg:block ${isCoverLetterPage || isResumePage ? 'collapsed' : (isSidebarCollapsed || hideExpandedSidebar ? 'collapsed' : 'expanded')}`}
         role="navigation"
         aria-label="Main navigation"
+        style={{ transition: 'none' }} /* Disable transitions to prevent flicker */
       >
         {/* Close Button - Simple X at top right of sidebar */}
-        {isSidebarOpen && (
+        {isMobileSidebarOpen && (
           <button 
             className="absolute right-4 top-4 z-50 text-white hover:text-gray-200 transition-colors lg:hidden"
-            onClick={() => setIsSidebarOpen(false)}
+            onClick={() => setIsMobileSidebarOpen?.(false)}
             aria-label="Close sidebar"
           >
             <FaTimes size={20} />
@@ -282,61 +344,90 @@ export default function DashboardSidebar({
             {!isSidebarCollapsed && <div className="menu-label">Workspace</div>}
             
             {/* Dashboard */}
-            <Link 
-              href="/dashboard"
+            <div 
               className={`menu-item w-full text-left relative ${isActive('/dashboard') && pathname === '/dashboard' ? 'active' : ''}`}
               onClick={() => {
-                setIsSidebarOpen(false);
+                setIsMobileSidebarOpen?.(false);
                 // Expand sidebar when Home is clicked
-                handleSidebarCollapse(false);
+                handleSidebarCollapse();
+                // Set transitioning state to prevent flicker
+                setIsTransitioning(true);
+                document.body.classList.add('page-transitioning');
+                // Use Next.js router for smooth navigation
+                router.push('/dashboard');
+                // Remove transitioning class after navigation
+                setTimeout(() => {
+                  document.body.classList.remove('page-transitioning');
+                  setIsTransitioning(false);
+                }, 500);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Home')}
               onMouseLeave={handleSidebarTooltipLeave}
             >
               <FaHome className="icon" />
               {!isSidebarCollapsed && <span>Home</span>}
-            </Link>
+            </div>
             
             {/* Resume */}
-            <Link 
-              href="/dashboard/resume"
+            <div 
               className={`menu-item w-full text-left relative ${isActive('/dashboard/resume') ? 'active' : ''}`}
               onClick={() => {
-                setIsSidebarOpen(false);
+                setIsMobileSidebarOpen?.(false);
                 // Auto-collapse sidebar when section is clicked
-                handleSidebarCollapse(true);
+                handleSidebarCollapse();
+                // Set transitioning state to prevent flicker
+                setIsTransitioning(true);
+                // Force the sidebar to be collapsed immediately
+                document.body.classList.add('page-transitioning');
+                // Use Next.js router for smooth navigation
+                router.push('/dashboard/resume');
+                // Remove transitioning class after navigation
+                setTimeout(() => {
+                  document.body.classList.remove('page-transitioning');
+                  setIsTransitioning(false);
+                }, 500);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Resume')}
               onMouseLeave={handleSidebarTooltipLeave}
             >
               <FaFileAlt className="icon" />
               {!isSidebarCollapsed && <span>Resume</span>}
-            </Link>
+            </div>
             
             {/* Cover Letter */}
-            <Link 
-              href="/dashboard/cover-letter"
+            <div 
               className={`menu-item w-full text-left relative ${isActive('/dashboard/cover-letter') ? 'active' : ''}`}
               onClick={() => {
-                setIsSidebarOpen(false);
+                setIsMobileSidebarOpen?.(false);
                 // Auto-collapse sidebar when section is clicked
-                handleSidebarCollapse(true);
+                handleSidebarCollapse();
+                // Set transitioning state to prevent flicker
+                setIsTransitioning(true);
+                // Force the sidebar to be collapsed immediately
+                document.body.classList.add('page-transitioning');
+                // Use Next.js router for smooth navigation
+                router.push('/dashboard/cover-letter');
+                // Remove transitioning class after navigation
+                setTimeout(() => {
+                  document.body.classList.remove('page-transitioning');
+                  setIsTransitioning(false);
+                }, 500);
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Cover Letter')}
               onMouseLeave={handleSidebarTooltipLeave}
             >
               <FaEnvelopeOpenText className="icon" />
               {!isSidebarCollapsed && <span>Cover Letter</span>}
-            </Link>
+            </div>
             
             {/* Job Tracker */}
             <Link 
               href="/dashboard/job-tracker"
               className={`menu-item w-full text-left relative ${isActive('/dashboard/job-tracker') ? 'active' : ''}`}
               onClick={() => {
-                setIsSidebarOpen(false);
+                setIsMobileSidebarOpen?.(false);
                 // Auto-collapse sidebar when section is clicked
-                handleSidebarCollapse(true);
+                handleSidebarCollapse();
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Job Tracker')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -350,9 +441,9 @@ export default function DashboardSidebar({
               href="/dashboard/copilot"
               className={`menu-item w-full text-left relative ${isActive('/dashboard/copilot') ? 'active' : ''}`}
               onClick={() => {
-                setIsSidebarOpen(false);
+                setIsMobileSidebarOpen?.(false);
                 // Auto-collapse sidebar when section is clicked
-                handleSidebarCollapse(true);
+                handleSidebarCollapse();
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Copilot')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -366,9 +457,9 @@ export default function DashboardSidebar({
               href="/dashboard/playground"
               className={`menu-item w-full text-left relative ${isActive('/dashboard/playground') ? 'active' : ''}`}
               onClick={() => {
-                setIsSidebarOpen(false);
+                setIsMobileSidebarOpen?.(false);
                 // Auto-collapse sidebar when section is clicked
-                handleSidebarCollapse(true);
+                handleSidebarCollapse();
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Playground')}
               onMouseLeave={handleSidebarTooltipLeave}
@@ -387,6 +478,7 @@ export default function DashboardSidebar({
           </div>
         )}
       </div>
+      )}
 
       {/* Tooltip for collapsed sidebar */}
       <div 
