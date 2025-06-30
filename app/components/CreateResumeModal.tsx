@@ -102,18 +102,54 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
       if (resumeName && resumeName.trim() !== '') {
         formData.append('resumeName', resumeName);
       }
-      const res = await fetch('/api/resume/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const result = await res.json();
-      if (!res.ok || result.error) {
-        throw new Error(result.error || 'Upload failed.');
+      
+      // Set a timeout for the fetch request (120 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
+      
+      try {
+        const res = await fetch('/api/resume/upload', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!res.ok) {
+          throw new Error(`Upload failed with status: ${res.status}`);
+        }
+        
+        // Check if response is empty
+        const text = await res.text();
+        if (!text) {
+          throw new Error('Empty response from server');
+        }
+        
+        // Parse the response text as JSON
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch (parseError) {
+          console.error('Failed to parse response:', text);
+          throw new Error('Invalid response format from server');
+        }
+        
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        
+        // Use the backend's storage file name (with timestamp) for all future metadata updates
+        setUploadedFileName(result.fileName || result.storageName || file.name);
+      } catch (fetchError: any) {
+        if (fetchError.name === 'AbortError') {
+          throw new Error('Upload request timed out. Please try again.');
+        }
+        throw fetchError;
       }
-      // Use the backend's storage file name (with timestamp) for all future metadata updates
-      setUploadedFileName(result.fileName || result.storageName || file.name);
     } catch (err: any) {
-      setUploadError(err.message || 'Upload failed.');
+      console.error('Resume upload error:', err);
+      setUploadError(err.message || 'Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -143,37 +179,102 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
       
       console.log('Updating metadata with isTargeted:', isTargeted);
       
-      // Call a new API endpoint to update resume metadata
-      const res = await fetch('/api/resume/update-metadata', {
-        method: 'POST',
-        body: formData,
-      });
+      // Set a timeout for the fetch request (60 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
       
-      // If the endpoint doesn't exist yet, fall back to re-uploading
-      if (res.status === 404 && selectedFile) {
-        // Re-upload with metadata if update endpoint doesn't exist
-        const reuploadFormData = new FormData();
-        reuploadFormData.append('file', selectedFile);
-        if (resumeName) reuploadFormData.append('resumeName', resumeName);
-        reuploadFormData.append('isTargeted', isTargeted ? 'true' : 'false');
-        
-        const reuploadRes = await fetch('/api/resume/upload', {
+      try {
+        // Call a new API endpoint to update resume metadata
+        const res = await fetch('/api/resume/update-metadata', {
           method: 'POST',
-          body: reuploadFormData,
+          body: formData,
+          signal: controller.signal
         });
         
-        const reuploadResult = await reuploadRes.json();
-        if (!reuploadRes.ok || reuploadResult.error) {
-          throw new Error(reuploadResult.error || 'Failed to save resume metadata.');
+        clearTimeout(timeoutId);
+        
+        // If the endpoint doesn't exist yet, fall back to re-uploading
+        if (res.status === 404 && selectedFile) {
+          console.log('Metadata endpoint not found, falling back to re-upload');
+          // Re-upload with metadata if update endpoint doesn't exist
+          const reuploadFormData = new FormData();
+          reuploadFormData.append('file', selectedFile);
+          if (resumeName) reuploadFormData.append('resumeName', resumeName);
+          reuploadFormData.append('isTargeted', isTargeted ? 'true' : 'false');
+          
+          const reuploadController = new AbortController();
+          const reuploadTimeoutId = setTimeout(() => reuploadController.abort(), 60000);
+          
+          try {
+            const reuploadRes = await fetch('/api/resume/upload', {
+              method: 'POST',
+              body: reuploadFormData,
+              signal: reuploadController.signal
+            });
+            
+            clearTimeout(reuploadTimeoutId);
+            
+            if (!reuploadRes.ok) {
+              throw new Error(`Upload failed with status: ${reuploadRes.status}`);
+            }
+            
+            // Check if response is empty
+            const text = await reuploadRes.text();
+            if (!text) {
+              throw new Error('Empty response from server');
+            }
+            
+            // Parse the response text as JSON
+            let reuploadResult;
+            try {
+              reuploadResult = JSON.parse(text);
+            } catch (parseError) {
+              console.error('Failed to parse response:', text);
+              throw new Error('Invalid response format from server');
+            }
+            
+            if (reuploadResult.error) {
+              throw new Error(reuploadResult.error);
+            }
+            
+            // Save the resume ID for the contact form
+            setSavedResumeId(reuploadResult.fileName || reuploadResult.storageName || uploadedFileName);
+          } catch (reuploadError: any) {
+            if (reuploadError.name === 'AbortError') {
+              throw new Error('Upload request timed out. Please try again.');
+            }
+            throw reuploadError;
+          }
+        } else {
+          // Process normal response from metadata update endpoint
+          if (!res.ok) {
+            throw new Error(`Metadata update failed with status: ${res.status}`);
+          }
+          
+          // Check if response is empty
+          const text = await res.text();
+          if (!text) {
+            throw new Error('Empty response from server');
+          }
+          
+          // Parse the response text as JSON
+          let result;
+          try {
+            result = JSON.parse(text);
+          } catch (parseError) {
+            console.error('Failed to parse response:', text);
+            throw new Error('Invalid response format from server');
+          }
+          
+          if (result.error) {
+            throw new Error(result.error);
+          }
         }
-        // Save the resume ID for the contact form
-        setSavedResumeId(reuploadResult.fileName || reuploadResult.storageName || uploadedFileName);
-      } else {
-        // Process normal response from metadata update endpoint
-        const result = await res.json();
-        if (!res.ok || result.error) {
-          throw new Error(result.error || 'Failed to save resume metadata.');
+      } catch (fetchError: any) {
+        if (fetchError.name === 'AbortError') {
+          throw new Error('Request timed out. Please try again.');
         }
+        throw fetchError;
       }
       
       // Reset state
@@ -190,7 +291,8 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
       // Close the modal after saving, do not show contact form
       onClose();
     } catch (err: any) {
-      setUploadError(err.message || 'Upload failed.');
+      console.error('Resume save error:', err);
+      setUploadError(err.message || 'Save failed. Please try again.');
     } finally {
       setUploading(false);
     }

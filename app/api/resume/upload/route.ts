@@ -181,18 +181,57 @@ export async function POST(request: Request) {
       });
 
       const cloudRunUrl = 'https://resume-parser-84814621060.us-central1.run.app/parse-resume';
-      const parseResponse = await fetch(cloudRunUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firebase_pdf_path: filePath,
-          parsed_json_path: parsedFilePath
-        })
-      });
       
-      const result = await parseResponse.json();
-      if (result.status !== 'success') {
-        throw new Error('Python API failed: ' + JSON.stringify(result));
+      // Set a timeout for the parsing request (90 seconds)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      
+      try {
+        console.log('[UPLOAD API] Sending request to Cloud Run parser service');
+        const parseResponse = await fetch(cloudRunUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firebase_pdf_path: filePath,
+            parsed_json_path: parsedFilePath
+          }),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!parseResponse.ok) {
+          console.error('[UPLOAD API] Parser service returned error status:', parseResponse.status);
+          throw new Error(`Parser service returned status ${parseResponse.status}`);
+        }
+        
+        // Safely parse the response
+        const text = await parseResponse.text();
+        if (!text) {
+          console.error('[UPLOAD API] Empty response from parser service');
+          throw new Error('Empty response from parser service');
+        }
+        
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch (parseError) {
+          console.error('[UPLOAD API] Failed to parse response:', text);
+          throw new Error('Invalid response format from parser service');
+        }
+        
+        if (result.status !== 'success') {
+          console.error('[UPLOAD API] Parser service reported failure:', result);
+          throw new Error('Python API failed: ' + JSON.stringify(result));
+        }
+        
+        console.log('[UPLOAD API] Successfully received parser response');
+      } catch (fetchError: any) {
+        if (fetchError.name === 'AbortError') {
+          console.error('[UPLOAD API] Parser request timed out');
+          throw new Error('Resume parsing timed out. The server might be busy, please try again later.');
+        }
+        throw fetchError;
       }
       
       // Get signed URL for parsed resume JSON
@@ -202,10 +241,25 @@ export async function POST(request: Request) {
         expires: Date.now() + 365 * 24 * 60 * 60 * 1000
       });
 
+      // Fetch the parsed data from storage to include in the response
+      let parsedData = null;
+      try {
+        const [parsedFileExists] = await parsedStorageFile.exists();
+        if (parsedFileExists) {
+          const [parsedFileContents] = await parsedStorageFile.download();
+          parsedData = JSON.parse(parsedFileContents.toString());
+          console.log('[UPLOAD API] Successfully retrieved parsed data from storage');
+        } else {
+          console.warn('[UPLOAD API] Parsed file does not exist yet');
+        }
+      } catch (parseError) {
+        console.error('[UPLOAD API] Error retrieving parsed data:', parseError);
+      }
+
       // Update parsed_resumes document with parsed data
       await resumeRef.update({
         status: 'parsed',
-        parsedResumeData: result.parsed || null,
+        parsedResumeData: parsedData,
         parsedResumeUrl: parsedUrl,
         parsedResumeTimestamp: new Date()
       });
