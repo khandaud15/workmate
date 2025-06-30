@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaFileAlt, FaLock, FaEllipsisV, FaPlus } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import CreateResumeModal from './CreateResumeModal';
+import { normalizeResumeId } from '@/app/middleware/resumeIdNormalizer';
 
 interface Resume {
   id: string;
@@ -141,9 +142,14 @@ const ResumeList: React.FC = () => {
               style={{ minHeight: '48px' }}
               onClick={() => {
                 // Use parsed resume ID if available, otherwise fall back to storage name
-                const resumeId = resume.parsedResumeId || resume.storageName;
-                console.log('Navigating to resume:', {
-                  resumeId,
+                let resumeId = resume.parsedResumeId || resume.storageName;
+                
+                // Normalize the resumeId to ensure consistent URL format
+                resumeId = normalizeResumeId(resumeId);
+                
+                console.log('Navigating to resume with normalized ID:', {
+                  normalizedId: resumeId,
+                  originalId: resume.parsedResumeId || resume.storageName,
                   parsedResumeId: resume.parsedResumeId,
                   storageName: resume.storageName
                 });

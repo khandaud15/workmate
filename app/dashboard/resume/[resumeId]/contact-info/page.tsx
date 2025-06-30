@@ -1,6 +1,7 @@
 'use client';
 
-import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { normalizeResumeId } from '@/app/middleware/resumeIdNormalizer';
 // Import custom hook for resume name
 // (dynamic import is used in the component for SSR safety)
 import Link from 'next/link';
@@ -96,18 +97,13 @@ export default function ContactInfoPage() {
                           onClick={() => {
                             setDropdownOpen(false);
                             // Extract just the numeric ID part (before any underscore)
-                            let targetId = r.id || '';
-                            if (r.storageName) {
-                              // If it's a filename with timestamp (like 1749488145139_Daud2.pdf)
-                              // Extract just the numeric part before the underscore
-                              const match = r.storageName.match(/^(\d+)/);
-                              if (match && match[1]) {
-                                targetId = match[1];
-                              } else {
-                                targetId = r.storageName;
-                              }
-                            }
-                            console.log('DEBUG: Switching to resume:', { name: r.name, rawId: r.id, storageName: r.storageName, targetId });
+                            // Use the ID or storageName, whichever is available
+                            let targetId = r.id || r.storageName || '';
+                            
+                            // Normalize the resumeId to ensure consistent URL format
+                            targetId = normalizeResumeId(targetId);
+                            
+                            console.log('DEBUG: Switching to resume with normalized ID:', { name: r.name, normalizedId: targetId, rawId: r.id, storageName: r.storageName });
                             // Force a full page navigation to the same route pattern
                             router.push(`/dashboard/resume/${targetId}/contact-info`);
                           }}
@@ -148,7 +144,9 @@ export default function ContactInfoPage() {
                   key={section}
                   onClick={() => {
                     if (section !== "FINISH UP & PREVIEW") {
-                      router.push(`/dashboard/resume/${resumeId}/${section.toLowerCase()}`);
+                      // Normalize the resumeId to ensure consistent URL format
+                      const normalizedId = normalizeResumeId(resumeId);
+                      router.push(`/dashboard/resume/${normalizedId}/${section.toLowerCase()}`);
                     }
                   }}
                   className={
@@ -286,8 +284,9 @@ export default function ContactInfoPage() {
                     console.log('Contact info saved successfully to Firestore');
                     // Update the form state with the cleaned URLs
                     setContactInfo(updatedContactInfo);
-                    // Navigate to the experience page
-                    router.push(`/dashboard/resume/${resumeId}/experience`);
+                    // Navigate to the experience page with normalized resumeId
+                    const normalizedId = normalizeResumeId(resumeId);
+                    router.push(`/dashboard/resume/${normalizedId}/experience`);
                   } else {
                     console.error('Server returned error while saving:', data.error);
                     alert('Failed to save contact information. Please try again.');

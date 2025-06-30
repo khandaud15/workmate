@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import { normalizeResumeId } from '@/app/middleware/resumeIdNormalizer';
 import { useResumeName } from '../../hooks/useResumeName';
 
 interface ResumeNameDropdownProps {
@@ -84,15 +85,12 @@ export default function ResumeNameDropdown({ resumeId, currentSection }: ResumeN
                 className={`block w-full text-left px-4 py-2 text-sm truncate hover:bg-[#1e2d3d] ${((r.storageName === resumeId || r.id === resumeId) ? 'bg-[#1e2d3d] text-white font-semibold' : 'text-gray-200')}`}
                 onClick={() => {
                   setDropdownOpen(false);
-                  let targetId = r.id || '';
-                  if (r.storageName) {
-                    const match = r.storageName.match(/^(\d+)/);
-                    if (match && match[1]) {
-                      targetId = match[1];
-                    } else {
-                      targetId = r.storageName;
-                    }
-                  }
+                  // Use the ID or storageName, whichever is available
+                  let targetId = r.id || r.storageName || '';
+                  
+                  // Normalize the resumeId to ensure consistent URL format
+                  targetId = normalizeResumeId(targetId);
+                  
                   router.push(`/dashboard/resume/${targetId}/${currentSection}`);
                 }}
               >

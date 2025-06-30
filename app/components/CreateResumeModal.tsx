@@ -37,17 +37,6 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           text-align: left !important;
         }
         
-        .resume-modal-target-section {
-          padding-left: 0 !important;
-          margin-left: 0 !important;
-        }
-        
-        .resume-modal-target-heading {
-          padding-left: 0 !important;
-          margin-left: 0 !important;
-          text-indent: 0 !important;
-        }
-        
         hr.resume-modal-divider {
           width: calc(100% + 48px) !important;
           margin-left: -24px !important;
@@ -281,11 +270,11 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
             )}
           </div>
           <hr className="my-6 border-gray-700 resume-modal-divider" />
-          <div className="flex items-center mb-2 resume-modal-text resume-modal-target-section">
-            <span className="text-white font-semibold text-lg mr-3 resume-modal-target-heading">Target your resume</span>
+          <div className="flex items-center mb-2 resume-modal-text">
+            <span className="text-white font-semibold text-lg mr-3">Target your resume</span>
             <input type="checkbox" className="toggle toggle-sm" checked={isTargeted} onChange={e => setIsTargeted(e.target.checked)} />
           </div>
-          <p className="text-xs text-gray-400 mb-6 resume-modal-text resume-modal-target-section">A targeted resume is a resume tailored to a specific job opening. You have a significantly higher chance of getting an interview when you make it clear you have the experience required for the job.</p>
+          <p className="text-xs text-gray-400 mb-6 resume-modal-text">A targeted resume is a resume tailored to a specific job opening. You have a significantly higher chance of getting an interview when you make it clear you have the experience required for the job.</p>
           <div className="flex justify-between gap-3 mt-8 resume-modal-button-container">
             <button
               className="min-w-[120px] px-6 py-2 rounded-md border border-gray-700 text-white bg-[#1f2937] font-medium hover:bg-[#374151] hover:border-[#2563eb] transition resume-modal-button"

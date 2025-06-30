@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { normalizeResumeId } from '@/app/middleware/resumeIdNormalizer';
 
 interface ResumeNavigationProps {
   resumeId: string;
@@ -56,7 +57,9 @@ export default function ResumeNavigation({ resumeId, currentSection }: ResumeNav
                 } else {
                   path = section.toLowerCase();
                 }
-                router.push(`/dashboard/resume/${resumeId}/${path}`);
+                // Normalize the resumeId to ensure consistent URL patterns
+                const normalizedId = normalizeResumeId(resumeId);
+                router.push(`/dashboard/resume/${normalizedId}/${path}`);
               }}
               className={`text-xs font-bold px-4 py-2 rounded-md uppercase tracking-wide transition-colors duration-150 ${(section === 'Awards & Honors' ? 'awards-and-honors' : section.toLowerCase()) === currentSection ? "border border-[#2563eb] text-gray-300 bg-transparent hover:bg-[#2563eb] hover:bg-opacity-10" : "border border-[#1e2d3d] text-gray-300 bg-transparent hover:bg-[#0d1b2a] hover:border-[#2563eb] hover:text-white"}`}
               style={{ userSelect: "none", minWidth: 'fit-content' }}

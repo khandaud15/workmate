@@ -1,38 +1,32 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { getToken } from 'next-auth/jwt'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { shouldNormalizeUrl } from './app/middleware/resumeIdNormalizer';
 
-export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request })
-  const path = request.nextUrl.pathname
-
-  // Public paths that don't require authentication
-  const publicPaths = ['/', '/signup', '/signin', '/pricing', '/copilot', '/cover-letter', '/forgot-password']
-
-  // Root path and public paths should always be accessible
-  if (path === '/' || publicPaths.includes(path)) {
-    return NextResponse.next()
+/**
+ * Middleware to normalize resume URLs
+ * This ensures that all resume URLs use the timestamp-only format
+ * Example: /dashboard/resume/1751268991175_Daud_Resume.pdf/experience -> /dashboard/resume/1751268991175/experience
+ */
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  // Check if this is a resume URL that needs normalization
+  const { shouldNormalize, normalizedUrl } = shouldNormalizeUrl(pathname);
+  
+  if (shouldNormalize) {
+    // Create a new URL with the normalized path
+    const url = request.nextUrl.clone();
+    url.pathname = normalizedUrl;
+    
+    // Redirect to the normalized URL
+    return NextResponse.redirect(url);
   }
-
-  // If the user is not authenticated and trying to access protected pages, redirect to signup
-  if (!token && !publicPaths.includes(path)) {
-    const signupUrl = new URL('/signup', request.url)
-    return NextResponse.redirect(signupUrl)
-  }
-
-  const response = NextResponse.next()
-  response.headers.set('x-invoke-path', path)
-  return response
-
-  // If the user is authenticated and trying to access auth pages, redirect to dashboard
-  if (token && (path === '/signup' || path === '/signin')) {
-    const dashboardUrl = new URL('/dashboard', request.url)
-    return NextResponse.redirect(dashboardUrl)
-  }
-
-  return NextResponse.next()
+  
+  // If no normalization needed, continue with the request
+  return NextResponse.next();
 }
 
+// Only run the middleware on resume-related paths
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-}
+  matcher: '/dashboard/resume/:path*',
+};

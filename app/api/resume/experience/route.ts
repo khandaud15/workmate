@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/firebase';
+import { normalizeResumeId } from '@/app/middleware/resumeIdNormalizer';
 
 export async function GET(req: Request) {
   try {
@@ -17,31 +18,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: false, error: 'Resume ID is required' }, { status: 400 });
     }
 
-    console.log(`Fetching data for resumeId: ${resumeId}`);
+    console.log(`[EXPERIENCE API] Fetching data for normalized resumeId: ${resumeId}`);
     
-    // Extract timestamp from filename if present (this is the actual document ID in Firestore)
-    const timestampMatch = resumeId.match(/^(\d+)/);
-    const timestamp = timestampMatch ? timestampMatch[1] : null;
-    
-    console.log(`[EXPERIENCE API] Extracted timestamp from resumeId: ${timestamp || 'none'} (from ${resumeId})`);
-    
-    // First try to get the resume directly by the timestamp (which is the document ID in Firestore)
-    let resumeDoc;
-    if (timestamp) {
-      console.log(`[EXPERIENCE API] Trying to find resume by timestamp ID: ${timestamp}`);
-      const timestampRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(timestamp);
-      resumeDoc = await timestampRef.get();
-      if (resumeDoc.exists) {
-        console.log(`[EXPERIENCE API] Found resume by timestamp ID: ${timestamp}`);
-      }
-    }
-    
-    // If not found by timestamp, try the full ID
-    if (!resumeDoc || !resumeDoc.exists) {
-      console.log(`[EXPERIENCE API] Trying to find resume by full ID: ${resumeId}`);
-      const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
-      resumeDoc = await resumeRef.get();
-    }
+    // Since we've already normalized the resumeId, we can use it directly as the document ID
+    const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
+    const resumeDoc = await resumeRef.get();
 
     if (!resumeDoc.exists) {
       console.log('Resume document not found.');

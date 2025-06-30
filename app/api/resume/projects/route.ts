@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { db } from '@/lib/firebase';
+import { normalizeResumeId } from '@/app/middleware/resumeIdNormalizer';
 
 export async function GET(req: Request) {
   try {
@@ -11,37 +12,19 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const resumeId = searchParams.get('resumeId');
+    let resumeId = searchParams.get('resumeId');
 
     if (!resumeId) {
       return NextResponse.json({ success: false, error: 'Resume ID is required' }, { status: 400 });
     }
 
-    console.log(`Fetching data for resumeId: ${resumeId}`);
+    // Normalize the resumeId to ensure consistent handling
+    resumeId = normalizeResumeId(resumeId);
+    console.log(`[PROJECTS API] Fetching data for normalized resumeId: ${resumeId}`);
     
-    // Extract timestamp from filename if present (this is the actual document ID in Firestore)
-    const timestampMatch = resumeId.match(/^(\d+)/);
-    const timestamp = timestampMatch ? timestampMatch[1] : null;
-    
-    console.log(`[PROJECTS API] Extracted timestamp from resumeId: ${timestamp || 'none'} (from ${resumeId})`);
-    
-    // First try to get the resume directly by the timestamp (which is the document ID in Firestore)
-    let resumeDoc;
-    if (timestamp) {
-      console.log(`[PROJECTS API] Trying to find resume by timestamp ID: ${timestamp}`);
-      const timestampRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(timestamp);
-      resumeDoc = await timestampRef.get();
-      if (resumeDoc.exists) {
-        console.log(`[PROJECTS API] Found resume by timestamp ID: ${timestamp}`);
-      }
-    }
-    
-    // If not found by timestamp, try the full ID
-    if (!resumeDoc || !resumeDoc.exists) {
-      console.log(`[PROJECTS API] Trying to find resume by full ID: ${resumeId}`);
-      const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
-      resumeDoc = await resumeRef.get();
-    }
+    // Since we've already normalized the resumeId, we can use it directly as the document ID
+    const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
+    const resumeDoc = await resumeRef.get();
 
     if (!resumeDoc.exists) {
       console.log('Resume document not found.');
@@ -86,12 +69,15 @@ export async function POST(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const resumeId = searchParams.get('resumeId');
+    let resumeId = searchParams.get('resumeId');
 
     if (!resumeId) {
       console.log('No resumeId provided in URL params');
       return NextResponse.json({ success: false, error: 'Resume ID is required' }, { status: 400 });
     }
+    
+    // Normalize the resumeId to ensure consistent handling
+    resumeId = normalizeResumeId(resumeId);
 
     const body = await req.json();
     console.log('Request body:', JSON.stringify(body));
@@ -103,9 +89,9 @@ export async function POST(req: Request) {
     }
     
     console.log('Projects data to save:', JSON.stringify(Projects));
-    console.log(`Updating projects for resumeId: ${resumeId}`);
+    console.log(`Updating projects for normalized resumeId: ${resumeId}`);
     
-    // Use the same path as in the GET method
+    // Use the normalized resumeId directly as the document ID
     const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
     const resumeDoc = await resumeRef.get();
 
