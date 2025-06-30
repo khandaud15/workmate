@@ -9,6 +9,80 @@ interface CreateResumeModalProps {
 }
 
 const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, onResumeUploaded }) => {
+  // Add custom styles for mobile
+  React.useEffect(() => {
+    // Create a style element
+    const styleEl = document.createElement('style');
+    styleEl.id = 'resume-modal-mobile-styles';
+    
+    // Add CSS for wider input fields on mobile
+    styleEl.innerHTML = `
+      @media (max-width: 767px) {
+        .resume-modal-input, .resume-modal-button {
+          width: calc(100% + 48px) !important;
+          margin-left: -24px !important;
+          margin-right: -24px !important;
+          padding-left: 24px !important;
+          padding-right: 24px !important;
+          box-sizing: border-box !important;
+        }
+        
+        .resume-modal-text {
+          width: calc(100% + 48px) !important;
+          margin-left: -24px !important;
+          margin-right: -24px !important;
+          padding-left: 24px !important;
+          padding-right: 24px !important;
+          box-sizing: border-box !important;
+          text-align: left !important;
+        }
+        
+        .resume-modal-target-section {
+          padding-left: 0 !important;
+          margin-left: 0 !important;
+        }
+        
+        .resume-modal-target-heading {
+          padding-left: 0 !important;
+          margin-left: 0 !important;
+          text-indent: 0 !important;
+        }
+        
+        hr.resume-modal-divider {
+          width: calc(100% + 48px) !important;
+          margin-left: -24px !important;
+          margin-right: -24px !important;
+          box-sizing: border-box !important;
+        }
+        
+        .resume-modal-button-container {
+          display: flex;
+          width: calc(100% + 48px) !important;
+          margin-left: -24px !important;
+          margin-right: -24px !important;
+          padding-left: 24px !important;
+          padding-right: 24px !important;
+          box-sizing: border-box !important;
+          justify-content: space-between;
+        }
+        
+        .resume-modal-button-container button {
+          width: 48% !important;
+        }
+      }
+    `;
+    
+    // Add to document head
+    document.head.appendChild(styleEl);
+    
+    // Clean up on unmount
+    return () => {
+      const existingStyle = document.getElementById('resume-modal-mobile-styles');
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+    };
+  }, []);
   const [uploading, setUploading] = React.useState(false);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
   const [uploadedFileName, setUploadedFileName] = React.useState<string | null>(null);
@@ -159,7 +233,8 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">RESUME NAME *</label>
             <input
-              className="w-full rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-400 outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]"
+              className="w-full rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-white placeholder-gray-400 outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] resume-modal-input"
+              style={{ minHeight: '48px' }}
               placeholder="Enter here..."
               value={resumeName}
               onChange={e => setResumeName(e.target.value)}
@@ -167,7 +242,10 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           </div>
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">EXPERIENCE</label>
-            <select className="w-full rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-white outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb]">
+            <select 
+              className="w-full rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-white outline-none focus:ring-1 focus:ring-[#2563eb] focus:border-[#2563eb] resume-modal-input"
+              style={{ minHeight: '48px' }}
+            >
               <option className="bg-[#1f2937] text-gray-400">Select...</option>
               <option className="bg-[#1f2937] text-gray-400">0-1 years</option>
               <option className="bg-[#1f2937] text-gray-400">1-3 years</option>
@@ -177,12 +255,15 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
           </div>
           <div className="mb-6">
             <label className="block text-gray-400 text-sm mb-2">IMPORT YOUR EXISTING RESUME</label>
-            <label className="w-full flex justify-between items-center rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-gray-300 hover:bg-[#374151] hover:border-[#2563eb] cursor-pointer">
+            <label 
+              className="w-full flex justify-between items-center rounded-md border border-gray-700 bg-[#1f2937] px-4 py-3 text-gray-300 hover:bg-[#374151] hover:border-[#2563eb] cursor-pointer resume-modal-input"
+              style={{ minHeight: '48px' }}
+            >
               <span>Upload PDF, DOCx resume file</span>
               <span className="ml-2">&#8682;</span>
               <input type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleFileChange} />
             </label>
-            <p className="text-xs text-gray-500 mt-2">This process may take up to 60 seconds. Please be patient and keep this page open.</p>
+            <p className="text-gray-400 text-sm mt-2 resume-modal-text">This process may take up to 60 seconds. Please be patient and keep this page open.</p>
             {uploading && (
               <div className="text-xs text-yellow-300 mt-2 flex items-center gap-2">
                 <svg className="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -199,21 +280,21 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
               <div className="text-xs text-red-400 mt-2">{uploadError}</div>
             )}
           </div>
-          <hr className="my-6 border-gray-700" />
-          <div className="flex items-center mb-2">
-            <span className="text-white font-semibold text-lg mr-3">Target your resume</span>
+          <hr className="my-6 border-gray-700 resume-modal-divider" />
+          <div className="flex items-center mb-2 resume-modal-text resume-modal-target-section">
+            <span className="text-white font-semibold text-lg mr-3 resume-modal-target-heading">Target your resume</span>
             <input type="checkbox" className="toggle toggle-sm" checked={isTargeted} onChange={e => setIsTargeted(e.target.checked)} />
           </div>
-          <p className="text-xs text-gray-400 mb-6">A targeted resume is a resume tailored to a specific job opening. You have a significantly higher chance of getting an interview when you make it clear you have the experience required for the job.</p>
-          <div className="flex justify-between gap-3 mt-8">
+          <p className="text-xs text-gray-400 mb-6 resume-modal-text resume-modal-target-section">A targeted resume is a resume tailored to a specific job opening. You have a significantly higher chance of getting an interview when you make it clear you have the experience required for the job.</p>
+          <div className="flex justify-between gap-3 mt-8 resume-modal-button-container">
             <button
-              className="min-w-[120px] px-6 py-2 rounded-md border border-gray-700 text-white bg-[#1f2937] font-medium hover:bg-[#374151] hover:border-[#2563eb] transition"
+              className="min-w-[120px] px-6 py-2 rounded-md border border-gray-700 text-white bg-[#1f2937] font-medium hover:bg-[#374151] hover:border-[#2563eb] transition resume-modal-button"
               onClick={onClose}
             >
               CANCEL
             </button>
             <button
-              className="min-w-[120px] px-6 py-2 rounded-md border border-gray-700 bg-[#1f2937] text-white font-bold hover:bg-[#374151] hover:border-[#2563eb] transition"
+              className="min-w-[120px] px-6 py-2 rounded-md border border-gray-700 bg-[#1f2937] text-white font-bold hover:bg-[#374151] hover:border-[#2563eb] transition resume-modal-button"
               type="button"
               onClick={handleSave}
               disabled={uploading}

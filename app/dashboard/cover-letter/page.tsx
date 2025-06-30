@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '../../components/DashboardLayout';
-import { FaSpinner, FaDownload, FaCopy, FaRedo, FaFileAlt, FaChevronDown } from 'react-icons/fa';
+import FixedResumeSelector from '../../components/FixedResumeSelector';
+import { FaSpinner, FaDownload, FaCopy, FaRedo, FaFileAlt } from 'react-icons/fa';
 import './cover-letter-styles.css';
 import { initializeVercelEnvironment } from './vercel-fix';
 
@@ -20,7 +21,19 @@ interface Resume {
   parsedResumeId: string | null;
 }
 
-export default function CoverLetterPage() {
+// Simple client component wrapper for dashboard layout
+function ClientCoverLetterPage() {
+  return (
+    <DashboardLayout>
+      <CoverLetterContent />
+    </DashboardLayout>
+  );
+}
+
+export default ClientCoverLetterPage;
+
+// Main content component with all the logic
+function CoverLetterContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [jobDescription, setJobDescription] = useState('');
@@ -300,90 +313,37 @@ export default function CoverLetterPage() {
     document.body.removeChild(element);
   };
 
-  // Resume selector dropdown component
-  const ResumeSelector = () => {
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    
-    // Close dropdown on outside click
-    useEffect(() => {
-      function handleClickOutside(e: MouseEvent) {
-        if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-          setDropdownOpen(false);
-        }
-      }
-      
-      if (dropdownOpen) {
-        document.addEventListener('mousedown', handleClickOutside);
-      }
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [dropdownOpen]);
-    
-    // Find the currently selected resume
-    const selectedResume = resumes.find(r => r.id === selectedResumeId);
-    
-    return (
-      <div>
-        <div 
-          ref={dropdownRef}
-          className="relative inline-flex items-center justify-between mb-4 border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]"
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-        >
-          <span className="truncate text-white font-medium text-sm max-w-[100px]">
-            {isLoadingResumes ? (
-              <span className="inline-block bg-gray-700 rounded w-20 h-4 animate-pulse" />
-            ) : (
-              selectedResume?.name || 'Select a resume'
-            )}
-          </span>
-          <span className="text-white ml-3 flex items-center">
-            <FaChevronDown size={16} />
-          </span>
-          
-          {dropdownOpen && (
-            <div className="absolute left-0 top-full mt-1 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
-              {resumes.length === 0 ? (
-                <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
-              ) : (
-                resumes.map((resume) => (
-                  <button
-                    key={resume.id}
-                    className={`block w-full text-left px-4 py-2 text-sm truncate hover:bg-[#1e2d3d] ${(resume.parsedResumeId || resume.storageName) === selectedResumeId ? 'bg-[#1e2d3d] text-white font-semibold' : 'text-gray-200'}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Use parsedResumeId if available, otherwise fall back to storage name
-                      const resumeId = resume.parsedResumeId || resume.storageName || resume.id;
-                      console.log('[COVER-LETTER] Selected resume from dropdown:', {
-                        parsedResumeId: resume.parsedResumeId,
-                        storageName: resume.storageName,
-                        id: resume.id,
-                        selectedId: resumeId
-                      });
-                      
-                      setSelectedResumeId(resumeId);
-                      fetchResumeContent(resume.url, resume);
-                      // Clear existing cover letter when changing resumes
-                      setCoverLetter('');
-                      setIsAIGenerated(false);
-                      setDropdownOpen(false);
-                    }}
-                  >
-                    <span className="truncate block w-full">{resume.name}</span>
-                  </button>
-                ))
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    );
+  // Handle resume selection
+  const handleSelectResume = (resumeId: string, resume: Resume) => {
+    setSelectedResumeId(resumeId);
+    fetchResumeContent(resume.url, resume);
+    // Clear existing cover letter when changing resumes
+    setCoverLetter('');
+    setIsAIGenerated(false);
+  };
+
+  // Handle resume upload completion
+  const handleResumeUploaded = async () => {
+    console.log('Resume uploaded, refreshing list');
+    // Refresh the resume list
+    await fetchResumes();
+    // The fetchResumes function already updates the state internally
   };
 
   return (
-    <DashboardLayout>
       <div className="w-full px-4 py-8 md:max-w-7xl md:mx-auto cover-letter-page" id="cover-letter-page">
         <h1 className="text-xl font-bold text-white mb-8 cover-letter-title">Talexus Cover Letter Generator</h1>
-        <ResumeSelector />
+        
+        {isClient && (
+          <FixedResumeSelector 
+            resumes={resumes}
+            isLoadingResumes={isLoadingResumes}
+            selectedResumeId={selectedResumeId}
+            onSelectResume={handleSelectResume}
+            onResumeUploaded={handleResumeUploaded}
+          />
+        )}
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Input Form */}
           <div className="bg-[#0d1b2a] rounded-lg p-6 shadow-lg border border-gray-700">
@@ -490,6 +450,5 @@ export default function CoverLetterPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
   );
 }
