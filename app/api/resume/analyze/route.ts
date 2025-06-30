@@ -44,10 +44,32 @@ export async function GET(request: Request) {
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'User email not found in session' }, { status: 400 });
     }
-
-    const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
-    const resumeSnapshot = await resumeRef.get();
-    const resumeDoc = resumeSnapshot.exists ? resumeSnapshot.data() : null;
+    
+    // Extract timestamp from filename if present (this is the actual document ID in Firestore)
+    const timestampMatch = resumeId.match(/^(\d+)/);
+    const timestamp = timestampMatch ? timestampMatch[1] : null;
+    
+    console.log(`[RESUME-ANALYZE GET API] Extracted timestamp from resumeId: ${timestamp || 'none'} (from ${resumeId})`);
+    
+    // First try to get the resume directly by the timestamp (which is the document ID in Firestore)
+    let resumeSnapshot;
+    if (timestamp) {
+      console.log(`[RESUME-ANALYZE GET API] Trying to find resume by timestamp ID: ${timestamp}`);
+      const timestampRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(timestamp);
+      resumeSnapshot = await timestampRef.get();
+      if (resumeSnapshot.exists) {
+        console.log(`[RESUME-ANALYZE GET API] Found resume by timestamp ID: ${timestamp}`);
+      }
+    }
+    
+    // If not found by timestamp, try the full ID
+    if (!resumeSnapshot || !resumeSnapshot.exists) {
+      console.log(`[RESUME-ANALYZE GET API] Trying to find resume by full ID: ${resumeId}`);
+      const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
+      resumeSnapshot = await resumeRef.get();
+    }
+    
+    const resumeDoc = resumeSnapshot?.exists ? resumeSnapshot.data() : null;
     const lastAnalysis = resumeDoc?.lastAnalysis || null;
 
     // If analysis exists, return it
@@ -98,8 +120,30 @@ export async function POST(request: Request) {
       }
       
       console.log(`Looking for resume in parsed_resumes/${session.user.email}/resumes/${resumeId}`);
-      const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
-      const resumeSnapshot = await resumeRef.get();
+      
+      // Extract timestamp from filename if present (this is the actual document ID in Firestore)
+      const timestampMatch = resumeId.match(/^(\d+)/);
+      const timestamp = timestampMatch ? timestampMatch[1] : null;
+      
+      console.log(`[RESUME-ANALYZE API] Extracted timestamp from resumeId: ${timestamp || 'none'} (from ${resumeId})`);
+      
+      // First try to get the resume directly by the timestamp (which is the document ID in Firestore)
+      let resumeSnapshot;
+      if (timestamp) {
+        console.log(`[RESUME-ANALYZE API] Trying to find resume by timestamp ID: ${timestamp}`);
+        const timestampRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(timestamp);
+        resumeSnapshot = await timestampRef.get();
+        if (resumeSnapshot.exists) {
+          console.log(`[RESUME-ANALYZE API] Found resume by timestamp ID: ${timestamp}`);
+        }
+      }
+      
+      // If not found by timestamp, try the full ID
+      if (!resumeSnapshot || !resumeSnapshot.exists) {
+        console.log(`[RESUME-ANALYZE API] Trying to find resume by full ID: ${resumeId}`);
+        const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
+        resumeSnapshot = await resumeRef.get();
+      }
       
       if (resumeSnapshot.exists) {
         // Get the actual resume data

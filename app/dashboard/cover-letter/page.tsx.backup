@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '../../components/DashboardLayout';
+import TestAPI from './test-api';
 import { FaSpinner, FaDownload, FaCopy, FaRedo, FaFileAlt, FaChevronDown } from 'react-icons/fa';
 import './cover-letter-styles.css';
 import { initializeVercelEnvironment } from './vercel-fix';
@@ -323,13 +324,13 @@ export default function CoverLetterPage() {
     const selectedResume = resumes.find(r => r.id === selectedResumeId);
     
     return (
-      <div>
+      <div className="mb-6">
         <div 
           ref={dropdownRef}
-          className="relative inline-flex items-center justify-between mb-4 border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 py-1.5 shadow-md w-auto max-w-xs min-w-[120px]"
+          className="relative inline-flex items-center justify-between border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 py-1.5 shadow-md w-full md:w-auto max-w-xs min-w-[200px] cursor-pointer"
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
-          <span className="truncate text-white font-medium text-sm max-w-[100px]">
+          <span className="truncate text-white font-medium text-sm max-w-[180px]">
             {isLoadingResumes ? (
               <span className="inline-block bg-gray-700 rounded w-20 h-4 animate-pulse" />
             ) : (
@@ -341,7 +342,7 @@ export default function CoverLetterPage() {
           </span>
           
           {dropdownOpen && (
-            <div className="absolute left-0 top-full mt-1 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg w-[260px] z-50 overflow-hidden">
+            <div className="absolute left-0 top-full mt-1 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg w-full z-50 overflow-hidden">
               {resumes.length === 0 ? (
                 <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
               ) : (
@@ -374,13 +375,160 @@ export default function CoverLetterPage() {
               )}
             </div>
           )}
-        </div>
-      </div>
     );
-  };
+    
+    console.log('[COVER-LETTER] Generating cover letter:', {
+      selectedResumeId,
+      selectedResume,
+      allResumes: resumes.map(r => ({ 
+        id: r.id, 
+        parsedId: r.parsedResumeId, 
+        storageName: r.storageName,
+        name: r.name 
+      }))
+    });
+    
+    // Call the cover letter generation API
+    const response = await fetch('/api/cover-letter/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jobDescription,
+        position,
+        companyName,
+        resumeId: selectedResumeId,
+      }),
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to generate cover letter');
+    }
+    
+    if (data.coverLetter) {
+      setCoverLetter(data.coverLetter);
+      setIsAIGenerated(true); // Mark as AI-generated
+      console.log('Cover letter generated successfully');
+    } else {
+      throw new Error('No cover letter returned from API');
+    }
+  } catch (err: any) {
+    console.error('Error generating cover letter:', err);
+    setError(`Failed to generate cover letter: ${err.message || 'Unknown error'}`);
+    setCoverLetter('');
+    setIsAIGenerated(false);
+  } finally {
+    clearTimeout(timeoutId);
+    setIsGenerating(false);
+  }
+};
 
+// No template helper functions needed anymore
+
+const handleCopy = () => {
+  navigator.clipboard.writeText(coverLetter);
+};
+
+const handleDownload = () => {
+  const element = document.createElement('a');
+  const file = new Blob([coverLetter], {type: 'text/plain'});
+  element.href = URL.createObjectURL(file);
+  element.download = `Cover_Letter_${companyName}_${position}.txt`;
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+};
+
+// Resume selector dropdown component
+const ResumeSelector = () => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    
+    if (dropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [dropdownOpen]);
+  
+  // Find the currently selected resume
+  const selectedResume = resumes.find(r => r.id === selectedResumeId);
+  
   return (
-    <DashboardLayout>
+    <div className="mb-6">
+      <div 
+        ref={dropdownRef}
+        className="relative inline-flex items-center justify-between border border-[#1e2d3d] rounded-lg bg-[#0d1b2a] px-3 py-1.5 shadow-md w-full md:w-auto max-w-xs min-w-[200px] cursor-pointer"
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+      >
+        <span className="truncate text-white font-medium text-sm max-w-[180px]">
+          {isLoadingResumes ? (
+            <span className="inline-block bg-gray-700 rounded w-20 h-4 animate-pulse" />
+          ) : (
+            selectedResume?.name || 'Select a resume'
+          )}
+        </span>
+        <span className="text-white ml-3 flex items-center">
+          <FaChevronDown size={16} />
+        </span>
+        
+        {dropdownOpen && (
+          <div className="absolute left-0 top-full mt-1 bg-[#0d1b2a] border border-[#1e2d3d] rounded-lg shadow-lg w-full z-50 overflow-hidden">
+            {resumes.length === 0 ? (
+              <div className="px-4 py-2 text-gray-400 text-sm">No resumes found</div>
+            ) : (
+              resumes.map((resume) => (
+                <button
+                  key={resume.id}
+                  className={`block w-full text-left px-4 py-2 text-sm truncate hover:bg-[#1e2d3d] ${(resume.parsedResumeId || resume.storageName) === selectedResumeId ? 'bg-[#1e2d3d] text-white font-semibold' : 'text-gray-200'}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Use parsedResumeId if available, otherwise fall back to storage name
+                    const resumeId = resume.parsedResumeId || resume.storageName || resume.id;
+                    console.log('[COVER-LETTER] Selected resume from dropdown:', {
+                      parsedResumeId: resume.parsedResumeId,
+                      storageName: resume.storageName,
+                      id: resume.id,
+                      selectedId: resumeId
+                    });
+                    
+                    setSelectedResumeId(resumeId);
+                    fetchResumeContent(resume.url, resume);
+                    // Clear existing cover letter when changing resumes
+                    setCoverLetter('');
+                    setIsAIGenerated(false);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  <span className="truncate block w-full">{resume.name}</span>
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+return (
+  <DashboardLayout>
+    <div className="p-4 md:p-8 max-w-5xl mx-auto">
+      {/* API Test Component for debugging */}
+      <div className="mb-8 p-4 border border-gray-300 rounded-lg">
+        <h3 className="text-lg font-semibold mb-2">API Testing Tool</h3>
+        <TestAPI />
+      </div>
       <div className="w-full px-4 py-8 md:max-w-7xl md:mx-auto cover-letter-page" id="cover-letter-page">
         <h1 className="text-xl font-bold text-white mb-8 cover-letter-title">Talexus Cover Letter Generator</h1>
         <ResumeSelector />

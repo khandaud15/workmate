@@ -12,6 +12,7 @@ interface Resume {
   url: string;
   isTargeted?: boolean;
   isLocked?: boolean;
+  parsedResumeId?: string; // Firestore document ID for parsed resume
 }
 
 const fetchResumes = async (): Promise<Resume[]> => {
@@ -22,16 +23,28 @@ const fetchResumes = async (): Promise<Resume[]> => {
     console.log('Fetched resumes:', data.resumes);
     
     // Map API response to Resume[]
-    return (data.resumes || []).map((r: any, i: number) => ({
-      id: r.storageName || r.url, // fallback to url if storageName missing
-      name: r.name, // display name (custom or cleaned)
-      storageName: r.storageName, // actual storage file name
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
-      isTargeted: r.isTargeted === true, // Only show badge if backend says so
-      isLocked: false, // Update if you have this info
-      url: r.url,
-    }));
+    const mappedResumes = (data.resumes || []).map((r: any, i: number) => {
+      console.log('[ResumeList] Mapping resume:', {
+        name: r.name,
+        storageName: r.storageName,
+        parsedResumeId: r.parsedResumeId
+      });
+      
+      return {
+        id: r.storageName || r.url, // fallback to url if storageName missing
+        name: r.name, // display name (custom or cleaned)
+        storageName: r.storageName, // actual storage file name
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+        isTargeted: r.isTargeted === true, // Only show badge if backend says so
+        isLocked: false, // Update if you have this info
+        url: r.url,
+        parsedResumeId: r.parsedResumeId // Include parsed resume ID
+      };
+    });
+    
+    console.log('[ResumeList] Mapped resumes:', mappedResumes);
+    return mappedResumes;
   } catch (error) {
     console.error('Error fetching resumes:', error);
     return [];
@@ -127,10 +140,14 @@ const ResumeList: React.FC = () => {
               className="relative flex items-center border border-[#23263a] rounded-md px-1.5 sm:px-7 py-3 transition group shadow-xl font-helvetica bg-transparent hover:bg-[#23263a] cursor-pointer w-full overflow-hidden"
               style={{ minHeight: '48px' }}
               onClick={() => {
-                // Extract numeric ID from storageName or id (e.g., 1748752352469_Resume.pdf -> 1748752352469)
-                let rawId = resume.storageName || resume.id;
-                let numericId = rawId.split('_')[0];
-                router.push(`/dashboard/resume/${numericId}/contact-info`);
+                // Use parsed resume ID if available, otherwise fall back to storage name
+                const resumeId = resume.parsedResumeId || resume.storageName;
+                console.log('Navigating to resume:', {
+                  resumeId,
+                  parsedResumeId: resume.parsedResumeId,
+                  storageName: resume.storageName
+                });
+                router.push(`/dashboard/resume/${resumeId}/contact-info`);
               }}
             >
               <FaFileAlt className="text-gray-300 mr-2 sm:mr-5 flex-shrink-0" size={22} />

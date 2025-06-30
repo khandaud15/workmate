@@ -84,9 +84,29 @@ export async function GET(request: NextRequest) {
 
     console.log('DEBUG: Getting contact info for:', { userEmail, resumeId });
 
-    // Get resume data from new parsed_resumes collection structure
-    const resumeRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(resumeId);
-    const resumeDoc = await resumeRef.get();
+    // Extract timestamp from filename if present (this is the actual document ID in Firestore)
+    const timestampMatch = resumeId.match(/^(\d+)/);
+    const timestamp = timestampMatch ? timestampMatch[1] : null;
+    
+    console.log(`[CONTACT-INFO API] Extracted timestamp from resumeId: ${timestamp || 'none'} (from ${resumeId})`);
+    
+    // First try to get the resume directly by the timestamp (which is the document ID in Firestore)
+    let resumeDoc;
+    if (timestamp) {
+      console.log(`[CONTACT-INFO API] Trying to find resume by timestamp ID: ${timestamp}`);
+      const timestampRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(timestamp);
+      resumeDoc = await timestampRef.get();
+      if (resumeDoc.exists) {
+        console.log(`[CONTACT-INFO API] Found resume by timestamp ID: ${timestamp}`);
+      }
+    }
+    
+    // If not found by timestamp, try the full ID
+    if (!resumeDoc || !resumeDoc.exists) {
+      console.log(`[CONTACT-INFO API] Trying to find resume by full ID: ${resumeId}`);
+      const resumeRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(resumeId);
+      resumeDoc = await resumeRef.get();
+    }
     
     if (!resumeDoc.exists) {
       return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
@@ -119,7 +139,9 @@ export async function GET(request: NextRequest) {
         
         // Update the Firestore document with the parsed data for future use
         try {
-          await resumeRef.update({
+          // Create a reference to the resume document
+          const resumeDocRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(resumeId);
+          await resumeDocRef.update({
             parsedResumeData: jsonData
           });
           console.log('DEBUG: Updated Firestore document with parsed resume data');
@@ -199,7 +221,9 @@ export async function GET(request: NextRequest) {
         
         // Update Firestore with this data
         try {
-          await resumeRef.update({ parsedResumeData: resumeFieldsMap });
+          // Create a reference to the resume document
+          const resumeDocRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes').doc(resumeId);
+          await resumeDocRef.update({ parsedResumeData: resumeFieldsMap });
           console.log('DEBUG: Updated Firestore document with parsed resume data');
         } catch (updateError) {
           console.error('DEBUG: Error updating Firestore:', updateError);

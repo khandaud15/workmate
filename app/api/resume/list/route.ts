@@ -41,7 +41,61 @@ export async function GET(request: NextRequest) {
       targetedResumes
     });
 
+    // Get parsed resumes from Firestore
+    const parsedResumesRef = db.collection('parsed_resumes').doc(userEmail).collection('resumes');
+    const parsedResumesSnapshot = await parsedResumesRef.get();
+    const parsedResumes = new Map();
+    
+    parsedResumesSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.status === 'parsed') {
+        // Store the document ID as the parsed resume ID
+        const docId = doc.id;
+        
+        // Map various fields to this document ID
+        const fieldsToMap = [
+          'originalFileName', 
+          'fullFileName', 
+          'storageName',
+          'name'
+        ];
+        
+        // Add all possible mappings
+        fieldsToMap.forEach(field => {
+          if (data[field]) {
+            parsedResumes.set(data[field], docId);
+            console.log(`[LIST API] Mapping ${field} '${data[field]}' to parsed resume ID: ${docId}`);
+          }
+        });
+        
+        // Also map the document ID to itself to allow direct ID usage
+        parsedResumes.set(docId, docId);
+        
+        // If we have filenames with timestamps, also map the raw filename without timestamp
+        if (data.fullFileName) {
+          const match = data.fullFileName.match(/^\d+_(.*)$/);
+          if (match && match[1]) {
+            parsedResumes.set(match[1], docId);
+            console.log(`[LIST API] Mapping cleaned filename '${match[1]}' to parsed resume ID: ${docId}`);
+          }
+        }
+      }
+    });
+    
+    console.log('[LIST API] Resume ID mapping:', {
+      parsedResumes: Object.fromEntries(parsedResumes),
+      parsedResumeCount: parsedResumes.size
+    });
+
+    console.log('[LIST API] Found parsed resumes:', Array.from(parsedResumes.entries()));
+
     // Build resume list with signed URLs and metadata
+    console.log('[LIST API] Building resume list with parsed IDs:', {
+      fileCount: files.length,
+      parsedResumeCount: parsedResumes.size,
+      parsedResumeIds: Array.from(parsedResumes.values())
+    });
+
     const resumes = await Promise.all(
       files.map(async (file) => {
         const [signedUrl] = await file.getSignedUrl({
@@ -83,6 +137,10 @@ export async function GET(request: NextRequest) {
           targetedResumesValues: targetedResumes ? Object.values(targetedResumes) : []
         });
         
+        // Get the parsed resume ID for this file using multiple keys
+        const parsedResumeId = parsedResumes.get(fullFileName) || parsedResumes.get(fileName) || parsedResumes.get(file.name) || null;
+        console.log(`[LIST API] Resume ${fullFileName} parsed ID:`, parsedResumeId);
+
         // Ensure isTargeted is a boolean, not a string
         return {
           name: displayName, // for UI display
@@ -93,6 +151,7 @@ export async function GET(request: NextRequest) {
           updatedAt: file.metadata?.updated || file.metadata?.timeCreated,
           size: file.metadata?.size,
           contentType: file.metadata?.contentType,
+          parsedResumeId // Include the parsed resume ID
         };
       })
     );

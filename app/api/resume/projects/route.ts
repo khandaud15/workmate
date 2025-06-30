@@ -18,8 +18,30 @@ export async function GET(req: Request) {
     }
 
     console.log(`Fetching data for resumeId: ${resumeId}`);
-    const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
-    const resumeDoc = await resumeRef.get();
+    
+    // Extract timestamp from filename if present (this is the actual document ID in Firestore)
+    const timestampMatch = resumeId.match(/^(\d+)/);
+    const timestamp = timestampMatch ? timestampMatch[1] : null;
+    
+    console.log(`[PROJECTS API] Extracted timestamp from resumeId: ${timestamp || 'none'} (from ${resumeId})`);
+    
+    // First try to get the resume directly by the timestamp (which is the document ID in Firestore)
+    let resumeDoc;
+    if (timestamp) {
+      console.log(`[PROJECTS API] Trying to find resume by timestamp ID: ${timestamp}`);
+      const timestampRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(timestamp);
+      resumeDoc = await timestampRef.get();
+      if (resumeDoc.exists) {
+        console.log(`[PROJECTS API] Found resume by timestamp ID: ${timestamp}`);
+      }
+    }
+    
+    // If not found by timestamp, try the full ID
+    if (!resumeDoc || !resumeDoc.exists) {
+      console.log(`[PROJECTS API] Trying to find resume by full ID: ${resumeId}`);
+      const resumeRef = db.collection('parsed_resumes').doc(session.user.email).collection('resumes').doc(resumeId);
+      resumeDoc = await resumeRef.get();
+    }
 
     if (!resumeDoc.exists) {
       console.log('Resume document not found.');
