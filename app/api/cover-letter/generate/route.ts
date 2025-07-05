@@ -210,11 +210,9 @@ export async function POST(request: NextRequest) {
     const userDoc = await db.collection('users').doc(userEmail).get();
     const userData = userDoc.exists ? userDoc.data() : {};
     
-    // Extract candidate name from user data
+    // Extract candidate name from user data - use full name
     let candidateName = userData?.name || userData?.displayName || "Candidate";
-    if (candidateName.includes(' ')) {
-      candidateName = candidateName.split(' ')[0]; // Just use first name
-    }
+    // Keep the full name, don't split it
 
     // Create a structured representation of the resume data for the GPT API
     let resumeText = '';
@@ -302,24 +300,23 @@ export async function POST(request: NextRequest) {
     
     console.log('[COVER-LETTER-GENERATE API] Generated resume text:', resumeText);
 
-    // Create prompt for OpenAI
-    const prompt = `You are a cover letter generator. You will write a cover letter that STRICTLY uses ONLY the information provided in the resume content below.
-
-DO NOT make up or infer any information not explicitly stated in the resume.
-
-Focus on matching the candidate's actual experience and skills from their resume to the job requirements.
-If there are job requirements that don't match the resume, DO NOT mention them or make up experience.
-
-Write in a modern, professional style without being too formal.
-
-Resume Content:
+    // Create the prompt for OpenAI
+    const prompt = `
+RESUME:
 ${resumeText}
 
-Job Description:
+JOB DESCRIPTION:
 ${jobDescription}
 
 Position: ${position}
 Company: ${companyName}
+
+IMPORTANT: Format the cover letter with the applicant's contact information at the top as follows:
+${parsedResumeData['Full Name'] || candidateName}
+${location.join(', ')}
+${contactInfo.join(' | ')}
+
+Then start with "Dear Hiring Manager," and continue with the cover letter content.
 `;
 
     console.log('[COVER-LETTER-GENERATE API] Sending request to OpenAI');
@@ -330,7 +327,7 @@ Company: ${companyName}
       messages: [
         { 
           role: 'system', 
-          content: 'You are a professional cover letter writer. Follow these rules STRICTLY:\n1. ONLY use information explicitly stated in the provided resume\n2. NEVER make up or infer experience, skills, or qualifications\n3. If you cannot find relevant experience in the resume for a job requirement, DO NOT MENTION that requirement\n4. Do not use generic phrases like "I am passionate about" unless specifically mentioned in the resume\n5. Keep the tone professional but natural\n6. Focus on MATCHING the actual experience and skills from the resume to the job requirements'
+          content: 'You are a professional cover letter writer. Follow these rules STRICTLY:\n1. ONLY use information explicitly stated in the provided resume\n2. NEVER make up or infer experience, skills, or qualifications\n3. If you cannot find relevant experience in the resume for a job requirement, DO NOT MENTION that requirement\n4. Do not use generic phrases like "I am passionate about" unless specifically mentioned in the resume\n5. Keep the tone professional but natural\n6. Focus on MATCHING the actual experience and skills from the resume to the job requirements\n7. IMPORTANT: DO NOT include date, company address, or recipient address sections in the cover letter\n8. Format the cover letter EXACTLY like this:\n   [Full Name]\n   [Location]\n   [Email]\n   [Phone]\n\n   Dear Hiring Manager,\n\n   [Cover letter content...]\n9. You MUST include the applicant\'s full contact details at the top exactly as shown above'
         },
         { role: 'user', content: prompt }
       ],
@@ -346,11 +343,22 @@ Company: ${companyName}
 
     console.log('[COVER-LETTER-GENERATE API] Successfully generated cover letter');
 
-    // Return the generated cover letter
+    // Prepare contact information for the response
+    const responseContactInfo = {
+      phone: parsedResumeData['Phone'] || '',
+      email: parsedResumeData['Email'] || '',
+      linkedin: parsedResumeData['LinkedIn'] || '',
+      location: location.join(', ') || ''
+    };
+
+    console.log('[COVER-LETTER-GENERATE API] Returning contact info:', responseContactInfo);
+
+    // Return the generated cover letter with contact information
     return NextResponse.json({ 
       coverLetter,
       isAIGenerated: true,
-      candidateName
+      candidateName: parsedResumeData['Full Name'] || candidateName,
+      contactInfo: responseContactInfo
     });
   } catch (error: any) {
     console.error('[COVER-LETTER-GENERATE API] Error:', error);
