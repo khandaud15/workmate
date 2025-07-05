@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 
 interface MinimalCoverLetterTemplateProps {
-  data: {
+  coverLetterData: {
     applicantName: string;
     applicantTitle: string;
     applicantPhone: string;
@@ -18,7 +18,7 @@ interface MinimalCoverLetterTemplateProps {
 }
 
 const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({ 
-  data, 
+  coverLetterData, 
   isEditable = false 
 }) => {
   const [photoSrc, setPhotoSrc] = useState<string>('/placeholder-profile.svg');
@@ -46,14 +46,14 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
             contentEditable={isEditable}
             suppressContentEditableWarning={true}
           >
-            {data.applicantName}
+            {coverLetterData.applicantName}
           </h1>
           <p 
             className="text-lg md:text-xl font-medium text-blue-600 mb-3" 
             contentEditable={isEditable}
             suppressContentEditableWarning={true}
           >
-            {data.applicantTitle}
+            {coverLetterData.applicantTitle}
           </p>
           <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-gray-600 text-sm md:text-base font-medium">
             <div 
@@ -64,7 +64,7 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.928.7L7.5 6H10a1 1 0 011 1v4a1 1 0 01-1 1H7.5l-1.428 2.3a1 1 0 01-.928.7H3a1 1 0 01-1-1V3z"/>
               </svg>
-              {data.applicantPhone}
+              {coverLetterData.applicantPhone}
             </div>
             <div 
               className="flex items-center gap-2" 
@@ -75,7 +75,7 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
               </svg>
-              {data.applicantEmail}
+              {coverLetterData.applicantEmail}
             </div>
             <div 
               className="flex items-center gap-2" 
@@ -85,7 +85,7 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M14.243 5.757a6 6 0 10-.986 9.284 1 1 0 111.087 1.678A8 8 0 1118 10a3 3 0 01-4.8 2.401A4 4 0 1114 10a1 1 0 102 0c0-1.537-.586-3.07-1.757-4.243zM12 10a2 2 0 10-4 0 2 2 0 004 0z" clipRule="evenodd"/>
               </svg>
-              {data.applicantLinkedin}
+              {coverLetterData.applicantLinkedin}
             </div>
             <div 
               className="flex items-center gap-2" 
@@ -95,7 +95,7 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
               </svg>
-              {data.applicantLocation}
+              {coverLetterData.applicantLocation}
             </div>
           </div>
         </div>
@@ -130,10 +130,10 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
           contentEditable={isEditable}
           suppressContentEditableWarning={true}
         >
-          {data.recipientSalutation}
+          {coverLetterData.recipientSalutation}
         </p>
 
-        {data.bodyParagraphs.map((paragraph, index) => (
+        {coverLetterData.bodyParagraphs.map((paragraph: string, index: number) => (
           <p 
             key={index} 
             className="mb-6" 
