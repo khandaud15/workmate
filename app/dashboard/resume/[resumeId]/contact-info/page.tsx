@@ -17,7 +17,7 @@ import DashboardLayout from '../../../../components/DashboardLayout';
 
 export default function ContactInfoPage() {
   const params = useParams();
-  const resumeId = params.resumeId as string;
+  const resumeId = params?.resumeId as string;
   const router = useRouter();
   // ...any other hooks you need
 

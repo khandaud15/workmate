@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react';
 export default function VerifiedPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const email = searchParams.get('email') || '';
+  const email = searchParams?.get('email') || '';
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

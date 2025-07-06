@@ -15,7 +15,7 @@ export default function SignIn() {
 
   // Prefill email if present in query (from /verified)
   useEffect(() => {
-    const emailParam = searchParams.get("email");
+    const emailParam = searchParams?.get("email");
     if (emailParam) setEmail(emailParam);
   }, [searchParams]);
 

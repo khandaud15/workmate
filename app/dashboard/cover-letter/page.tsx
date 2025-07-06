@@ -327,148 +327,150 @@ function CoverLetterContent() {
     }
   };
   
+  interface CoverLetterData {
+    applicantName: string;
+    applicantTitle: string;
+    applicantPhone: string;
+    applicantEmail: string;
+    applicantLinkedin: string;
+    applicantLocation: string;
+    recipientSalutation: string;
+    bodyParagraphs: string[];
+    closingSalutation: string;
+    signatureName: string;
+  }
+
   // Helper function to parse cover letter text into structured data for the template
-  const parseCoverLetterForTemplate = (text: string, name: string) => {
-    // Extract paragraphs
+  const parseCoverLetterForTemplate = (text: string, name: string): CoverLetterData => {
+    // Split text into lines and paragraphs
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
     const paragraphs = text.split('\n\n').filter(p => p.trim().length > 0);
     
-    // Try to extract contact information from the text
-    const phoneMatch = text.match(/\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}/);
-    const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    const linkedinMatch = text.match(/linkedin\.com\/in\/[a-zA-Z0-9_-]+/);
-    const locationMatch = text.match(/[A-Za-z]+(,\s*[A-Za-z]+)?\s*,\s*[A-Z]{2}(\s+\d{5})?/);
+    // Initialize data with defaults
+    let extractedName = name;
+    let currentTitle = "";
+    let location = "";
+    let email = "";
+    let phone = "";
+    let linkedin = "";
     
-    // DIRECT APPROACH: Extract the name from the first line of the raw text
-    // This ensures we use the exact name that appears in the generated cover letter
-    let extractedName = "";
-    
-    // First try to get the name from the first line of the text
-    const firstLine = paragraphs[0]?.trim();
-    if (firstLine && !firstLine.includes('@') && !firstLine.includes('linkedin')) {
-      // The first line is likely the name
-      extractedName = firstLine;
-      console.log('Using name from first line of cover letter:', extractedName);
-    } 
-    // If that fails, look for patterns in the text
-    else {
-      // Look for patterns like "Sincerely, John Doe" or just "John Doe"
-      const namePatterns = [
-        /Sincerely,\s+([A-Z][a-z]+(\s+[A-Z][a-z]+)+)/,
-        /Regards,\s+([A-Z][a-z]+(\s+[A-Z][a-z]+)+)/,
-        /([A-Z][a-z]+(\s+[A-Z][a-z]+)+)\s+[\(\d]/,  // Name followed by phone
-        /([A-Z][a-z]+\s+[A-Z][a-z]+)/  // Simple FirstName LastName
-      ];
+    // Extract header information (first 3-4 lines)
+    if (lines.length >= 2) {
+      // First line is name
+      extractedName = lines[0];
       
-      for (const pattern of namePatterns) {
-        const match = text.match(pattern);
-        if (match && match[1]) {
-          extractedName = match[1];
-          console.log('Extracted name from text pattern:', extractedName);
-          break;
-        }
+      // Second line is current title
+      currentTitle = lines[1];
+      
+      // Try to find location in the first few lines
+      const locationLine = lines.find(line => 
+        line.match(/[A-Za-z]+(,\s*[A-Za-z]+)?\s*,\s*[A-Z]{2}/) &&
+        !line.includes('@') &&
+        !line.includes('linkedin.com') &&
+        !line.match(/\d{3}[-.]?\d{3}[-.]?\d{4}/)
+      );
+      if (locationLine) {
+        location = locationLine;
       }
-    }
-    
-    // If we still don't have a name, use the provided name or default
-    if (!extractedName) {
-      extractedName = name || "Applicant";
-      console.log('Using fallback name:', extractedName);
-    }
-    
-    // Default data structure with extracted contact info if available
-    const data: {
-      applicantName: string;
-      applicantTitle: string;
-      applicantPhone: string;
-      applicantEmail: string;
-      applicantLinkedin: string;
-      applicantLocation: string;
-      recipientSalutation: string;
-      bodyParagraphs: string[];
-      closingSalutation: string;
-      signatureName: string;
-    } = {
-      applicantName: extractedName,
-      applicantTitle: position || "Job Position",
-      applicantPhone: phoneMatch ? phoneMatch[0] : "(555) 123-4567",
-      applicantEmail: emailMatch ? emailMatch[0] : "example@email.com",
-      applicantLinkedin: linkedinMatch ? linkedinMatch[0] : "linkedin.com/in/applicant",
-      applicantLocation: locationMatch ? locationMatch[0] : "City, State",
-      recipientSalutation: "Dear Hiring Manager,",
-      bodyParagraphs: [],
-      closingSalutation: "Sincerely,",
-      signatureName: extractedName
-    };
-    
-    // Filter out contact information and duplicates from paragraphs
-    const seenSalutations = new Set<string>();
-    const filteredParagraphs = paragraphs.filter(para => {
-      // Skip paragraphs that look like contact information
-      const isContactInfo = (
-        (para.includes('@') && para.includes('.com')) || // Email
-        !!para.match(/\(?\d{3}\)?[-. ]?\d{3}[-. ]?\d{4}/) || // Phone number
-        para.includes('linkedin.com') || // LinkedIn
-        !!para.match(/[A-Za-z]+(,\s*[A-Za-z]+)?\s*,\s*[A-Z]{2}(\s+\d{5})?/) // Address
+      
+      // Look for contact info line (contains email, phone, or LinkedIn)
+      const contactLine = lines.find(line => 
+        line.includes('@') || 
+        line.includes('linkedin.com') || 
+        line.match(/\d{3}[-.]?\d{3}[-.]?\d{4}/)
       );
       
-      // Check if this is a duplicate salutation
-      const isSalutation = para.includes('Dear') || para.includes('To') || para.includes('Hello');
-      if (isSalutation) {
-        if (seenSalutations.has(para)) {
-          return false; // Skip duplicate salutations
-        }
-        seenSalutations.add(para);
+      if (contactLine) {
+        // Split contact line by common separators
+        const parts = contactLine.split(/[\s|•]+/).map(part => part.trim());
+        
+        parts.forEach(part => {
+          if (part.includes('@')) {
+            email = part;
+          } else if (part.match(/\d{3}[-.]?\d{3}[-.]?\d{4}/)) {
+            phone = part;
+          } else if (part.includes('linkedin.com')) {
+            linkedin = part;
+          }
+        });
       }
+    }
+    
+    // Find salutation
+    const salutation = paragraphs.find(p => p.startsWith('Dear'));
+    
+    // Find the closing section and signature
+    const closingIndex = paragraphs.findIndex(p => 
+      p.toLowerCase().trim() === 'sincerely,' ||
+      p.toLowerCase().trim() === 'sincerely' ||
+      p.toLowerCase().includes('best regards') ||
+      p.toLowerCase().includes('yours truly')
+    );
+
+    let closingSignature = extractedName;
+    
+    // Extract body paragraphs (excluding header, closing, and signature)
+    const bodyParagraphs = paragraphs.filter((p, index) => {
+      // Skip header info
+      const isHeaderInfo = 
+        p.includes(extractedName) ||
+        p.includes(email) ||
+        p.includes(phone) ||
+        p.includes(linkedin) ||
+        p.includes(location) ||
+        p.startsWith('Dear');
       
-      return !isContactInfo;
+      // Skip closing and signature
+      const isClosing = 
+        p.toLowerCase().includes('sincerely') ||
+        p.toLowerCase().includes('best regards') ||
+        p.toLowerCase().includes('yours truly');
+      
+      // Skip signature line
+      const isSignature = index === closingIndex + 1;
+      
+      return !isHeaderInfo && !isClosing && !isSignature;
     });
     
-    // Create a working copy of filtered paragraphs
-    const workingParagraphs = [...filteredParagraphs];
-    
-    // Set body paragraphs, excluding salutation and closing
-    if (workingParagraphs.length > 0) {
-      // Try to extract salutation from first paragraph
-      const firstPara = workingParagraphs[0];
-      if (firstPara && (firstPara.includes('Dear') || firstPara.includes('To') || firstPara.includes('Hello'))) {
-        data.recipientSalutation = firstPara;
-        workingParagraphs.shift(); // Remove salutation from working paragraphs
+    // Get signature if it exists
+    if (closingIndex >= 0 && closingIndex + 1 < paragraphs.length) {
+      const nameParagraph = paragraphs[closingIndex + 1].trim();
+      if (nameParagraph && !nameParagraph.toLowerCase().includes('dear')) {
+        closingSignature = nameParagraph;
       }
-      
-      // Try to extract closing from last paragraph
-      const lastPara = workingParagraphs[workingParagraphs.length - 1];
-      if (lastPara && (lastPara.includes('Sincerely') || lastPara.includes('Regards') || lastPara.includes('Yours'))) {
-        const closingParts = lastPara.split(',');
-        if (closingParts.length > 0) {
-          data.closingSalutation = closingParts[0] + ',';
-          if (closingParts.length > 1) {
-            data.signatureName = closingParts.slice(1).join(',').trim();
-          }
-          workingParagraphs.pop(); // Remove closing from working paragraphs
-        }
-      }
-      
-      // Assign the remaining paragraphs to bodyParagraphs
-      data.bodyParagraphs = workingParagraphs;
     }
     
-    // If no paragraphs left, add a placeholder
-    if (data.bodyParagraphs.length === 0) {
-      data.bodyParagraphs = ['Your cover letter content will appear here.'];
-    }
-    
-    return data;
+    // Return structured data
+    return {
+      applicantName: extractedName,
+      applicantTitle: currentTitle || 'Professional',
+      applicantPhone: phone,
+      applicantEmail: email,
+      applicantLinkedin: linkedin,
+      applicantLocation: location,
+      recipientSalutation: salutation || 'Dear Hiring Manager,',
+      bodyParagraphs: bodyParagraphs,
+      closingSalutation: 'Sincerely,',
+      signatureName: closingSignature
+    };
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(coverLetter);
+  const handleCopy = async () => {
+    if (!coverLetter) return;
+    try {
+      await navigator.clipboard.writeText(coverLetter);
+      // Could add toast notification here
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
   };
 
   const handleDownload = () => {
+    if (!coverLetter) return;
     const element = document.createElement('a');
     const file = new Blob([coverLetter], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
-    element.download = `Cover_Letter_${companyName}_${position}.txt`;
+    element.download = 'cover-letter.txt';
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -517,55 +519,16 @@ function CoverLetterContent() {
           <div className="mb-4">
             <h2 className="text-xl font-semibold text-white mb-4">Select a template</h2>
             
-            <div className="flex gap-4 mb-6">
-              {/* Minimal Template Option - Better proportioned thumbnail */}
-              <div 
-                className={`relative cursor-pointer rounded-lg overflow-hidden border-2 ${selectedTemplate === 'minimal' ? 'border-[#2563eb]' : 'border-gray-700'} hover:border-[#2563eb] transition-all duration-200 w-60`}
-                onClick={() => setSelectedTemplate('minimal')}
-              >
-                <div className="bg-white p-3 flex flex-col h-56">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="font-bold text-gray-800 text-sm uppercase">SAMPLE NAME</h3>
-                      <p className="text-[#2563eb] text-xs mb-1">Data Analyst Intern</p>
-                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-[9px] text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <span className="w-1 h-1 bg-gray-500 rounded-full"></span>
-                          (558) 333-1333
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className="w-1 h-1 bg-gray-500 rounded-full"></span>
-                          example@email.com
-                        </div>
-                      </div>
-                    </div>
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex-shrink-0"></div>
-                  </div>
-                  
-                  <div className="mt-3 border-t border-gray-200 pt-2">
-                    <p className="text-[9px] font-medium mb-1">COVER LETTER</p>
-                    <p className="text-[8px] text-gray-500 mb-1">Dear Hiring Manager,</p>
-                    <div className="space-y-1">
-                      <div className="h-1 bg-gray-100 rounded w-full"></div>
-                      <div className="h-1 bg-gray-100 rounded w-5/6"></div>
-                      <div className="h-1 bg-gray-100 rounded w-full"></div>
-                      <div className="h-1 bg-gray-100 rounded w-4/5"></div>
-                    </div>
-                  </div>
-                </div>
-                {selectedTemplate === 'minimal' && (
-                  <div className="absolute bottom-2 right-2 w-6 h-6 bg-[#2563eb] rounded-full flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                )}
-                <div className="bg-[#0a192f] text-center py-2 text-white">
-                  <span className="text-[#2563eb] font-medium text-xs">Minimal</span>
-                </div>
-              </div>
-              
-              {/* Future template options will be added here - Better proportioned thumbnail */}
+            {/* Use our enhanced CoverLetterTemplatesContainer for template selection */}
+            <div className="mb-6">
+              <CoverLetterTemplatesContainer
+                selectedTemplate={selectedTemplate}
+                onSelectTemplate={(template) => setSelectedTemplate(template)}
+              />
+            </div>
+            
+            {/* Legacy template options - can be removed once new component is fully integrated */}
+            <div className="flex gap-4 mb-6 hidden">
               <div className="relative cursor-not-allowed rounded-lg overflow-hidden border-2 border-gray-700 opacity-60 w-60">
                 <div className="bg-white p-3 flex flex-col h-56">
                   <div className="flex justify-between items-start">
@@ -611,22 +574,6 @@ function CoverLetterContent() {
                 <div className="bg-[#0a192f] p-3 flex justify-end gap-3">
                   <button
                     onClick={() => {
-                      // Create text file download
-                      const element = document.createElement('a');
-                      const file = new Blob([coverLetter], {type: 'text/plain'});
-                      element.href = URL.createObjectURL(file);
-                      element.download = `Cover_Letter_${companyName}_${position}.txt`;
-                      document.body.appendChild(element);
-                      element.click();
-                      document.body.removeChild(element);
-                    }}
-                    className="bg-[#1e293b] hover:bg-gray-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition duration-300"
-                    title="Download as text file"
-                  >
-                    <FaDownload /> Text
-                  </button>
-                  <button
-                    onClick={() => {
                       // Get the template element
                       const templateElement = document.querySelector('.bg-white > div');
                       if (!templateElement) return;
@@ -662,7 +609,7 @@ function CoverLetterContent() {
                           <body>
                             <div id="cover-letter-content"></div>
                             <div style="margin-top: 20px; text-align: center;">
-                              <button onclick="window.print();" style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                              <button onclick="window.print();" style="padding: 10px 20px; background: #0d1b2a; color: white; border: 1px solid #1e2d3d; border-radius: 8px; cursor: pointer;">
                                 Print/Save as PDF
                               </button>
                             </div>
@@ -678,10 +625,10 @@ function CoverLetterContent() {
                       `);
                       printWindow.document.close();
                     }}
-                    className="bg-[#2563eb] hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition duration-300"
+                    className="bg-[#0d1b2a] hover:bg-[#1e2d3d] text-white px-4 py-2 rounded-md flex items-center gap-2 transition duration-300 font-medium border border-[#1e2d3d]"
                     title="Download as PDF"
                   >
-                    <FaFileDownload /> PDF
+                    <FaFileDownload /> Download PDF
                   </button>
                 </div>
               )}

@@ -23,7 +23,7 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
       default:
         return (
           <div className="relative">
-            <MinimalCoverLetterTemplate data={coverLetterData} isEditable={isEditable} />
+            <MinimalCoverLetterTemplate coverLetterData={coverLetterData} isEditable={isEditable} />
             {isEditable && (
               <div className="absolute top-4 right-4 flex flex-col items-center gap-2">
                 <img src={applicantPhoto} alt="Applicant Photo" className="w-24 h-24 rounded-full object-cover border-2 border-blue-600 shadow-md"/>
@@ -80,28 +80,37 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
   // If onSelectTemplate is provided, we're in template selection mode
   if (onSelectTemplate) {
     return (
-      <div className="w-full" style={{marginBottom: '-20px'}}>
-        <div className="p-2 pt-2 pb-0 px-2 md:p-3 md:pb-0 md:pt-2 rounded-lg">
-          {/* Mobile-optimized scrollable container */}
-          <div className="flex flex-row gap-4 justify-start max-w-full overflow-x-auto pb-0 -mx-2 px-2 snap-x snap-mandatory scroll-smooth" style={{ WebkitOverflowScrolling: 'touch', marginBottom: '-10px' }}>
+      <div className="w-full">
+        <div className="p-2 md:p-3 rounded-lg">
+          <div className="mb-3 flex justify-end">
+            <input type="file" accept="image/*" id="photo-upload-input" className="hidden" onChange={handlePhotoUpload}/>
+            <button
+              onClick={() => document.getElementById('photo-upload-input')?.click()}
+              className="px-3 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200 flex items-center gap-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+              </svg>
+              Upload Photo
+            </button>
+          </div>
+          <div className="flex flex-col md:flex-row gap-4 justify-start max-w-full overflow-x-auto">
             {/* Minimal Template Preview */}
             <div 
-              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'minimal' || hoveredTemplate === 'minimal' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              className={`template-preview-card flex-1 max-w-[240px] border-2 ${selectedTemplate === 'minimal' || hoveredTemplate === 'minimal' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300`}
               onClick={() => handleSelectTemplate('minimal')}
               onMouseEnter={() => setHoveredTemplate('minimal')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '290px'}}>
                 {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
+                <div className="p-3 border-b border-gray-200 bg-white flex justify-between items-start">
+                  <div className="mb-1">
+                    <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
+                    <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
                   </div>
                   <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
                     <div className="flex items-center gap-1">
@@ -121,7 +130,7 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                 </div>
 
                 {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
+                <div className="p-3 text-[8px] text-gray-800">
                   <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
                   <p className="mb-1">Dear Hiring Manager,</p>
                   
@@ -133,29 +142,27 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                   <p className="font-semibold">Alberto Campbell</p>
                 </div>
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
+              <div className="template-label bg-[#0f172a] text-center py-2 rounded-b-lg">
                 <span className="text-white font-medium text-sm">Minimal</span>
               </div>
             </div>
             
             {/* Modern Template Preview */}
             <div 
-              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'modern' || hoveredTemplate === 'modern' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              className={`template-preview-card flex-1 max-w-[240px] border-2 ${selectedTemplate === 'modern' || hoveredTemplate === 'modern' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300`}
               onClick={() => handleSelectTemplate('modern')}
               onMouseEnter={() => setHoveredTemplate('modern')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '290px'}}>
                 {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
+                <div className="p-3 border-b border-gray-200 bg-white flex justify-between items-start">
+                  <div className="mb-1">
+                    <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
+                    <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
                   </div>
                   <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
                     <div className="flex items-center gap-1">
@@ -175,7 +182,7 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                 </div>
 
                 {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
+                <div className="p-3 text-[8px] text-gray-800">
                   <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
                   <p className="mb-1">Dear Hiring Manager,</p>
                   
@@ -187,29 +194,27 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                   <p className="font-semibold">Alberto Campbell</p>
                 </div>
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
+              <div className="template-label bg-[#0f172a] text-center py-2 rounded-b-lg">
                 <span className="text-white font-medium text-sm">Modern</span>
               </div>
             </div>
 
             {/* Teal Template Preview */}
             <div 
-              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'teal' || hoveredTemplate === 'teal' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              className={`template-preview-card flex-1 max-w-[240px] border-2 ${selectedTemplate === 'teal' || hoveredTemplate === 'teal' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300`}
               onClick={() => handleSelectTemplate('teal')}
               onMouseEnter={() => setHoveredTemplate('teal')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '290px'}}>
                 {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
+                <div className="p-3 border-b border-gray-200 bg-white flex justify-between items-start">
+                  <div className="mb-1">
+                    <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
+                    <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
                   </div>
                   <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
                     <div className="flex items-center gap-1">
@@ -229,7 +234,7 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                 </div>
 
                 {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
+                <div className="p-3 text-[8px] text-gray-800">
                   <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
                   <p className="mb-1">Dear Hiring Manager,</p>
                   
@@ -241,29 +246,27 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                   <p className="font-semibold">Alberto Campbell</p>
                 </div>
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
+              <div className="template-label bg-[#0f172a] text-center py-2 rounded-b-lg">
                 <span className="text-white font-medium text-sm">Teal</span>
               </div>
             </div>
 
             {/* Lexus Template Preview */}
             <div 
-              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'lexus' || hoveredTemplate === 'lexus' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              className={`template-preview-card flex-1 max-w-[240px] border-2 ${selectedTemplate === 'lexus' || hoveredTemplate === 'lexus' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300`}
               onClick={() => handleSelectTemplate('lexus')}
               onMouseEnter={() => setHoveredTemplate('lexus')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '290px'}}>
                 {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
+                <div className="p-3 border-b border-gray-200 bg-white flex justify-between items-start">
+                  <div className="mb-1">
+                    <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
+                    <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
+                  </div>
+                  <div className="flex-shrink-0">
+                    <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
                   </div>
                   <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
                     <div className="flex items-center gap-1">
@@ -283,7 +286,7 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                 </div>
 
                 {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
+                <div className="p-3 text-[8px] text-gray-800">
                   <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
                   <p className="mb-1">Dear Hiring Manager,</p>
                   
@@ -295,7 +298,7 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
                   <p className="font-semibold">Alberto Campbell</p>
                 </div>
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
+              <div className="template-label bg-[#0f172a] text-center py-2 rounded-b-lg">
                 <span className="text-white font-medium text-sm">Lexus</span>
               </div>
             </div>

@@ -87,7 +87,7 @@ function TypingText({ text, speed = 100 }: TypingTextProps) {
 // Wrapper component that provides the ResumeAnalysisContext
 export default function ExperiencePage() {
   const params = useParams();
-  const resumeId = params.resumeId as string;
+  const resumeId = params?.resumeId as string;
 
   return (
     <ResumeAnalysisProvider resumeId={resumeId}>
@@ -100,7 +100,7 @@ export default function ExperiencePage() {
 function ExperiencePageContent() {
   const params = useParams();
   const router = useRouter();
-  const resumeId = params.resumeId as string;
+  const resumeId = params?.resumeId as string;
 
   // Get resume name from the same hook used by the dropdown
   const { resumeName, isLoading: resumeNameLoading } = useResumeName(resumeId);

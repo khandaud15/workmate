@@ -13,7 +13,7 @@ import ScoreIndicator from '../../../../components/ScoreIndicator';
 // Wrapper component that provides the ResumeAnalysisContext
 export default function PublicationsPage() {
   const params = useParams();
-  const resumeId = params.resumeId as string;
+  const resumeId = params?.resumeId as string;
   
   return (
     <ResumeAnalysisProvider resumeId={resumeId}>
@@ -25,7 +25,7 @@ export default function PublicationsPage() {
 // Inner component that consumes the ResumeAnalysisContext
 function PublicationsPageContent() {
   const params = useParams();
-  const resumeId = params.resumeId as string;
+  const resumeId = params?.resumeId as string;
   
   // Get resume name from the same hook used by the dropdown
   const { resumeName } = useResumeName(resumeId);
