@@ -108,8 +108,8 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
               className="object-cover"
             />
           </div>
-          {isEditable && (
-            <label className="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded cursor-pointer transition">
+          {isEditable && photoSrc === '/placeholder-profile.svg' && (
+            <label className="mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded cursor-pointer transition photo-control">
               Upload Photo
               <input 
                 type="file" 
@@ -118,6 +118,25 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
                 onChange={handlePhotoUpload}
               />
             </label>
+          )}
+          {isEditable && photoSrc !== '/placeholder-profile.svg' && (
+            <div className="flex gap-2 mt-2 photo-control">
+              <button 
+                className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded cursor-pointer transition"
+                onClick={() => setPhotoSrc('/placeholder-profile.svg')}
+              >
+                Remove
+              </button>
+              <label className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded cursor-pointer transition">
+                Change
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handlePhotoUpload}
+                />
+              </label>
+            </div>
           )}
         </div>
       </div>

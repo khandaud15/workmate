@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import DashboardLayout from '../../components/DashboardLayout';
 import FixedResumeSelector from '../../components/FixedResumeSelector';
 import { FaSpinner, FaDownload, FaCopy, FaRedo, FaFileAlt, FaFileDownload } from 'react-icons/fa';
+import Script from 'next/script';
 import './cover-letter-styles.css';
 import { initializeVercelEnvironment } from './vercel-fix';
 import CoverLetterTemplatesContainer from '../../components/CoverLetter/CoverLetterTemplatesContainer';
@@ -43,6 +44,7 @@ function CoverLetterContent() {
   const [position, setPosition] = useState('');
   const [coverLetter, setCoverLetter] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [error, setError] = useState('');
   const [isClient, setIsClient] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
@@ -568,67 +570,120 @@ function CoverLetterContent() {
           
           {/* Only show the full template when a template is selected */}
           {selectedTemplate && (
-            <div className="bg-white rounded-md overflow-hidden w-full max-w-full">
+            <div className="bg-white rounded-md overflow-hidden w-full max-w-full cover-letter-output">
               {/* Download buttons for formatted template */}
               {coverLetter && (
                 <div className="bg-[#0a192f] p-3 flex justify-end gap-3">
                   <button
-                    onClick={() => {
-                      // Get the template element
-                      const templateElement = document.querySelector('.bg-white > div');
-                      if (!templateElement) return;
-                      
-                      // Create a clone of the template to modify for printing
-                      const clonedTemplate = templateElement.cloneNode(true) as HTMLElement;
-                      
-                      // Create a new window for the PDF version
-                      const printWindow = window.open('', '_blank');
-                      if (!printWindow) return;
-                      
-                      // Write the HTML content to the new window
-                      printWindow.document.write(`
-                        <html>
-                          <head>
-                            <title>Cover Letter - ${companyName} - ${position}</title>
-                            <style>
-                              @media print {
-                                @page { margin: 0.5in; }
-                                body { font-family: Arial, sans-serif; color: #000; }
-                                h1 { margin-bottom: 5px; }
-                                .contact-info { margin-bottom: 20px; }
-                                p { margin-bottom: 15px; line-height: 1.5; }
-                                button, [contenteditable="true"] { border: none !important; outline: none !important; }
-                              }
-                              body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
-                              h1 { margin-bottom: 5px; }
-                              .contact-info { margin-bottom: 20px; }
-                              p { margin-bottom: 15px; line-height: 1.5; }
-                              [contenteditable="true"] { border: none; outline: none; }
-                            </style>
-                          </head>
-                          <body>
-                            <div id="cover-letter-content"></div>
-                            <div style="margin-top: 20px; text-align: center;">
-                              <button onclick="window.print();" style="padding: 10px 20px; background: #0d1b2a; color: white; border: 1px solid #1e2d3d; border-radius: 8px; cursor: pointer;">
-                                Print/Save as PDF
-                              </button>
-                            </div>
-                            <script>
-                              document.getElementById('cover-letter-content').innerHTML = templateElement.outerHTML;
-                              // Remove any edit buttons or controls
-                              document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                                el.setAttribute('contenteditable', 'false');
-                              });
-                            </script>
-                          </body>
-                        </html>
-                      `);
-                      printWindow.document.close();
+                    onClick={async () => {
+                      try {
+                        // Show loading indicator
+                        setIsGeneratingPDF(true);
+                        
+                        // Get the actual rendered cover letter template element
+                        // Make sure we're only getting the cover letter content, not the buttons
+                        const coverLetterOutput = document.querySelector('.cover-letter-output');
+                        const coverLetterElement = coverLetterOutput?.querySelector('.bg-white');
+                        if (!coverLetterElement) {
+                          console.error('Could not find cover letter element');
+                          alert('Could not find cover letter content to download. Please try again.');
+                          setIsGeneratingPDF(false);
+                          return;
+                        }
+                        
+                        // Set a clean filename
+                        const filename = `Cover_Letter_${companyName || 'Company'}_${position || 'Position'}.pdf`.replace(/\s+/g, '_');
+                        
+                        // Create a clone of the element to avoid modifying the original
+                        const clonedElement = coverLetterElement.cloneNode(true) as HTMLElement;
+                        
+                        // Remove any contenteditable attributes for the PDF
+                        const editableElements = clonedElement.querySelectorAll('[contenteditable="true"]');
+                        editableElements.forEach(el => {
+                          el.removeAttribute('contenteditable');
+                        });
+                        
+                        // Create a temporary container with proper styling for PDF output
+                        const container = document.createElement('div');
+                        container.style.position = 'absolute';
+                        container.style.left = '-9999px';
+                        container.style.width = '8.5in';
+                        container.style.height = 'auto';
+                        container.style.backgroundColor = 'white';
+                        container.style.padding = '0';
+                        container.style.margin = '0';
+                        container.style.overflow = 'hidden';
+                        
+                        // Apply specific styling to the cloned element
+                        clonedElement.style.width = '100%';
+                        clonedElement.style.height = 'auto';
+                        clonedElement.style.minHeight = '11in';
+                        clonedElement.style.padding = '0.5in';
+                        clonedElement.style.boxSizing = 'border-box';
+                        clonedElement.style.backgroundColor = 'white';
+                        clonedElement.style.position = 'relative';
+                        
+                        // Remove any buttons or controls that might be in the template
+                        const elementsToRemove = clonedElement.querySelectorAll('button, .controls, .edit-controls, .photo-control');
+                        elementsToRemove.forEach(element => element.remove());
+                        
+                        container.appendChild(clonedElement);
+                        document.body.appendChild(container);
+                        
+                        // Dynamically import html2canvas and jsPDF
+                        const html2canvas = (await import('html2canvas')).default;
+                        const { jsPDF } = await import('jspdf');
+                        
+                        // Use html2canvas to capture the element as an image
+                        const canvas = await html2canvas(clonedElement, {
+                          scale: 2, // Higher scale for better quality
+                          useCORS: true, // Allow loading cross-origin images
+                          logging: false,
+                          backgroundColor: '#ffffff',
+                          windowWidth: clonedElement.scrollWidth,
+                          windowHeight: clonedElement.scrollHeight
+                        });
+                        
+                        // Calculate dimensions
+                        const imgWidth = 8.5; // Letter width in inches
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                        
+                        // Create PDF with proper dimensions
+                        const pdf = new jsPDF({
+                          orientation: imgHeight > imgWidth ? 'portrait' : 'landscape',
+                          unit: 'in',
+                          format: [imgWidth, imgHeight]
+                        });
+                        
+                        // Add the image to the PDF
+                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
+                        
+                        // Save the PDF
+                        pdf.save(filename);
+                        
+                        // Clean up
+                        document.body.removeChild(container);
+                        setIsGeneratingPDF(false);
+                      } catch (error) {
+                        console.error('Error generating PDF:', error);
+                        alert('There was an error generating your PDF. Please try again.');
+                        setIsGeneratingPDF(false);
+                      }
                     }}
                     className="bg-[#0d1b2a] hover:bg-[#1e2d3d] text-white px-4 py-2 rounded-md flex items-center gap-2 transition duration-300 font-medium border border-[#1e2d3d]"
                     title="Download as PDF"
+                    disabled={isGeneratingPDF}
                   >
-                    <FaFileDownload /> Download PDF
+                    {isGeneratingPDF ? (
+                      <>
+                        <FaSpinner className="animate-spin" /> Generating PDF...
+                      </>
+                    ) : (
+                      <>
+                        <FaFileDownload /> Download PDF
+                      </>
+                    )}
                   </button>
                 </div>
               )}

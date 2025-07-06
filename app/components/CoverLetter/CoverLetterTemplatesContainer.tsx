@@ -91,53 +91,18 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
               onMouseEnter={() => setHoveredTemplate('minimal')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
-                {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.928.7L7.5 6H10a1 1 0 011 1v4a1 1 0 01-1 1H7.5l-1.428 2.3a1 1 0 01-.928.7H3a1 1 0 01-1-1V3z"/>
-                      </svg>
-                      (558) 333-1333
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                      </svg>
-                      email@example.com
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
-                  <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
-                  <p className="mb-1">Dear Hiring Manager,</p>
-                  
-                  <p className="text-[8px] leading-tight mb-1">I am writing to express my interest in applying for the Data Analyst Intern position.</p>
-                  <p className="text-[8px] leading-tight mb-1">My skills include data mining, AI, and project management.</p>
-                  <p className="text-[8px] leading-tight mb-1">You will find me reliable and highly adaptable.</p>
-                  
-                  <p className="mb-1">Yours faithfully,</p>
-                  <p className="font-semibold">Alberto Campbell</p>
-                </div>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Minimal_1_9cbfcc5566.png" 
+                  alt="Minimal Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
-                <span className="text-white font-medium text-sm">Minimal</span>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Minimal</span>
               </div>
             </div>
-            
+
             {/* Modern Template Preview */}
             <div 
               className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'modern' || hoveredTemplate === 'modern' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
@@ -145,177 +110,349 @@ const CoverLetterTemplatesContainer: React.FC<CoverLetterTemplatesContainerProps
               onMouseEnter={() => setHoveredTemplate('modern')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
-                {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.928.7L7.5 6H10a1 1 0 011 1v4a1 1 0 01-1 1H7.5l-1.428 2.3a1 1 0 01-.928.7H3a1 1 0 01-1-1V3z"/>
-                      </svg>
-                      (558) 333-1333
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                      </svg>
-                      email@example.com
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
-                  <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
-                  <p className="mb-1">Dear Hiring Manager,</p>
-                  
-                  <p className="text-[8px] leading-tight mb-1">I am writing to express my interest in applying for the Data Analyst Intern position.</p>
-                  <p className="text-[8px] leading-tight mb-1">My skills include data mining, AI, and project management.</p>
-                  <p className="text-[8px] leading-tight mb-1">You will find me reliable and highly adaptable.</p>
-                  
-                  <p className="mb-1">Yours faithfully,</p>
-                  <p className="font-semibold">Alberto Campbell</p>
-                </div>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Modern_1_8812773e4d.png" 
+                  alt="Modern Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
-                <span className="text-white font-medium text-sm">Modern</span>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Modern</span>
               </div>
             </div>
 
-            {/* Teal Template Preview */}
+            {/* Multi-Column Template Preview */}
             <div 
-              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'teal' || hoveredTemplate === 'teal' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
-              onClick={() => handleSelectTemplate('teal')}
-              onMouseEnter={() => setHoveredTemplate('teal')}
+              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'multi-column' || hoveredTemplate === 'multi-column' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              onClick={() => handleSelectTemplate('multi-column')}
+              onMouseEnter={() => setHoveredTemplate('multi-column')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
-                {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.928.7L7.5 6H10a1 1 0 011 1v4a1 1 0 01-1 1H7.5l-1.428 2.3a1 1 0 01-.928.7H3a1 1 0 01-1-1V3z"/>
-                      </svg>
-                      (558) 333-1333
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                      </svg>
-                      email@example.com
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
-                  <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
-                  <p className="mb-1">Dear Hiring Manager,</p>
-                  
-                  <p className="text-[8px] leading-tight mb-1">I am writing to express my interest in applying for the Data Analyst Intern position.</p>
-                  <p className="text-[8px] leading-tight mb-1">My skills include data mining, AI, and project management.</p>
-                  <p className="text-[8px] leading-tight mb-1">You will find me reliable and highly adaptable.</p>
-                  
-                  <p className="mb-1">Yours faithfully,</p>
-                  <p className="font-semibold">Alberto Campbell</p>
-                </div>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Multi_Column_1_64c1f63d40.png" 
+                  alt="Multi-Column Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
-                <span className="text-white font-medium text-sm">Teal</span>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Multi-Column</span>
               </div>
             </div>
 
-            {/* Lexus Template Preview */}
+            {/* Minimal 2 Template Preview */}
             <div 
-              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'lexus' || hoveredTemplate === 'lexus' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
-              onClick={() => handleSelectTemplate('lexus')}
-              onMouseEnter={() => setHoveredTemplate('lexus')}
+              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'minimal-2' || hoveredTemplate === 'minimal-2' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              onClick={() => handleSelectTemplate('minimal-2')}
+              onMouseEnter={() => setHoveredTemplate('minimal-2')}
               onMouseLeave={() => setHoveredTemplate(null)}
             >
-              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative" style={{height: '270px'}}>
-                {/* Header Section - Simplified but recognizable */}
-                <div className="p-3 border-b border-gray-200 bg-white">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-[10px] font-bold text-gray-800">ALBERTO CAMPBELL</h3>
-                      <p className="text-[8px] font-medium text-blue-600">Data Analyst Intern</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <img src={applicantPhoto} alt="Applicant" className="w-6 h-6 rounded-full object-cover border border-gray-300" />
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-[7px] text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.928.7L7.5 6H10a1 1 0 011 1v4a1 1 0 01-1 1H7.5l-1.428 2.3a1 1 0 01-.928.7H3a1 1 0 01-1-1V3z"/>
-                      </svg>
-                      (558) 333-1333
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-2 w-2 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                      </svg>
-                      email@example.com
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cover Letter Body - Clear and readable */}
-                <div className="p-3 pt-2 text-[8px] text-gray-800">
-                  <h4 className="text-[9px] font-semibold mb-2 border-b pb-1 border-gray-200">COVER LETTER</h4>
-                  <p className="mb-1">Dear Hiring Manager,</p>
-                  
-                  <p className="text-[8px] leading-tight mb-1">I am writing to express my interest in applying for the Data Analyst Intern position.</p>
-                  <p className="text-[8px] leading-tight mb-1">My skills include data mining, AI, and project management.</p>
-                  <p className="text-[8px] leading-tight mb-1">You will find me reliable and highly adaptable.</p>
-                  
-                  <p className="mb-1">Yours faithfully,</p>
-                  <p className="font-semibold">Alberto Campbell</p>
-                </div>
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Minimal_2_5eac4d0acc.png" 
+                  alt="Minimal 2 Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
               </div>
-              <div className="template-label bg-[#0f172a] text-center py-1 rounded-b-lg">
-                <span className="text-white font-medium text-sm">Lexus</span>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Minimal 2</span>
+              </div>
+            </div>
+
+            {/* Minimal 3 Template Preview */}
+            <div 
+              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'minimal-3' || hoveredTemplate === 'minimal-3' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              onClick={() => handleSelectTemplate('minimal-3')}
+              onMouseEnter={() => setHoveredTemplate('minimal-3')}
+              onMouseLeave={() => setHoveredTemplate(null)}
+            >
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Minimal_3_c2ebd8bd9e.png" 
+                  alt="Minimal 3 Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
+              </div>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Minimal 3</span>
+              </div>
+            </div>
+
+            {/* Modern 2 Template Preview */}
+            <div 
+              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'modern-2' || hoveredTemplate === 'modern-2' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              onClick={() => handleSelectTemplate('modern-2')}
+              onMouseEnter={() => setHoveredTemplate('modern-2')}
+              onMouseLeave={() => setHoveredTemplate(null)}
+            >
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Modern_2_23beea2e93.png" 
+                  alt="Modern 2 Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
+              </div>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Modern 2</span>
+              </div>
+            </div>
+
+            {/* Modern 3 Template Preview */}
+            <div 
+              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'modern-3' || hoveredTemplate === 'modern-3' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              onClick={() => handleSelectTemplate('modern-3')}
+              onMouseEnter={() => setHoveredTemplate('modern-3')}
+              onMouseLeave={() => setHoveredTemplate(null)}
+            >
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Modern_3_0bfef66bd7.png" 
+                  alt="Modern 3 Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
+              </div>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Modern 3</span>
+              </div>
+            </div>
+
+            {/* Multi-Column 2 Template Preview */}
+            <div 
+              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'multi-column-2' || hoveredTemplate === 'multi-column-2' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              onClick={() => handleSelectTemplate('multi-column-2')}
+              onMouseEnter={() => setHoveredTemplate('multi-column-2')}
+              onMouseLeave={() => setHoveredTemplate(null)}
+            >
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Multi_Column_2_af467c430f.png" 
+                  alt="Multi-Column 2 Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
+              </div>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Multi-Column 2</span>
+              </div>
+            </div>
+
+            {/* Multi-Column 3 Template Preview */}
+            <div 
+              className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 ${selectedTemplate === 'multi-column-3' || hoveredTemplate === 'multi-column-3' ? 'border-blue-500' : 'border-gray-400'} rounded-lg cursor-pointer transition-all duration-300 snap-center`}
+              onClick={() => handleSelectTemplate('multi-column-3')}
+              onMouseEnter={() => setHoveredTemplate('multi-column-3')}
+              onMouseLeave={() => setHoveredTemplate(null)}
+            >
+              <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+                <img 
+                  src="/images/cover-letter-templates/Multi_Column_3_29ee44d27b.png" 
+                  alt="Multi-Column 3 Template" 
+                  className="w-full h-full object-cover" style={{objectPosition: 'top'}}
+                />
+              </div>
+              <div className="bg-slate-800 p-2 rounded-b-lg text-center">
+                <span className="text-sm font-medium text-white">Multi-Column 3</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     );
-  }
+};
 
-  // If not in selection mode and a template is selected, render the selected template
-  if (!onSelectTemplate && selectedTemplate) {
-    return (
-      <div className="cover-letter-templates-container w-full max-w-[21cm] mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
-        {renderSelectedTemplate()}
+// If onSelectTemplate is provided, we're in template selection mode
+if (onSelectTemplate) {
+return (
+  <div className="cover-letter-templates-selection-container w-full max-w-[21cm] mx-auto bg-white shadow-lg rounded-xl overflow-hidden p-6">
+    <div className="templates-grid">
+      <div className="flex flex-row gap-4 overflow-x-auto pb-4 snap-x snap-mandatory">
+        {/* Minimal Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'minimal' || hoveredTemplate === 'minimal' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('minimal')}
+          onMouseEnter={() => setHoveredTemplate('minimal')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Minimal_1_9cbfcc5566.png" 
+              alt="Minimal Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Minimal</span>
+          </div>
+        </div>
+
+        {/* Modern Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'modern' || hoveredTemplate === 'modern' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('modern')}
+          onMouseEnter={() => setHoveredTemplate('modern')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Modern_1_8812773e4d.png" 
+              alt="Modern Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Modern</span>
+          </div>
+        </div>
+
+        {/* Multi-Column Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'multi-column' || hoveredTemplate === 'multi-column' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('multi-column')}
+          onMouseEnter={() => setHoveredTemplate('multi-column')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Multi_Column_1_64c1f63d40.png" 
+              alt="Multi-Column Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Multi-Column</span>
+          </div>
+        </div>
+
+        {/* Minimal 2 Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'minimal-2' || hoveredTemplate === 'minimal-2' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('minimal-2')}
+          onMouseEnter={() => setHoveredTemplate('minimal-2')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Minimal_2_5eac4d0acc.png" 
+              alt="Minimal 2 Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Minimal 2</span>
+          </div>
+        </div>
+
+        {/* Minimal 3 Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'minimal-3' || hoveredTemplate === 'minimal-3' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('minimal-3')}
+          onMouseEnter={() => setHoveredTemplate('minimal-3')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Minimal_3_c2ebd8bd9e.png" 
+              alt="Minimal 3 Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Minimal 3</span>
+          </div>
+        </div>
+
+        {/* Modern 2 Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'modern-2' || hoveredTemplate === 'modern-2' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('modern-2')}
+          onMouseEnter={() => setHoveredTemplate('modern-2')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Modern_2_23beea2e93.png" 
+              alt="Modern 2 Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Modern 2</span>
+          </div>
+        </div>
+
+        {/* Modern 3 Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'modern-3' || hoveredTemplate === 'modern-3' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('modern-3')}
+          onMouseEnter={() => setHoveredTemplate('modern-3')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Modern_3_0bfef66bd7.png" 
+              alt="Modern 3 Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Modern 3</span>
+          </div>
+        </div>
+
+        {/* Multi-Column 2 Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'multi-column-2' || hoveredTemplate === 'multi-column-2' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('multi-column-2')}
+          onMouseEnter={() => setHoveredTemplate('multi-column-2')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Multi_Column_2_af467c430f.png" 
+              alt="Multi-Column 2 Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Multi-Column 2</span>
+          </div>
+        </div>
+
+        {/* Multi-Column 3 Template Preview */}
+        <div 
+          className={`template-preview-card flex-1 max-w-[240px] min-w-[240px] border-2 border-gray-400 rounded-lg cursor-pointer transition-all duration-300 snap-center ${selectedTemplate === 'multi-column-3' || hoveredTemplate === 'multi-column-3' ? 'border-blue-500' : ''}`}
+          onClick={() => handleSelectTemplate('multi-column-3')}
+          onMouseEnter={() => setHoveredTemplate('multi-column-3')}
+          onMouseLeave={() => setHoveredTemplate(null)}
+        >
+          <div className="template-preview bg-white rounded-t-lg overflow-hidden relative border border-gray-200" style={{height: '240px', padding: '8px'}}>
+            <img 
+              src="/images/cover-letter-templates/Multi_Column_3_29ee44d27b.png" 
+              alt="Multi-Column 3 Template" 
+              className="w-full h-full object-contain" style={{objectPosition: 'top'}}
+            />
+          </div>
+          <div className="bg-gray-100 p-2 rounded-b-lg text-center border-t border-gray-200">
+            <span className="text-sm font-medium">Multi-Column 3</span>
+          </div>
+        </div>
       </div>
-    );
-  }
-  
-  // If not in selection mode and no template is selected, return null
-  return null;
+    </div>
+  </div>
+);
+}
+
+// If not in selection mode and a template is selected, render the selected template
+if (!onSelectTemplate && selectedTemplate) {
+return (
+  <div className="cover-letter-templates-container w-full max-w-[21cm] mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+    {renderSelectedTemplate()}
+  </div>
+);
+}
+
+// If not in selection mode and no template is selected, return null
+return null;
 };
 
 export default CoverLetterTemplatesContainer;
