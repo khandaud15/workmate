@@ -519,7 +519,7 @@ function CoverLetterContent() {
         {/* Cover Letter Templates Container - Placed under resume toggle and upload box */}
         <div className="mb-8 mt-6 bg-[#0d1b2a] rounded-lg p-6 shadow-lg border border-[#1e2d3d]">
           <div className="mb-4">
-            <h2 className="text-xl font-semibold text-white mb-4">Select a template</h2>
+            <h2 className="text-xl font-semibold text-white mb-4 text-center md:text-left">Select a template</h2>
             
             {/* Use our enhanced CoverLetterTemplatesContainer for template selection */}
             <div className="mb-6">

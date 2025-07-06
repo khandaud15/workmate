@@ -18,6 +18,16 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
     // Add CSS for wider input fields on mobile
     styleEl.innerHTML = `
       @media (max-width: 767px) {
+        .modal-container {
+          width: 99.5% !important;
+          max-width: 99.5% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+          padding-left: 4px !important;
+          padding-right: 4px !important;
+          border-radius: 12px !important;
+        }
+        
         .resume-modal-input, .resume-modal-button {
           width: calc(100% + 48px) !important;
           margin-left: -24px !important;
@@ -307,9 +317,9 @@ const CreateResumeModal: React.FC<CreateResumeModalProps> = ({ isOpen, onClose, 
 
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 px-0.5">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40 px-0">
       <div
-        className="bg-[#111827] rounded-2xl shadow-lg w-full max-w-lg p-0 relative border border-gray-700 max-h-[90vh] overflow-y-auto mx-0.5"
+        className="bg-[#111827] rounded-2xl shadow-lg w-full max-w-lg p-0 relative border border-gray-700 max-h-[90vh] overflow-y-auto mx-0 modal-container"
         style={{ boxShadow: '0 0 16px 0 rgba(37, 99, 235, 0.2)' }}
       >
         <button
