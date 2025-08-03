@@ -56,6 +56,8 @@ function CoverLetterContent() {
   const [resumeOwnerName, setResumeOwnerName] = useState<string>('');
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [coverLetterData, setCoverLetterData] = useState<any>(null);
+  const [showFormattedTemplate, setShowFormattedTemplate] = useState<boolean>(false);
+  const [showTemplateModal, setShowTemplateModal] = useState<boolean>(false);
 
   // This ensures we're only rendering on the client side
   useEffect(() => {
@@ -216,6 +218,10 @@ function CoverLetterContent() {
   // Function to generate a cover letter
   const generateCoverLetter = async () => {
     if (!isClient) return;
+    
+    // Reset formatted template display and modal when generating new cover letter
+    setShowFormattedTemplate(false);
+    setShowTemplateModal(false);
     
     // Validate inputs
     if (!jobDescription.trim()) {
@@ -525,7 +531,13 @@ function CoverLetterContent() {
             <div className="mb-6">
               <CoverLetterTemplatesContainer
                 selectedTemplate={selectedTemplate}
-                onSelectTemplate={(template) => setSelectedTemplate(template)}
+                onSelectTemplate={(template) => {
+                  setSelectedTemplate(template);
+                  // Only show modal if cover letter has been generated
+                  if (coverLetter) {
+                    setShowTemplateModal(true);
+                  }
+                }}
               />
             </div>
             
@@ -568,143 +580,174 @@ function CoverLetterContent() {
             </div>
           </div>
           
-          {/* Only show the full template when a template is selected */}
-          {selectedTemplate && (
-            <div className="bg-white rounded-md overflow-hidden w-full max-w-full cover-letter-output">
-              {/* Download buttons for formatted template */}
-              {coverLetter && (
-                <div className="bg-[#0a192f] p-3 flex justify-end gap-3">
-                  <button
-                    onClick={async () => {
-                      try {
-                        // Show loading indicator
-                        setIsGeneratingPDF(true);
-                        
-                        // Get the actual rendered cover letter template element
-                        // Make sure we're only getting the cover letter content, not the buttons
-                        const coverLetterOutput = document.querySelector('.cover-letter-output');
-                        const coverLetterElement = coverLetterOutput?.querySelector('.bg-white');
-                        if (!coverLetterElement) {
-                          console.error('Could not find cover letter element');
-                          alert('Could not find cover letter content to download. Please try again.');
+          {/* Template Modal */}
+          {showTemplateModal && selectedTemplate && coverLetter && (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-2">
+              <div className="bg-white rounded-lg max-w-6xl h-[98vh] w-full overflow-hidden shadow-2xl">
+                {/* Modal Header */}
+                <div className="bg-[#0a192f] p-4 flex justify-between items-center">
+                  <h3 className="text-white text-lg font-semibold">
+                    Cover Letter Preview
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    {/* Download PDF Button */}
+                    <button
+                      onClick={async () => {
+                        try {
+                          // Show loading indicator
+                          setIsGeneratingPDF(true);
+                          
+                          // Get the element to convert to PDF
+                          const element = document.querySelector('.cover-letter-template');
+                          if (!element) {
+                            throw new Error('Cover letter template not found');
+                          }
+                          
+                          // Create filename
+                          const filename = `${companyName ? companyName.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'company'}_${position ? position.replace(/[^a-z0-9]/gi, '_').toLowerCase() : 'position'}_cover_letter.pdf`;
+                          console.log('PDF filename will be:', filename);
+                          
+                          // Clone the element to avoid modifying the original
+                          const clonedElement = element.cloneNode(true) as HTMLElement;
+                          
+                          // Remove any contenteditable attributes for the PDF
+                          const editableElements = clonedElement.querySelectorAll('[contenteditable="true"]');
+                          editableElements.forEach(el => {
+                            el.removeAttribute('contenteditable');
+                          });
+                          
+                          // Create a temporary container with proper styling for PDF output
+                          const container = document.createElement('div');
+                          container.style.position = 'absolute';
+                          container.style.left = '-9999px';
+                          container.style.width = '8.5in';
+                          container.style.height = 'auto';
+                          container.style.backgroundColor = 'white';
+                          container.style.padding = '0';
+                          container.style.margin = '0';
+                          container.style.overflow = 'hidden';
+                          
+                          // Apply specific styling to the cloned element
+                          clonedElement.style.width = '100%';
+                          clonedElement.style.height = 'auto';
+                          clonedElement.style.minHeight = '11in';
+                          clonedElement.style.padding = '0.5in';
+                          clonedElement.style.boxSizing = 'border-box';
+                          clonedElement.style.backgroundColor = 'white';
+                          clonedElement.style.position = 'relative';
+                          
+                          // Remove any buttons or controls that might be in the template
+                          const elementsToRemove = clonedElement.querySelectorAll('button, .controls, .edit-controls, .photo-control');
+                          elementsToRemove.forEach(element => element.remove());
+                          
+                          container.appendChild(clonedElement);
+                          document.body.appendChild(container);
+                          
+                          // Dynamically import html2canvas and jsPDF
+                          const html2canvas = (await import('html2canvas')).default;
+                          const { jsPDF } = await import('jspdf');
+                          
+                          // Use html2canvas to capture the element as an image
+                          const canvas = await html2canvas(clonedElement, {
+                            scale: 2, // Higher scale for better quality
+                            useCORS: true, // Allow loading cross-origin images
+                            logging: false,
+                            backgroundColor: '#ffffff',
+                            windowWidth: clonedElement.scrollWidth,
+                            windowHeight: clonedElement.scrollHeight
+                          });
+                          
+                          // Calculate dimensions
+                          const imgWidth = 8.5; // Letter width in inches
+                          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                          
+                          // Create PDF with proper dimensions
+                          const pdf = new jsPDF({
+                            orientation: imgHeight > imgWidth ? 'portrait' : 'landscape',
+                            unit: 'in',
+                            format: [imgWidth, imgHeight]
+                          });
+                          
+                          // Add the image to the PDF
+                          const imgData = canvas.toDataURL('image/jpeg', 1.0);
+                          pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
+                          
+                          // Save the PDF
+                          pdf.save(filename);
+                          
+                          // Clean up
+                          document.body.removeChild(container);
                           setIsGeneratingPDF(false);
-                          return;
+                        } catch (error) {
+                          console.error('Error generating PDF:', error);
+                          alert('There was an error generating your PDF. Please try again.');
+                          setIsGeneratingPDF(false);
                         }
-                        
-                        // Set a clean filename
-                        const filename = `Cover_Letter_${companyName || 'Company'}_${position || 'Position'}.pdf`.replace(/\s+/g, '_');
-                        
-                        // Create a clone of the element to avoid modifying the original
-                        const clonedElement = coverLetterElement.cloneNode(true) as HTMLElement;
-                        
-                        // Remove any contenteditable attributes for the PDF
-                        const editableElements = clonedElement.querySelectorAll('[contenteditable="true"]');
-                        editableElements.forEach(el => {
-                          el.removeAttribute('contenteditable');
-                        });
-                        
-                        // Create a temporary container with proper styling for PDF output
-                        const container = document.createElement('div');
-                        container.style.position = 'absolute';
-                        container.style.left = '-9999px';
-                        container.style.width = '8.5in';
-                        container.style.height = 'auto';
-                        container.style.backgroundColor = 'white';
-                        container.style.padding = '0';
-                        container.style.margin = '0';
-                        container.style.overflow = 'hidden';
-                        
-                        // Apply specific styling to the cloned element
-                        clonedElement.style.width = '100%';
-                        clonedElement.style.height = 'auto';
-                        clonedElement.style.minHeight = '11in';
-                        clonedElement.style.padding = '0.5in';
-                        clonedElement.style.boxSizing = 'border-box';
-                        clonedElement.style.backgroundColor = 'white';
-                        clonedElement.style.position = 'relative';
-                        
-                        // Remove any buttons or controls that might be in the template
-                        const elementsToRemove = clonedElement.querySelectorAll('button, .controls, .edit-controls, .photo-control');
-                        elementsToRemove.forEach(element => element.remove());
-                        
-                        container.appendChild(clonedElement);
-                        document.body.appendChild(container);
-                        
-                        // Dynamically import html2canvas and jsPDF
-                        const html2canvas = (await import('html2canvas')).default;
-                        const { jsPDF } = await import('jspdf');
-                        
-                        // Use html2canvas to capture the element as an image
-                        const canvas = await html2canvas(clonedElement, {
-                          scale: 2, // Higher scale for better quality
-                          useCORS: true, // Allow loading cross-origin images
-                          logging: false,
-                          backgroundColor: '#ffffff',
-                          windowWidth: clonedElement.scrollWidth,
-                          windowHeight: clonedElement.scrollHeight
-                        });
-                        
-                        // Calculate dimensions
-                        const imgWidth = 8.5; // Letter width in inches
-                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                        
-                        // Create PDF with proper dimensions
-                        const pdf = new jsPDF({
-                          orientation: imgHeight > imgWidth ? 'portrait' : 'landscape',
-                          unit: 'in',
-                          format: [imgWidth, imgHeight]
-                        });
-                        
-                        // Add the image to the PDF
-                        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-                        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight, undefined, 'FAST');
-                        
-                        // Save the PDF
-                        pdf.save(filename);
-                        
-                        // Clean up
-                        document.body.removeChild(container);
-                        setIsGeneratingPDF(false);
-                      } catch (error) {
-                        console.error('Error generating PDF:', error);
-                        alert('There was an error generating your PDF. Please try again.');
-                        setIsGeneratingPDF(false);
-                      }
-                    }}
-                    className="bg-[#0d1b2a] hover:bg-[#1e2d3d] text-white px-4 py-2 rounded-md flex items-center gap-2 transition duration-300 font-medium border border-[#1e2d3d]"
-                    title="Download as PDF"
-                    disabled={isGeneratingPDF}
-                  >
-                    {isGeneratingPDF ? (
-                      <>
-                        <FaSpinner className="animate-spin" /> Generating PDF...
-                      </>
-                    ) : (
-                      <>
-                        <FaFileDownload /> Download PDF
-                      </>
-                    )}
-                  </button>
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1.5 transition duration-300"
+                      title="Download as PDF"
+                      disabled={isGeneratingPDF}
+                    >
+                      {isGeneratingPDF ? (
+                        <>
+                          <FaSpinner className="animate-spin" /> Generating...
+                        </>
+                      ) : (
+                        <>
+                          <FaFileDownload /> Download PDF
+                        </>
+                      )}
+                    </button>
+                    {/* Close Button */}
+                    <button
+                      onClick={() => setShowTemplateModal(false)}
+                      className="text-white hover:text-gray-300 transition duration-300"
+                      title="Close"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-              )}
-              <MinimalCoverLetterTemplate 
-                data={coverLetter ? 
-                  parseCoverLetterForTemplate(coverLetter, session?.user?.name || resumeOwnerName) : 
-                  {
-                    applicantName: session?.user?.name || resumeOwnerName || "Applicant Name",
-                    applicantTitle: position || "Job Position",
-                    applicantPhone: "(555) 123-4567",
-                    applicantEmail: "example@email.com",
-                    applicantLinkedin: "linkedin.com/in/applicant",
-                    applicantLocation: "City, State",
-                    recipientSalutation: "Dear Hiring Manager,",
-                    bodyParagraphs: ["Your cover letter content will appear here after you generate it."],
-                    closingSalutation: "Sincerely,",
-                    signatureName: session?.user?.name || resumeOwnerName || "Applicant Name"
-                  }
-                }
-                isEditable={true}
-              />
+                
+                {/* Template Selection Tabs */}
+                <div className="bg-gray-50 border-b border-gray-200 px-4 py-2">
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { id: 'minimal', name: 'Minimal' },
+                      { id: 'modern', name: 'Modern' },
+                      { id: 'multi-column', name: 'Multi-Column' },
+                      { id: 'minimal-2', name: 'Minimal 2' },
+                      { id: 'minimal-3', name: 'Minimal 3' },
+                      { id: 'modern-2', name: 'Modern 2' },
+                      { id: 'modern-3', name: 'Modern 3' },
+                      { id: 'multi-column-2', name: 'Multi-Column 2' },
+                      { id: 'multi-column-3', name: 'Multi-Column 3' }
+                    ].map((template) => (
+                      <button
+                        key={template.id}
+                        onClick={() => setSelectedTemplate(template.id)}
+                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                          selectedTemplate === template.id
+                            ? 'bg-blue-600 text-white shadow-lg border-2 border-blue-600'
+                            : 'bg-gray-100 text-gray-600 hover:bg-white hover:text-gray-800 border border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        {template.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Modal Content */}
+                <div className="overflow-y-auto h-[calc(98vh-140px)] p-6">
+                  <MinimalCoverLetterTemplate 
+                    data={parseCoverLetterForTemplate(coverLetter, session?.user?.name || resumeOwnerName)}
+                    isEditable={true}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
