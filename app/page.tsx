@@ -49,58 +49,59 @@ export default function Home() {
         {/* Feature Cards Section */}
         <div className="py-4 sm:py-8 -mt-8 sm:-mt-12" style={{ backgroundColor: '#fefcf9' }}>
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="pt-6 sm:pt-10"></div>
             <h2 className="text-center text-[24px] sm:text-[32px] text-[#1A1A1A] mb-6 sm:mb-8" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
               We don't stop until you're hired
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 mt-8 sm:mt-12">
               {/* Card 1 */}
-              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
-                <div className="text-[#4292FF] text-3xl mb-4">→</div>
-                <h3 className="text-lg font-semibold mb-2">Automate your job search</h3>
-                <p className="text-gray-800 text-sm text-left">
+              <div className="bg-gradient-to-br from-[#0e3a68] to-[#1a4f85] rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
+                <div className="text-white text-3xl mb-4">→</div>
+                <h3 className="text-lg font-bold mb-2 text-white">Automate your job search</h3>
+                <p className="text-gray-100 text-sm text-left font-medium">
                   We continuously scan millions of openings to find your top matches.
                 </p>
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
-                <div className="text-[#FF69B4] text-3xl mb-4">⭕</div>
-                <h3 className="text-lg font-semibold mb-2">Wake up to your best matches</h3>
-                <p className="text-gray-800 text-sm text-left">
+              <div className="bg-gradient-to-br from-[#0e3a68] to-[#1a4f85] rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
+                <div className="text-white text-3xl mb-4">⭕</div>
+                <h3 className="text-lg font-bold mb-2 text-white">Wake up to your best matches</h3>
+                <p className="text-gray-100 text-sm text-left font-medium">
                   Start each day with a list of new roles matched to your skills and preferences.
                 </p>
               </div>
 
               {/* Card 3 */}
-              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
-                <div className="text-[#00FF00] text-3xl mb-4">⚡</div>
-                <h3 className="text-lg font-semibold mb-2">10x your job applications</h3>
-                <p className="text-gray-800 text-sm text-left">
+              <div className="bg-gradient-to-br from-[#0e3a68] to-[#1a4f85] rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
+                <div className="text-white text-3xl mb-4">⚡</div>
+                <h3 className="text-lg font-bold mb-2 text-white">10x your job applications</h3>
+                <p className="text-gray-100 text-sm text-left font-medium">
                   Submit 10x as many applications with less effort than one manual application.
                 </p>
               </div>
 
               {/* Card 4 */}
-              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
-                <div className="text-gray-700 text-3xl mb-4">⏰</div>
-                <h3 className="text-lg font-semibold mb-2">Reclaim valuable hours every week</h3>
-                <p className="text-gray-800 text-sm text-left">
+              <div className="bg-gradient-to-br from-[#0e3a68] to-[#1a4f85] rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
+                <div className="text-white text-3xl mb-4">⏰</div>
+                <h3 className="text-lg font-bold mb-2 text-white">Reclaim valuable hours every week</h3>
+                <p className="text-gray-100 text-sm text-left font-medium">
                   Reclaim your time by letting our AI handle the grunt work of job searching.
                 </p>
               </div>
 
               {/* Card 5 */}
-              <div className="bg-white rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
-                <div className="text-[#9370DB] text-3xl mb-4">💬</div>
-                <h3 className="text-lg font-semibold mb-2">Mock interview preparation</h3>
-                <p className="text-gray-800 text-sm text-left">
+              <div className="bg-gradient-to-br from-[#0e3a68] to-[#1a4f85] rounded-[20px] p-6 lg:py-8 shadow-lg hover:shadow-xl transition-shadow lg:h-[260px] flex flex-col">
+                <div className="text-white text-3xl mb-4">💬</div>
+                <h3 className="text-lg font-bold mb-2 text-white">Mock interview preparation</h3>
+                <p className="text-gray-100 text-sm text-left font-medium">
                   Practice with AI-powered mock interviews tailored to your target roles.
                 </p>
               </div>
             </div>
 
             {/* CTA Section */}
-            <div className="mt-16 bg-[#0A0F1C] rounded-[24px] p-6 sm:p-8 md:p-12 text-center flex flex-col justify-center">
+            <div className="mt-24 sm:mt-32 bg-[#0A0F1C] rounded-[24px] p-6 sm:p-8 md:p-12 text-center flex flex-col justify-center">
               <h2 className="text-[25px] sm:text-[28px] md:text-[32px] font-bold text-white mb-5 sm:mb-6 md:mb-8">
                 Ready to automate your job search?
               </h2>

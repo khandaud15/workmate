@@ -1,8 +1,22 @@
 export default function FeatureCards() {
+  // Custom styles to ensure text visibility
+  const titleStyle = {
+    color: '#000000',
+    textShadow: 'none',
+    fontWeight: 700,
+    opacity: 1
+  };
+  
+  const descriptionStyle = {
+    color: '#000000',
+    textShadow: 'none',
+    fontWeight: 500,
+    opacity: 1
+  };
   const features = [
     {
       icon: (
-        <svg className="w-12 h-12 text-blue-500" viewBox="0 0 24 24" fill="none">
+        <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none">
           <path d="M13 20L20 13M20 13H4M20 13L13 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
@@ -11,7 +25,7 @@ export default function FeatureCards() {
     },
     {
       icon: (
-        <svg className="w-12 h-12 text-pink-500" viewBox="0 0 24 24" fill="none">
+        <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none">
           <path d="M12 15.5H7.5C6.10444 15.5 5.40665 15.5 4.83886 15.6722C3.56045 16.06 2.56004 17.0605 2.17224 18.3389C2 18.9067 2 19.6044 2 21M16 18L18 20L22 16M14.5 7.5C14.5 9.98528 12.4853 12 10 12C7.51472 12 5.5 9.98528 5.5 7.5C5.5 5.01472 7.51472 3 10 3C12.4853 3 14.5 5.01472 14.5 7.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
@@ -20,7 +34,7 @@ export default function FeatureCards() {
     },
     {
       icon: (
-        <svg className="w-12 h-12 text-green-500" viewBox="0 0 24 24" fill="none">
+        <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none">
           <path d="M13 10V3L4 14H11V21L20 10H13Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
@@ -29,7 +43,7 @@ export default function FeatureCards() {
     },
     {
       icon: (
-        <svg className="w-12 h-12 text-navy-500" viewBox="0 0 24 24" fill="none">
+        <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none">
           <path d="M12 6V12L16 14M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
@@ -38,7 +52,7 @@ export default function FeatureCards() {
     },
     {
       icon: (
-        <svg className="w-12 h-12 text-purple-500" viewBox="0 0 24 24" fill="none">
+        <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="none">
           <path d="M8 10H8.01M12 10H12.01M16 10H16.01M9 16H5C3.89543 16 3 15.1046 3 14V6C3 4.89543 3.89543 4 5 4H19C20.1046 4 21 4.89543 21 6V14C21 15.1046 20.1046 16 19 16H15L12 19L9 16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
@@ -57,26 +71,21 @@ export default function FeatureCards() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative bg-white p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              className="group relative bg-gradient-to-br from-[#0e3a68] to-[#1a4f85] p-6 sm:p-8 rounded-xl sm:rounded-2xl shadow-lg border border-gray-700 transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               style={{
                 perspective: '1000px',
                 transformStyle: 'preserve-3d',
               }}
             >
-              <div 
-                className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-xl sm:rounded-2xl transition-opacity duration-300 group-hover:opacity-0"
-                style={{
-                  transform: 'translateZ(2px)',
-                }}
-              />
+              {/* Removed overlay that was causing visibility issues */}
               <div className="flex flex-col items-center text-center relative">
                 <div className="mb-4 sm:mb-6 transform transition-transform duration-300 group-hover:scale-110">
                   {feature.icon}
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-900">
+                <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3 text-white">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-gray-100 text-sm leading-relaxed font-medium">
                   {feature.description}
                 </p>
               </div>

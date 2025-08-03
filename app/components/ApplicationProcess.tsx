@@ -1,119 +1,85 @@
 'use client';
 
 import Link from 'next/link';
-
-// Using HTML entities instead of react-icons to avoid SSR issues
-const EditIcon = () => <span className="text-lg">✎</span>;
-const ArrowIcon = () => <span className="text-lg">→</span>;
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 export default function ApplicationProcess() {
   return (
-    <div className="py-16 bg-[#fefcf9]">
+    <div className="py-16 bg-[#0e3a68]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Headline */}
-        <h2 className="text-center text-[24px] sm:text-[32px] text-[#1A1A1A] mb-12" style={{ fontFamily: 'Helvetica Neue Bold, Helvetica Neue, Helvetica, Arial, sans-serif', fontWeight: 700 }}>
-          Save time — skip the job application process
-        </h2>
-
-        {/* 3-Column Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8 [perspective:1000px]">
-          {/* Column 1: We get to know you */}
-          <div className="rounded-[16px] sm:rounded-[20px] p-4 sm:p-6 md:p-8 h-full bg-gradient-to-br from-[#F3E8FF] via-[#FFE8F9] to-[#FFE0EA] shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl relative before:absolute before:inset-0 before:bg-black/5 before:rounded-[16px] sm:before:rounded-[20px] before:opacity-0 hover:before:opacity-100 before:transition-opacity">
-            <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">We get to know you</h3>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 md:gap-4">
+          {/* Left Column - Text Content */}
+          <div className="md:w-2/5 text-white">
+            <h2 className="text-[32px] md:text-[40px] leading-tight font-bold mb-4">
+              Stand out with expert-crafted resumes
+            </h2>
+            <p className="text-lg mb-6">
+              Land more interviews with ATS-optimized templates trusted by hiring managers at top companies.
+            </p>
+            <Link
+              href="/resume-examples"
+              className="inline-flex items-center px-6 py-3 text-[16px] font-medium rounded-[8px] text-[#0e3a68] bg-white hover:bg-gray-100 transition-colors"
+            >
+              Browse templates
+            </Link>
             
-            {/* Info Cards */}
-            <div className="space-y-4">
-              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-gray-500">Your desired salary</p>
-                    <p className="text-base sm:text-lg font-semibold">$85,000</p>
-                  </div>
-                  <div role="button" tabIndex={0} onClick={() => {}} onKeyDown={(e) => e.key === 'Enter' && {}} className="p-2 text-[#4292FF] hover:bg-blue-50 rounded-full transition-colors cursor-pointer">
-                    <EditIcon />
-                  </div>
+            {/* Rating Section */}
+            <div className="mt-8">
+              <div className="flex items-center mb-1">
+                {/* Star Rating */}
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span key={star} className="text-[#39FF14] text-xl mr-1">
+                      {star <= 4 ? '★' : '☆'}
+                    </span>
+                  ))}
                 </div>
               </div>
-              
-              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-gray-500">Where do you want to work?</p>
-                    <p className="text-base sm:text-lg font-semibold">Houston, TX</p>
-                  </div>
-                  <div role="button" tabIndex={0} onClick={() => {}} onKeyDown={(e) => e.key === 'Enter' && {}} className="p-2 text-[#4292FF] hover:bg-blue-50 rounded-full transition-colors cursor-pointer">
-                    <EditIcon />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Column 2: We find jobs for you */}
-          <div className="rounded-[16px] sm:rounded-[20px] p-4 sm:p-6 md:p-8 h-full bg-gradient-to-br from-[#FFF3E8] via-[#FFE8D4] to-[#FFE0E0] shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl relative before:absolute before:inset-0 before:bg-black/5 before:rounded-[16px] sm:before:rounded-[20px] before:opacity-0 hover:before:opacity-100 before:transition-opacity">
-            <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">We find jobs for you</h3>
-            
-            {/* Search Input */}
-            <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm flex items-center mb-3 sm:mb-4">
-              <div className="flex-1 text-gray-800">Project Manager</div>
-              <div role="button" tabIndex={0} onClick={() => {}} onKeyDown={(e) => e.key === 'Enter' && {}} className="p-2 text-[#4292FF] hover:bg-blue-50 rounded-full transition-colors cursor-pointer">
-                <ArrowIcon />
-              </div>
-            </div>
-
-            {/* Job Card */}
-            <div className="bg-[#fefcf9] rounded-[12px] p-4 shadow-sm">
-              <h4 className="font-semibold mb-2">Project Manager</h4>
-              <p className="text-sm text-gray-600 line-clamp-3">
-                The Project Manager is responsible for planning, delivery, and marketing across the lifecycle...
+              <p className="text-sm text-gray-200">
+                4.4/5 from 54.5K reviews
               </p>
             </div>
           </div>
-
-          {/* Column 3: We apply for you */}
-          <div className="rounded-[16px] sm:rounded-[20px] p-4 sm:p-6 md:p-8 h-full bg-gradient-to-br from-[#E8E8FF] via-[#F0E8FF] to-[#F8E8FF] shadow-lg transform transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 hover:shadow-2xl relative before:absolute before:inset-0 before:bg-black/5 before:rounded-[16px] sm:before:rounded-[20px] before:opacity-0 hover:before:opacity-100 before:transition-opacity">
-            <h3 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-center">We apply for you</h3>
+          
+          {/* Right Column - Resume Examples */}
+          <div className="md:w-3/5 relative">
+            <div className="flex overflow-x-auto pb-4 space-x-6 snap-x snap-mandatory hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              {/* Resume Example 1 */}
+              <div className="flex-shrink-0 w-[320px] md:w-[350px] snap-center transform hover:scale-105 transition-transform duration-300 -mt-4">
+                <img
+                  src="/canva-blue.jpeg"
+                  alt="Professional Resume Template - Blue"
+                  className="rounded-lg w-full h-auto shadow-xl"
+                />
+              </div>
+              
+              {/* Resume Example 2 */}
+              <div className="flex-shrink-0 w-[320px] md:w-[350px] snap-center transform hover:scale-105 transition-transform duration-300 -mt-4">
+                <img
+                  src="/canva.jpeg"
+                  alt="Professional Resume Template - Standard"
+                  className="rounded-lg w-full h-auto shadow-xl"
+                />
+              </div>
+              
+              {/* Resume Example 3 */}
+              <div className="flex-shrink-0 w-[320px] md:w-[350px] snap-center transform hover:scale-105 transition-transform duration-300 -mt-4">
+                <img
+                  src="/canva-white.jpeg"
+                  alt="Professional Resume Template - White"
+                  className="rounded-lg w-full h-auto shadow-xl"
+                />
+              </div>
+            </div>
             
-            {/* Resume Card */}
-            <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-3 sm:p-4 shadow-sm mb-3 sm:mb-4">
-              <p className="font-medium text-sm sm:text-base">Resume.pdf</p>
-            </div>
-
-            {/* Matched Offers Badge */}
-            <div className="inline-block bg-[#4292FF] text-white text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full mb-3 sm:mb-4">
-              15 Matched offers
-            </div>
-
-            {/* Applied Jobs List */}
-            <div className="space-y-3">
-              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <p className="font-medium text-sm sm:text-base">Project Manager</p>
-                  <span className="text-green-600 flex items-center gap-1 text-sm sm:text-base">
-                    Applied ✅
-                  </span>
-                </div>
-              </div>
-              <div className="bg-[#fefcf9] rounded-[10px] sm:rounded-[12px] p-2 sm:p-3 shadow-sm">
-                <div className="flex justify-between items-center">
-                  <p className="font-medium text-sm sm:text-base">Data Engineer</p>
-                  <span className="text-green-600 flex items-center gap-1 text-sm sm:text-base">
-                    Applied ✅
-                  </span>
-                </div>
-              </div>
+            {/* Scroll indicators */}
+            <div className="flex justify-center mt-4 space-x-2">
+              <div className="w-2 h-2 rounded-full bg-white opacity-70"></div>
+              <div className="w-2 h-2 rounded-full bg-white opacity-40"></div>
+              <div className="w-2 h-2 rounded-full bg-white opacity-40"></div>
             </div>
           </div>
-        </div>
-
-        {/* CTA Button */}
-        <div className="mt-12 text-center">
-          <Link
-            href="/signup"
-            className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 text-[14px] sm:text-[16px] font-medium rounded-[6px] sm:rounded-[8px] text-white bg-[#0e3a68] hover:bg-[#0c3156] transition-colors"
-          >
-            Get Started →
-          </Link>
         </div>
       </div>
     </div>
