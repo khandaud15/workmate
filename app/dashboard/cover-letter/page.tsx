@@ -616,6 +616,12 @@ function CoverLetterContent() {
                             el.removeAttribute('contenteditable');
                           });
                           
+                          // Simple fix: move icons 3 points down for better alignment in PDF
+                          const svgElements = clonedElement.querySelectorAll('svg');
+                          svgElements.forEach(svg => {
+                            (svg as any).style.transform = 'translateY(3px)';
+                          });
+                          
                           // Create a temporary container with proper styling for PDF output
                           const container = document.createElement('div');
                           container.style.position = 'absolute';
@@ -855,16 +861,8 @@ function CoverLetterContent() {
             
             {coverLetter ? (
               <div className="bg-[#1e293b] border border-gray-700 rounded-md p-4 overflow-y-auto">
-                <div className="flex justify-between items-center mb-4">
+                <div className="mb-4">
                   <h3 className="text-lg font-medium text-white">Raw Text</h3>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setSelectedTemplate('minimal')}
-                      className={`px-3 py-1 text-xs font-medium ${selectedTemplate === 'minimal' ? 'bg-[#2563eb] text-white' : 'bg-[#1e293b] text-gray-300'} rounded border border-gray-700 hover:bg-[#2563eb] hover:text-white focus:ring-2 focus:ring-blue-500`}
-                    >
-                      View Template
-                    </button>
-                  </div>
                 </div>
                 <div className="whitespace-pre-wrap text-gray-200 h-[500px] overflow-y-auto p-4 bg-[#0a192f] rounded-md">
                   {coverLetter}

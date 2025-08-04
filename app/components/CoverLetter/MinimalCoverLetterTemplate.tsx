@@ -39,7 +39,7 @@ const MinimalCoverLetterTemplate: React.FC<MinimalCoverLetterTemplateProps> = ({
   return (
     <div className="cover-letter-template bg-white text-gray-800 font-sans selection:bg-blue-200 p-4 md:p-6" style={{ width: '100%', minHeight: '11in' }}>
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 mb-8">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 mb-8 min-h-[120px]">
         <div className="flex flex-col items-center md:items-start text-center md:text-left flex-grow">
           <h1 
             className="text-3xl md:text-4xl font-bold text-gray-800 mb-2" 
