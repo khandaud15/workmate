@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, MapPin, Briefcase, ExternalLink, Bookmark, Clock } from 'lucide-react';
+import { API_ENDPOINTS } from '../../config';
 
 interface Job {
   job_id: string;
@@ -25,6 +26,7 @@ interface SearchStatus {
 }
 
 export default function JobSearchInterface() {
+  const statusPollingRef = useRef<NodeJS.Timeout | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -143,7 +145,7 @@ export default function JobSearchInterface() {
     setJobs([]);
 
     try {
-      const response = await fetch('/api/jobs/search', {
+      const response = await fetch(API_ENDPOINTS.SEARCH, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,35 +171,41 @@ export default function JobSearchInterface() {
   };
 
   const pollSearchStatus = async () => {
-    const interval = setInterval(async () => {
-      try {
-        const statusResponse = await fetch('/api/jobs/status');
-        const status = await statusResponse.json();
-        setSearchStatus(status);
-
-        if (!status.running) {
-          clearInterval(interval);
-          setIsSearching(false);
-          
-          if (status.total_jobs > 0) {
-            loadJobResults();
-          }
-        }
-      } catch (error) {
-        console.error('Status polling error:', error);
-        clearInterval(interval);
-        setIsSearching(false);
+    try {
+      const response = await fetch(API_ENDPOINTS.STATUS);
+      if (!response.ok) throw new Error('Failed to get search status');
+      const status = await response.json();
+      
+      setSearchStatus({
+        running: status.running,
+        progress: status.progress,
+        message: status.message,
+        total_jobs: status.total_jobs,
+        search_query: status.search_query,
+        location: status.location
+      });
+      
+      if (status.running) {
+        // Continue polling if still running
+        statusPollingRef.current = setTimeout(pollSearchStatus, 2000);
+      } else if (status.total_jobs > 0) {
+        // If search completed, fetch the results
+        loadJobResults();
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Error polling status:', error);
+      // Retry after delay
+      statusPollingRef.current = setTimeout(pollSearchStatus, 5000);
+    }
   };
 
   const loadJobResults = async () => {
     try {
-      const response = await fetch('/api/jobs/results?per_page=50');
-      const data = await response.json();
+      const resultsResponse = await fetch(API_ENDPOINTS.RESULTS);
+      const data = await resultsResponse.json();
       setJobs(data.jobs || []);
     } catch (error) {
-      console.error('Failed to load job results:', error);
+      console.error('Error loading job results:', error);
     }
   };
 
@@ -222,6 +230,15 @@ export default function JobSearchInterface() {
         return 0;
     }
   };
+
+  useEffect(() => {
+    return () => {
+      // Cleanup
+      if (statusPollingRef.current) {
+        clearTimeout(statusPollingRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="w-full space-y-4 px-4 sm:px-0 mt-6">

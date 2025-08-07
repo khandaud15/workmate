@@ -2,31 +2,58 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { shouldNormalizeUrl } from './app/middleware/resumeIdNormalizer';
 
+import { VERCEL_URL } from './app/config';
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  VERCEL_URL,
+].filter(Boolean); // Filter out any undefined values
+
 /**
- * Middleware to normalize resume URLs
- * This ensures that all resume URLs use the timestamp-only format
- * Example: /dashboard/resume/1751268991175_Daud_Resume.pdf/experience -> /dashboard/resume/1751268991175/experience
+ * Middleware to handle CORS and URL normalization
  */
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, origin } = request.nextUrl;
   
-  // Check if this is a resume URL that needs normalization
+  // Handle CORS for API routes
+  if (pathname.startsWith('/api/')) {
+    const response = NextResponse.next();
+    
+    // Set CORS headers
+    const requestOrigin = request.headers.get('origin');
+    if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
+      response.headers.set('Access-Control-Allow-Origin', requestOrigin);
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+      response.headers.set(
+        'Access-Control-Allow-Methods',
+        'GET, POST, PUT, DELETE, OPTIONS'
+      );
+      response.headers.set(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization, X-Requested-With'
+      );
+    }
+    
+    // Handle preflight requests
+    if (request.method === 'OPTIONS') {
+      return new NextResponse(null, { status: 204, headers: response.headers });
+    }
+    
+    return response;
+  }
+  
+  // Resume URL normalization (existing functionality)
   const { shouldNormalize, normalizedUrl } = shouldNormalizeUrl(pathname);
-  
   if (shouldNormalize) {
-    // Create a new URL with the normalized path
     const url = request.nextUrl.clone();
     url.pathname = normalizedUrl;
-    
-    // Redirect to the normalized URL
     return NextResponse.redirect(url);
   }
   
-  // If no normalization needed, continue with the request
   return NextResponse.next();
 }
 
-// Only run the middleware on resume-related paths
+// Run middleware on all routes
 export const config = {
-  matcher: '/dashboard/resume/:path*',
+  matcher: ['/api/:path*', '/dashboard/resume/:path*'],
 };
