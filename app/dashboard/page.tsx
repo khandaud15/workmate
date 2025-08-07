@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa';
 import AccountSettings from '../components/AccountSettings';
 import ResumeViewer from '../components/ResumeViewer';
+import JobSearchInterface from '../components/JobSearch/JobSearchInterface';
 
 
 import SideDrawer from '../components/SideDrawer';
@@ -60,6 +61,7 @@ export default function DashboardPage() {
   const [showCopilot, setShowCopilot] = useState(false);
   const [showPlayground, setShowPlayground] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showJobSearch, setShowJobSearch] = useState(false);
   
   // Use the onboarding data hook to fetch real data
   const { 
@@ -367,6 +369,7 @@ export default function DashboardPage() {
                   setShowResume(false);
                   setShowCoverLetter(false);
                   setShowJobTracker(false);
+                  setShowJobSearch(false);
                   setShowCopilot(false);
                   setShowPlayground(false);
                   setShowAccountSettings(false);
@@ -392,6 +395,7 @@ export default function DashboardPage() {
                   setShowResume(true);
                   setShowCoverLetter(false);
                   setShowJobTracker(false);
+                  setShowJobSearch(false);
                   setShowCopilot(false);
                   setShowPlayground(false);
                   setShowAccountSettings(false);
@@ -424,27 +428,23 @@ export default function DashboardPage() {
               </button>
               <button 
                 type="button" 
-                className={`menu-item w-full text-left relative ${showJobTracker ? 'active' : ''}`}
+                className={`menu-item w-full text-left relative ${showJobSearch ? 'active' : ''}`}
                 onClick={() => {
-                  setShowDashboard(false);
-                  setShowResume(false);
-                  setShowCoverLetter(false);
-                  setShowJobTracker(true);
-                  setShowCopilot(false);
-                  setShowPlayground(false);
-                  setShowAccountSettings(false);
+                  // Navigate to the jobs page instead of showing modal
+                  router.push('/dashboard/jobs');
                   setIsSidebarOpen(false);
                   // Auto-collapse sidebar when section is clicked
                   setIsSidebarCollapsed(true);
                 }}
-                title="Job Tracker"
-                onMouseEnter={e => handleSidebarTooltip(e, 'Job Tracker')}
+                title="Jobs"
+                onMouseEnter={e => handleSidebarTooltip(e, 'Jobs')}
                 onMouseLeave={handleSidebarTooltipLeave}
               >
                 <FaBriefcase className="icon" />
-                {!isSidebarCollapsed && <span>Job Tracker</span>}
+                {!isSidebarCollapsed && <span>Jobs</span>}
                 
               </button>
+
               <button 
                 type="button" 
                 className={`menu-item w-full text-left relative ${showCopilot ? 'active' : ''}`}
@@ -453,6 +453,7 @@ export default function DashboardPage() {
                   setShowResume(false);
                   setShowCoverLetter(false);
                   setShowJobTracker(false);
+                  setShowJobSearch(false);
                   setShowCopilot(true);
                   setShowPlayground(false);
                   setShowAccountSettings(false);
@@ -504,7 +505,7 @@ export default function DashboardPage() {
         </div>
 
         <main 
-          className={`flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 bg-[#0a192f] text-white ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'}`}
+          className={`flex-1 overflow-auto pt-4 lg:pt-0 transition-all duration-300 bg-gradient-to-b from-[#0a192f] to-[#0d1b2a] text-white ${isSidebarCollapsed ? 'lg:ml-20' : 'lg:ml-[280px]'}`}
           onClick={() => {
             // Collapse sidebar when clicking on main content area
             if (!isSidebarCollapsed && window.innerWidth >= 1024) {
@@ -529,6 +530,24 @@ export default function DashboardPage() {
               <div className="bg-[#1f1e22] rounded-xl shadow-sm p-6">
                 <p className="text-gray-300">Job tracker content will be displayed here.</p>
               </div>
+            </div>
+          ) : showJobSearch ? (
+            <div className="min-h-screen bg-gradient-to-b from-[#0a192f] to-[#0d1b2a]">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-[#1e2d3d]">
+                <h1 className="text-2xl font-bold text-white">AI-Powered Job Search</h1>
+                <button
+                  onClick={() => {
+                    setShowJobSearch(false);
+                    setShowDashboard(true);
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors p-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <JobSearchInterface />
             </div>
           ) : showCopilot ? (
             <div className="max-w-6xl mx-auto p-4 lg:p-8">
@@ -1368,12 +1387,8 @@ export default function DashboardPage() {
                 {/* Box 3: Jobs */}
                 <div 
                   onClick={() => {
-                    setShowJobTracker(true);
-                    setShowProfile(false);
-                    setShowResume(false);
-                    setShowCoverLetter(false);
-                    setShowCopilot(false);
-                    setShowPlayground(false);
+                    // Navigate to the jobs page instead of showing modal
+                    router.push('/dashboard/jobs');
                   }}
                   className="group bg-[#0d1b2a] border border-[#1e2d3d] rounded-xl p-5 transition-all shadow-lg cursor-pointer hover:shadow-[0_0_16px_2px_rgba(37,99,235,0.5)] hover:border-[#2563eb] transition-all"
                 >

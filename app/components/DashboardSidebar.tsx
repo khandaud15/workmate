@@ -235,16 +235,16 @@ export default function DashboardSidebar({
               <span>Cover Letter</span>
             </div>
             
-            {/* Job Tracker */}
+            {/* Jobs */}
             <Link 
-              href="/dashboard/job-tracker"
-              className={`menu-item w-full text-left relative ${isActive('/dashboard/job-tracker') ? 'active' : ''}`}
+              href="/dashboard/jobs"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard/jobs') ? 'active' : ''}`}
               onClick={() => {
                 setIsMobileSidebarOpen?.(false);
               }}
             >
               <FaBriefcase className="icon" />
-              <span>Job Tracker</span>
+              <span>Jobs</span>
             </Link>
             
             {/* Copilot */}
@@ -420,16 +420,16 @@ export default function DashboardSidebar({
               {!isSidebarCollapsed && <span>Cover Letter</span>}
             </div>
             
-            {/* Job Tracker */}
+            {/* Jobs */}
             <Link 
-              href="/dashboard/job-tracker"
-              className={`menu-item w-full text-left relative ${isActive('/dashboard/job-tracker') ? 'active' : ''}`}
+              href="/dashboard/jobs"
+              className={`menu-item w-full text-left relative ${isActive('/dashboard/jobs') ? 'active' : ''}`}
               onClick={() => {
                 setIsMobileSidebarOpen?.(false);
                 // Auto-collapse sidebar when section is clicked
                 handleSidebarCollapse();
               }}
-              onMouseEnter={e => handleSidebarTooltip(e, 'Job Tracker')}
+              onMouseEnter={e => handleSidebarTooltip(e, 'Jobs')}
               onMouseLeave={handleSidebarTooltipLeave}
             >
               <FaBriefcase className="icon" />
