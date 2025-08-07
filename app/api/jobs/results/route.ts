@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getStoredJobs } from '../search/route';
 
+// Moved storeJobs functionality to search/route.ts
+// This function is now handled by the search route
+
+// Get job count helper (moved to top level)
+function getJobsCount() {
+  const storedJobs = getStoredJobs();
+  return storedJobs.length;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -31,15 +40,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-// Legacy functions for backward compatibility
-export function storeJobs(jobs: any[]) {
-  // This is now handled by the search route
-  console.log('storeJobs called (legacy) - jobs now stored in search route');
-}
-
-export function getJobsCount() {
-  const storedJobs = getStoredJobs();
-  return storedJobs.length;
 }
