@@ -1,5 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Simple CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'https://www.talexus.ai',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Credentials': 'true',
+};
+
+// Handle OPTIONS method for CORS preflight
+const handleOptions = () => {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      ...corsHeaders,
+      'Content-Length': '0'
+    }
+  });
+};
+
 // Robust in-memory job storage with global persistence
 if (!(global as any).storedJobs) {
   (global as any).storedJobs = [];
@@ -14,6 +33,11 @@ let searchInProgress: boolean = (global as any).searchInProgress;
 export async function POST(request: NextRequest) {
   console.log('=== SEARCH API CALLED ===');
   
+  // Handle CORS preflight
+  if (request.method === 'OPTIONS') {
+    return handleOptions();
+  }
+  
   try {
     const body = await request.json();
     console.log('Request body received:', JSON.stringify(body, null, 2));
@@ -23,17 +47,29 @@ export async function POST(request: NextRequest) {
     
     if (!jobTitle || !location) {
       console.log('❌ Missing required fields');
-      return NextResponse.json(
-        { error: 'Job title and location are required' },
-        { status: 400 }
+      return new NextResponse(
+        JSON.stringify({ error: 'Job title and location are required' }),
+        { 
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        }
       );
     }
     
     if (searchInProgress) {
       console.log('❌ Search already in progress');
-      return NextResponse.json(
-        { error: 'Search already in progress' },
-        { status: 429 }
+      return new NextResponse(
+        JSON.stringify({ error: 'Search already in progress' }),
+        { 
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        }
       );
     }
     
@@ -42,37 +78,70 @@ export async function POST(request: NextRequest) {
     console.log('✅ Starting cloud scraper...');
     
     try {
-      // Run cloud scraper directly with simpler approach
+      // Run cloud scraper
       const jobs = await runCloudScraper(jobTitle, location);
       console.log(`✅ Cloud scraper completed. Found ${jobs.length} jobs`);
       
-      // Store jobs directly in global storage
+      // Store jobs in global storage
       storedJobs = jobs;
       (global as any).storedJobs = jobs;
-      console.log(`📊 Jobs stored in memory: ${storedJobs.length} jobs`);
       
-      return NextResponse.json({
-        success: true,
-        message: `Found ${jobs.length} jobs`,
-        jobCount: jobs.length
-      });
+      return new NextResponse(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Search completed successfully',
+          jobCount: jobs.length 
+        }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        }
+      );
+      
     } catch (error) {
-      console.error('❌ Cloud scraper error:', error);
-      return NextResponse.json(
-        { error: 'Failed to run job search' },
-        { status: 500 }
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error('Error in cloud scraper:', errorMessage);
+      
+      return new NextResponse(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Failed to complete job search',
+          details: errorMessage 
+        }),
+        {
+          status: 500,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders
+          }
+        }
       );
     } finally {
+      // Always reset search in progress flag
       searchInProgress = false;
       (global as any).searchInProgress = false;
       console.log(`🔄 Search completed. searchInProgress: ${searchInProgress}, storedJobs: ${storedJobs.length}`);
     }
   } catch (error) {
-    console.error('❌ API Error:', error);
-    searchInProgress = false;
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ Error in search API:', errorMessage);
+    
+    return new NextResponse(
+      JSON.stringify({ 
+        success: false, 
+        error: 'Failed to process search request',
+        details: errorMessage 
+      }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      }
     );
   }
 }

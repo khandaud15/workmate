@@ -4,8 +4,11 @@ import { shouldNormalizeUrl } from './app/middleware/resumeIdNormalizer';
 
 import { VERCEL_URL } from './app/config';
 
+// Allow local development, Vercel URL, and talexus.ai domains
 const allowedOrigins = [
   'http://localhost:3000',
+  'https://www.talexus.ai',
+  'https://talexus.ai',
   VERCEL_URL,
 ].filter(Boolean); // Filter out any undefined values
 

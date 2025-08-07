@@ -9,8 +9,8 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Apply these headers to all routes
-        source: '/:path*',
+        // Apply these headers to all API routes
+        source: '/api/:path*',
         headers: [
           {
             key: 'Access-Control-Allow-Credentials',
@@ -18,7 +18,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*',
+            value: 'https://www.talexus.ai',
           },
           {
             key: 'Access-Control-Allow-Methods',
