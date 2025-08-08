@@ -426,8 +426,7 @@ export default function DashboardSidebar({
               className={`menu-item w-full text-left relative ${isActive('/dashboard/jobs') ? 'active' : ''}`}
               onClick={() => {
                 setIsMobileSidebarOpen?.(false);
-                // Auto-collapse sidebar when section is clicked
-                handleSidebarCollapse();
+                // Don't toggle sidebar state for jobs page
               }}
               onMouseEnter={e => handleSidebarTooltip(e, 'Jobs')}
               onMouseLeave={handleSidebarTooltipLeave}

@@ -16,7 +16,8 @@ export function useSidebarState(defaultCollapsed = true) {
   // Determine if we're on a page that should have collapsed sidebar only
   const isCoverLetterPage = pathname?.includes('/dashboard/cover-letter');
   const isResumePage = pathname?.includes('/dashboard/resume');
-  const showOnlyCollapsedSidebar = isCoverLetterPage || isResumePage;
+  const isJobsPage = pathname?.includes('/dashboard/jobs');
+  const showOnlyCollapsedSidebar = isCoverLetterPage || isResumePage || isJobsPage;
 
   const toggleMobileSidebar = () => {
     console.log('Toggling mobile sidebar, current state:', isMobileSidebarOpen);
