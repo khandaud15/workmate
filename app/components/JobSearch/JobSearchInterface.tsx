@@ -652,7 +652,7 @@ export default function JobSearchInterface() {
   };
 
   return (
-    <div className="w-full space-y-4 px-0.5 sm:px-0 mt-16 sm:mt-6 min-h-screen">
+    <div className="w-full max-w-full space-y-4 px-0.5 sm:px-0 mt-16 sm:mt-6 min-h-screen overflow-x-hidden">
       {/* Tabs - Responsive Design */}
       <div className="bg-[#1a2332] rounded-lg border border-[#2a3441] p-3">
         <div 
@@ -679,8 +679,8 @@ export default function JobSearchInterface() {
       </div>
 
       {/* Search Form - Mobile 3-line Layout */}
-      <div className="bg-[#1a2332] rounded-lg border border-[#2a3441] p-4">
-        <div className="flex flex-col md:flex-row gap-3 md:gap-2 md:items-center">
+      <div className="bg-[#1a2332] rounded-lg border border-[#2a3441] p-4 w-full max-w-full overflow-hidden">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-2 md:items-center w-full max-w-full">
           {/* Job Title Input - Full width on mobile */}
           <div className="w-full md:flex-[3] relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -812,7 +812,7 @@ export default function JobSearchInterface() {
               href={job.job_url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="block bg-[#1a2332] rounded-xl border border-[#2a3441] p-5 hover:bg-[#243142] transition-all duration-200 shadow-sm cursor-pointer"
+              className="block w-full max-w-full bg-[#1a2332] rounded-xl border border-[#2a3441] p-5 hover:bg-[#243142] transition-all duration-200 shadow-sm cursor-pointer overflow-hidden"
             >
               {/* Beautiful Layout - Matching Reference */}
               <div className="flex flex-col space-y-3">
@@ -822,7 +822,7 @@ export default function JobSearchInterface() {
                 </h3>
                 
                 {/* Company and Location - Clean Gray */}
-                <div className="flex items-center text-gray-300 text-base">
+                <div className="flex items-center text-gray-300 text-base flex-wrap sm:flex-nowrap">
                   <span className="flex items-center">
                     <Briefcase className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                     <span className="font-medium">{job.company || 'N/A'}</span>
@@ -833,7 +833,7 @@ export default function JobSearchInterface() {
                 
                 {/* Description - Clean and Readable */}
                 <div className="py-1">
-                  <p className="text-gray-200 text-base leading-relaxed line-clamp-2 sm:line-clamp-none">
+                  <p className="text-gray-200 text-base leading-relaxed line-clamp-2 sm:line-clamp-none break-words">
                     <span className="text-blue-400 mr-2 text-lg">✨</span>{job.description ? job.description.substring(0, 180) + '...' : 'Seeking a highly motivated professional to lead and support projects involving data analysis and research.'}
                   </p>
                 </div>
