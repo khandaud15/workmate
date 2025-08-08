@@ -1,24 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSearchStatus, getStoredJobs } from '../search/route';
+import { getLatestSearchStatus } from '../search/route';
 
 export async function GET(request: NextRequest) {
   try {
-    const isSearching = getSearchStatus();
-    const storedJobs = getStoredJobs();
-    const jobCount = storedJobs.length;
+    console.log('📊 Status API called - fetching from Firebase...');
+    const status = await getLatestSearchStatus();
     
-    console.log(`📊 Status API - isSearching: ${isSearching}, jobCount: ${jobCount}`);
+    console.log(`📊 Status API - running: ${status.running}, total_jobs: ${status.total_jobs}`);
     
     return NextResponse.json({
-      running: isSearching,
-      total_jobs: jobCount,
-      message: isSearching ? 'Search in progress...' : 'Search completed',
-      progress: isSearching ? 50 : 100,
-      search_query: '',
-      location: ''
+      running: status.running,
+      total_jobs: status.total_jobs,
+      message: status.message,
+      progress: status.progress,
+      search_query: status.search_query || '',
+      location: status.location || ''
     });
   } catch (error) {
-    console.error('Status error:', error);
+    console.error('🔥 Status API error:', error);
     return NextResponse.json(
       { error: 'Failed to get status' },
       { status: 500 }

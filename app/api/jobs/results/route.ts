@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStoredJobs } from '../search/route';
-
-// Moved storeJobs functionality to search/route.ts
-// This function is now handled by the search route
-
-// Get job count helper (moved to top level)
-function getJobsCount() {
-  const storedJobs = getStoredJobs();
-  return storedJobs.length;
-}
+import { getLatestStoredJobs } from '../search/route';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,15 +7,19 @@ export async function GET(request: NextRequest) {
     const perPage = parseInt(searchParams.get('per_page') || '50');
     const page = parseInt(searchParams.get('page') || '1');
     
-    // Get jobs from the search route
-    const storedJobs = getStoredJobs();
+    console.log('📥 Results API called - fetching jobs from Firebase...');
+    
+    // Get jobs from Firebase
+    const storedJobs = await getLatestStoredJobs();
+    
+    console.log(`📥 Retrieved ${storedJobs.length} jobs from Firebase`);
     
     // Calculate pagination
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
     const paginatedJobs = storedJobs.slice(startIndex, endIndex);
     
-    console.log(`Results API: Returning ${paginatedJobs.length} jobs (page ${page}, total: ${storedJobs.length})`);
+    console.log(`📥 Results API: Returning ${paginatedJobs.length} jobs (page ${page}, total: ${storedJobs.length})`);
     
     return NextResponse.json({
       jobs: paginatedJobs,
@@ -34,7 +29,7 @@ export async function GET(request: NextRequest) {
       has_more: endIndex < storedJobs.length
     });
   } catch (error) {
-    console.error('Results error:', error);
+    console.error('🔥 Results API error:', error);
     return NextResponse.json(
       { error: 'Failed to get job results' },
       { status: 500 }

@@ -1,15 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/firebase';
 
-// Robust in-memory job storage with global persistence
-if (!(global as any).storedJobs) {
-  (global as any).storedJobs = [];
-}
-if (!(global as any).searchInProgress) {
-  (global as any).searchInProgress = false;
+// Firebase-based job storage for Vercel compatibility
+const JOBS_COLLECTION = 'job_searches';
+const SEARCH_STATUS_COLLECTION = 'search_status';
+
+// Helper functions for Firebase storage
+async function storeJobsInFirebase(searchId: string, jobs: any[]) {
+  try {
+    await db.collection(JOBS_COLLECTION).doc(searchId).set({
+      jobs: jobs,
+      total: jobs.length,
+      timestamp: new Date(),
+      status: 'completed'
+    });
+    console.log(`🔥 Stored ${jobs.length} jobs in Firebase for search: ${searchId}`);
+    return true;
+  } catch (error) {
+    console.error('🔥 Firebase storage error:', error);
+    return false;
+  }
 }
 
-let storedJobs: any[] = (global as any).storedJobs;
-let searchInProgress: boolean = (global as any).searchInProgress;
+async function updateSearchStatus(searchId: string, status: any) {
+  try {
+    await db.collection(SEARCH_STATUS_COLLECTION).doc(searchId).set({
+      ...status,
+      timestamp: new Date()
+    });
+    console.log(`🔥 Updated search status in Firebase: ${searchId}`);
+  } catch (error) {
+    console.error('🔥 Firebase status update error:', error);
+  }
+}
+
+// Generate unique search ID
+function generateSearchId(): string {
+  return `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
 
 export async function POST(request: NextRequest) {
   console.log('=== SEARCH API CALLED ===');
@@ -29,47 +57,76 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    if (searchInProgress) {
-      console.log('❌ Search already in progress');
-      return NextResponse.json(
-        { error: 'Search already in progress' },
-        { status: 429 }
-      );
-    }
+    // Generate unique search ID for this search
+    const searchId = generateSearchId();
+    console.log(`🔍 Generated search ID: ${searchId}`);
     
-    searchInProgress = true;
-    (global as any).searchInProgress = true;
+    // Update search status to running
+    await updateSearchStatus(searchId, {
+      running: true,
+      progress: 0,
+      message: 'Starting job search...',
+      total_jobs: 0,
+      search_query: jobTitle,
+      location: location,
+      searchId: searchId
+    });
+    
     console.log('✅ Starting cloud scraper...');
     
     try {
-      // Run cloud scraper directly with simpler approach
+      // Run cloud scraper
       const jobs = await runCloudScraper(jobTitle, location);
       console.log(`✅ Cloud scraper completed. Found ${jobs.length} jobs`);
       
-      // Store jobs directly in global storage
-      storedJobs = jobs;
-      (global as any).storedJobs = jobs;
-      console.log(`📊 Jobs stored in memory: ${storedJobs.length} jobs`);
+      // Store jobs in Firebase
+      const stored = await storeJobsInFirebase(searchId, jobs);
       
-      return NextResponse.json({
-        success: true,
-        message: `Found ${jobs.length} jobs`,
-        jobCount: jobs.length
-      });
+      if (stored) {
+        // Update search status to completed
+        await updateSearchStatus(searchId, {
+          running: false,
+          progress: 100,
+          message: 'Search completed',
+          total_jobs: jobs.length,
+          search_query: jobTitle,
+          location: location,
+          searchId: searchId
+        });
+        
+        console.log(`🔥 Successfully stored ${jobs.length} jobs in Firebase`);
+        
+        return NextResponse.json({
+          success: true,
+          message: `Found ${jobs.length} jobs`,
+          jobCount: jobs.length,
+          searchId: searchId
+        });
+      } else {
+        throw new Error('Failed to store jobs in Firebase');
+      }
     } catch (error) {
       console.error('❌ Cloud scraper error:', error);
+      
+      // Update search status to failed
+      await updateSearchStatus(searchId, {
+        running: false,
+        progress: 0,
+        message: 'Search failed',
+        total_jobs: 0,
+        search_query: jobTitle,
+        location: location,
+        searchId: searchId,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      
       return NextResponse.json(
         { error: 'Failed to run job search' },
         { status: 500 }
       );
-    } finally {
-      searchInProgress = false;
-      (global as any).searchInProgress = false;
-      console.log(`🔄 Search completed. searchInProgress: ${searchInProgress}, storedJobs: ${storedJobs.length}`);
     }
   } catch (error) {
     console.error('❌ API Error:', error);
-    searchInProgress = false;
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -160,11 +217,58 @@ function generateMockJobs(jobTitle: string, location: string): any[] {
   return mockJobs;
 }
 
-// Export functions for other routes
-export function getSearchStatus() {
-  return searchInProgress;
+// Export functions for other routes - now using Firebase
+export async function getLatestSearchStatus() {
+  try {
+    const statusSnapshot = await db.collection(SEARCH_STATUS_COLLECTION)
+      .orderBy('timestamp', 'desc')
+      .limit(1)
+      .get();
+    
+    if (statusSnapshot.empty) {
+      return {
+        running: false,
+        progress: 100,
+        message: 'No recent searches',
+        total_jobs: 0,
+        search_query: '',
+        location: ''
+      };
+    }
+    
+    const latestStatus = statusSnapshot.docs[0].data();
+    console.log('🔥 Retrieved latest search status from Firebase:', latestStatus);
+    return latestStatus;
+  } catch (error) {
+    console.error('🔥 Error getting search status from Firebase:', error);
+    return {
+      running: false,
+      progress: 100,
+      message: 'Error retrieving status',
+      total_jobs: 0,
+      search_query: '',
+      location: ''
+    };
+  }
 }
 
-export function getStoredJobs() {
-  return storedJobs;
+export async function getLatestStoredJobs() {
+  try {
+    const jobsSnapshot = await db.collection(JOBS_COLLECTION)
+      .orderBy('timestamp', 'desc')
+      .limit(1)
+      .get();
+    
+    if (jobsSnapshot.empty) {
+      console.log('🔥 No jobs found in Firebase');
+      return [];
+    }
+    
+    const latestJobs = jobsSnapshot.docs[0].data();
+    console.log(`🔥 Retrieved ${latestJobs.jobs?.length || 0} jobs from Firebase`);
+    return latestJobs.jobs || [];
+  } catch (error) {
+    console.error('🔥 Error getting jobs from Firebase:', error);
+    return [];
+  }
 }
