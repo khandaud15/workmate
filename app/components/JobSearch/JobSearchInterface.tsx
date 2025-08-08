@@ -194,22 +194,33 @@ export default function JobSearchInterface() {
   };
 
   const pollSearchStatus = async () => {
+    console.log('🔄 Starting status polling...');
     const interval = setInterval(async () => {
       try {
+        console.log('📊 Polling status...');
         const statusResponse = await fetch('/api/jobs/status');
+        console.log('📊 Status response status:', statusResponse.status);
+        
         const status = await statusResponse.json();
+        console.log('📊 Status data:', status);
         setSearchStatus(status);
 
         if (!status.running) {
+          console.log('✅ Search completed! Jobs found:', status.total_jobs);
           clearInterval(interval);
           setIsSearching(false);
           
           if (status.total_jobs > 0) {
+            console.log('📥 Loading job results...');
             loadJobResults();
+          } else {
+            console.log('❌ No jobs found in status');
           }
+        } else {
+          console.log('⏳ Search still running...', status.message);
         }
       } catch (error) {
-        console.error('Status polling error:', error);
+        console.error('❌ Status polling error:', error);
         clearInterval(interval);
         setIsSearching(false);
       }
@@ -218,11 +229,29 @@ export default function JobSearchInterface() {
 
   const loadJobResults = async () => {
     try {
+      console.log('📥 Fetching job results from API...');
       const response = await fetch('/api/jobs/results?per_page=50');
+      console.log('📥 Results API response status:', response.status);
+      
+      if (!response.ok) {
+        console.error('📥 Results API failed:', response.status, response.statusText);
+        return;
+      }
+      
       const data = await response.json();
-      setJobs(data.jobs || []);
+      console.log('📥 Results API data:', data);
+      console.log('📥 Jobs array length:', data.jobs?.length || 0);
+      
+      if (data.jobs && data.jobs.length > 0) {
+        console.log('✅ Setting jobs in state:', data.jobs.length, 'jobs');
+        setJobs(data.jobs);
+        console.log('📋 Jobs state updated successfully');
+      } else {
+        console.log('❌ No jobs in response data');
+        setJobs([]);
+      }
     } catch (error) {
-      console.error('Failed to load job results:', error);
+      console.error('❌ Failed to load job results:', error);
     }
   };
 
