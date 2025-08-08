@@ -32,6 +32,7 @@ export default function JobSearchInterface() {
   const [jobSuggestions, setJobSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [autoFillSuggestion, setAutoFillSuggestion] = useState('');
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
   const [searchStatus, setSearchStatus] = useState<SearchStatus | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [activeTab, setActiveTab] = useState('ALL JOBS');
@@ -740,9 +741,11 @@ export default function JobSearchInterface() {
       setJobSuggestions(filtered);
       setShowSuggestions(filtered.length > 0);
       setAutoFillSuggestion(''); // Remove inline autofill, use dropdown only
+      setSelectedSuggestionIndex(-1); // Reset selection when suggestions change
     } else {
       setShowSuggestions(false);
       setAutoFillSuggestion('');
+      setSelectedSuggestionIndex(-1);
     }
     
     // Mobile debugging
@@ -773,12 +776,34 @@ export default function JobSearchInterface() {
         setAutoFillSuggestion('');
         setShowSuggestions(false);
       }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (showSuggestions && jobSuggestions.length > 0) {
+        setSelectedSuggestionIndex(prev => 
+          prev < jobSuggestions.length - 1 ? prev + 1 : 0
+        );
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (showSuggestions && jobSuggestions.length > 0) {
+        setSelectedSuggestionIndex(prev => 
+          prev > 0 ? prev - 1 : jobSuggestions.length - 1
+        );
+      }
     } else if (e.key === 'Escape') {
       setAutoFillSuggestion('');
       setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
     } else if (e.key === 'Enter') {
-      // Trigger search when Enter is pressed
-      if (searchQuery.trim() && location.trim() && !isSearching) {
+      e.preventDefault();
+      if (showSuggestions && selectedSuggestionIndex >= 0 && selectedSuggestionIndex < jobSuggestions.length) {
+        // Select the highlighted suggestion
+        const selectedSuggestion = jobSuggestions[selectedSuggestionIndex];
+        setSearchQuery(selectedSuggestion);
+        setShowSuggestions(false);
+        setSelectedSuggestionIndex(-1);
+      } else if (searchQuery.trim() && location.trim() && !isSearching) {
+        // Trigger search when Enter is pressed
         setShowSuggestions(false);
         startJobSearch();
       }
@@ -1187,8 +1212,13 @@ export default function JobSearchInterface() {
                     onClick={() => {
                       setSearchQuery(suggestion);
                       setShowSuggestions(false);
+                      setSelectedSuggestionIndex(-1);
                     }}
-                    className="w-full text-left px-4 py-3 text-white hover:bg-[#3a4651] transition-colors flex items-center gap-3 text-sm"
+                    className={`w-full text-left px-4 py-3 text-white transition-colors flex items-center gap-3 text-sm ${
+                      index === selectedSuggestionIndex 
+                        ? 'bg-[#3a4651]' 
+                        : 'hover:bg-[#3a4651]'
+                    }`}
                   >
                     <Briefcase className="h-3 w-3 text-gray-400" />
                     <span>{capitalizeJobTitle(suggestion)}</span>
