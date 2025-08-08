@@ -897,11 +897,13 @@ export default function JobSearchInterface() {
                 const filteredTotalPages = Math.ceil(filteredJobs.length / JOBS_PER_PAGE);
                 return (
                   <>
-                    <span>Page {currentPage} of {filteredTotalPages}</span>
-                    <span className="mx-2 text-gray-500">•</span>
-                    <span>{jobs.length} jobs on this page</span>
-                    <span className="mx-2 text-gray-500">•</span>
-                    <span>{filteredJobs.length} total {activeTab.toLowerCase()}</span>
+                    {/* Mobile: Show only essential info */}
+                    <span className="sm:hidden">{filteredJobs.length} jobs</span>
+                    
+                    {/* Desktop: Show detailed info */}
+                    <span className="hidden sm:inline">Page {currentPage} of {filteredTotalPages}</span>
+                    <span className="mx-2 text-gray-500 hidden sm:inline">•</span>
+                    <span className="hidden sm:inline">{filteredJobs.length} total jobs</span>
                   </>
                 );
               })()}
@@ -981,7 +983,8 @@ export default function JobSearchInterface() {
             <div className="mt-4 pt-4 border-t border-[#2a4651]">
               <div className="text-center">
                 <p className="text-gray-400 text-sm mb-3">
-                  Showing {allJobs.length} jobs. Load more to find additional opportunities.
+                  <span className="sm:hidden">{allJobs.length} jobs</span>
+                  <span className="hidden sm:inline">Showing {allJobs.length} jobs. Load more to find additional opportunities.</span>
                 </p>
                 <button
                   onClick={() => loadMoreJobs()}
