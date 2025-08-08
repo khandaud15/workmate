@@ -605,32 +605,18 @@ export default function JobSearchInterface() {
       
       // Check if date is valid
       if (isNaN(date.getTime())) {
-        return 'Recently posted';
+        return 'N/A';
       }
       
-      const now = new Date();
-      const diffTime = Math.abs(now.getTime() - date.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      // Return relative time for recent posts
-      if (diffDays === 1) {
-        return '1 day ago';
-      } else if (diffDays <= 7) {
-        return `${diffDays} days ago`;
-      } else if (diffDays <= 30) {
-        const weeks = Math.floor(diffDays / 7);
-        return weeks === 1 ? '1 week ago' : `${weeks} weeks ago`;
-      } else {
-        // For older posts, show the actual date
-        return date.toLocaleDateString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-        });
-      }
+      // Return date format: MM/DD/YYYY
+      return date.toLocaleDateString('en-US', {
+        month: '2-digit',
+        day: '2-digit', 
+        year: 'numeric'
+      });
     } catch (error) {
       console.error('Error formatting date:', error);
-      return 'Recently posted';
+      return 'N/A';
     }
   };
 
@@ -841,8 +827,8 @@ export default function JobSearchInterface() {
                 {/* Bottom Section - Professional Layout */}
                 <div className="flex items-center justify-between pt-3 border-t border-[#3a4651]">
                   {/* Date - Subtle Gray */}
-                  <div className="text-gray-400 text-xs sm:text-sm">
-                    {job.posted_text || job.posted_date || 'Date not available'}
+                  <div className="text-gray-400 text-xs sm:text-sm font-medium font-sans">
+                    {job.posted_text || job.posted_date || formatDate(job.created_at) || 'Date not available'}
                   </div>
                   
                   {/* Action Buttons - Professional Style */}
