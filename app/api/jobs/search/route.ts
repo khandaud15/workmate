@@ -199,7 +199,33 @@ function generateMockJobs(jobTitle: string, location: string): any[] {
     'Opportunity to work with industry-leading technologies and contribute to groundbreaking solutions.'
   ];
   
+  // Generate realistic posted dates
+  const postedOptions = [
+    '1 day ago', '2 days ago', '3 days ago', '4 days ago', '5 days ago',
+    '1 week ago', '2 weeks ago', '3 weeks ago', '1 month ago'
+  ];
+  
   for (let i = 0; i < 25; i++) {
+    // Create realistic posted dates with actual timestamps
+    const daysAgo = Math.floor(Math.random() * 30) + 1; // 1-30 days ago
+    const postedDate = new Date();
+    postedDate.setDate(postedDate.getDate() - daysAgo);
+    
+    let postedText;
+    if (daysAgo === 1) {
+      postedText = '1 day ago';
+    } else if (daysAgo <= 7) {
+      postedText = `${daysAgo} days ago`;
+    } else if (daysAgo <= 14) {
+      postedText = '1 week ago';
+    } else if (daysAgo <= 21) {
+      postedText = '2 weeks ago';
+    } else if (daysAgo <= 28) {
+      postedText = '3 weeks ago';
+    } else {
+      postedText = '1 month ago';
+    }
+    
     mockJobs.push({
       job_id: `mock_${Date.now()}_${i}`,
       job_title: jobTitle,
@@ -207,13 +233,14 @@ function generateMockJobs(jobTitle: string, location: string): any[] {
       location: location,
       description: descriptions[i % descriptions.length],
       salary_text: '$80,000 - $120,000',
-      posted_text: `${Math.floor(Math.random() * 7) + 1} days ago`,
+      posted_text: postedText,
+      posted_date: postedDate.toISOString(), // Add actual date for better processing
       job_url: `https://example.com/job/${i}`,
       created_at: new Date().toISOString()
     });
   }
   
-  console.log(`🎭 Generated ${mockJobs.length} mock jobs for testing`);
+  console.log(`🎭 Generated ${mockJobs.length} mock jobs with realistic posted dates`);
   return mockJobs;
 }
 
