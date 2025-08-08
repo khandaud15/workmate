@@ -184,8 +184,25 @@ export default function JobSearchInterface() {
       const responseData = await response.json();
       console.log('📡 Search API response data:', responseData);
 
-      // Start polling for status
+      // If jobs were found, try loading them immediately
+      if (responseData.jobCount && responseData.jobCount > 0) {
+        console.log('🚀 Jobs found! Attempting immediate load...');
+        // Try loading jobs immediately since search completed successfully
+        setTimeout(() => {
+          console.log('⚡ Immediate job load attempt...');
+          loadJobResults();
+        }, 1000);
+      }
+
+      // Start polling for status as backup
+      console.log('🚀 Initiating status polling...');
       pollSearchStatus();
+      
+      // Also add a fallback check after 5 seconds
+      setTimeout(() => {
+        console.log('⏰ Fallback: Checking if jobs are ready...');
+        loadJobResults();
+      }, 5000);
     } catch (error) {
       console.error('❌ Search error:', error);
       alert(`Failed to start job search: ${error instanceof Error ? error.message : String(error)}`);
