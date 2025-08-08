@@ -827,7 +827,7 @@ export default function JobSearchInterface() {
                 {/* Bottom Section - Professional Layout */}
                 <div className="flex items-center justify-between pt-3 border-t border-[#3a4651]">
                   {/* Date - Subtle Gray */}
-                  <div className="text-gray-400 text-xs sm:text-sm font-medium font-sans">
+                  <div className="text-white text-sm font-medium font-sans">
                     {job.posted_text || job.posted_date || formatDate(job.created_at) || 'Date not available'}
                   </div>
                   
