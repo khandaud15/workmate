@@ -131,6 +131,7 @@ export default function JobSearchInterface() {
     console.log('🔍 startJobSearch called!');
     console.log('searchQuery:', searchQuery);
     console.log('location:', location);
+    console.log('🌐 Current URL:', window.location.href);
     
     if (!searchQuery.trim() || !location.trim()) {
       console.log('❌ Missing required fields');
@@ -143,6 +144,22 @@ export default function JobSearchInterface() {
     setJobs([]);
 
     try {
+      // Test API connectivity first
+      console.log('🧪 Testing API connectivity...');
+      const testResponse = await fetch('/api/jobs/test', {
+        method: 'GET'
+      });
+      console.log('🧪 Test API response status:', testResponse.status);
+      
+      if (testResponse.ok) {
+        const testData = await testResponse.json();
+        console.log('🧪 Test API data:', testData);
+      } else {
+        console.error('🧪 Test API failed:', testResponse.status, testResponse.statusText);
+      }
+
+      // Proceed with actual search
+      console.log('📡 Calling search API...');
       const response = await fetch('/api/jobs/search', {
         method: 'POST',
         headers: {
@@ -155,15 +172,23 @@ export default function JobSearchInterface() {
         }),
       });
 
+      console.log('📡 Search API response status:', response.status);
+      console.log('📡 Search API response headers:', Object.fromEntries(response.headers.entries()));
+
       if (!response.ok) {
-        throw new Error('Failed to start job search');
+        const errorText = await response.text();
+        console.error('📡 Search API error response:', errorText);
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
       }
+
+      const responseData = await response.json();
+      console.log('📡 Search API response data:', responseData);
 
       // Start polling for status
       pollSearchStatus();
     } catch (error) {
-      console.error('Search error:', error);
-      alert('Failed to start job search');
+      console.error('❌ Search error:', error);
+      alert(`Failed to start job search: ${error instanceof Error ? error.message : String(error)}`);
       setIsSearching(false);
     }
   };

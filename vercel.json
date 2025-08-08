@@ -10,10 +10,23 @@
       "maxDuration": 30
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/jobs/:path*",
-      "destination": "/api/jobs/:path*"
+      "src": "/api/jobs/search",
+      "dest": "/api/jobs/search"
+    },
+    {
+      "src": "/api/jobs/status",
+      "dest": "/api/jobs/status"
+    },
+    {
+      "src": "/api/jobs/results",
+      "dest": "/api/jobs/results"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }
 }
