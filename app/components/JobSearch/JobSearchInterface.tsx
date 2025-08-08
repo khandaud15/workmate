@@ -822,7 +822,7 @@ export default function JobSearchInterface() {
                 </h3>
                 
                 {/* Company and Location - Clean Gray */}
-                <div className="flex items-center text-gray-300 text-base flex-wrap sm:flex-nowrap">
+                <div className="flex items-center text-gray-300 text-base">
                   <span className="flex items-center">
                     <Briefcase className="w-5 h-5 text-gray-400 mr-3 flex-shrink-0" />
                     <span className="font-medium">{job.company || 'N/A'}</span>
@@ -841,13 +841,13 @@ export default function JobSearchInterface() {
                 {/* Bottom Section - Professional Layout */}
                 <div className="flex items-center justify-between pt-3 border-t border-[#3a4651]">
                   {/* Date - Subtle Gray */}
-                  <div className="text-gray-400 text-sm">
+                  <div className="text-gray-400 text-xs sm:text-sm">
                     {job.posted_text || job.posted_date || 'Date not available'}
                   </div>
                   
                   {/* Action Buttons - Professional Style */}
                   <div className="flex items-center gap-2">
-                    <button className="text-sm font-medium text-white bg-[#475569] hover:bg-[#64748b] px-4 py-2 rounded-lg transition-colors">
+                    <button className="text-xs sm:text-sm font-medium text-white bg-[#475569] hover:bg-[#64748b] px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors">
                       ACCESS RESUME
                     </button>
                     <button 
