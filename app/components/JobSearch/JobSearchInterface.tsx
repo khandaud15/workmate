@@ -226,7 +226,7 @@ export default function JobSearchInterface() {
   return (
     <div className="w-full space-y-4 px-0.5 sm:px-0 mt-16 sm:mt-6 min-h-screen">
       {/* Tabs - Responsive Design */}
-      <div className="bg-[#1e2d3d] rounded-lg border border-[#2a3441] p-3">
+      <div className="bg-[#1a2332] rounded-lg border border-[#2a3441] p-3">
         <div 
           className="flex sm:flex-wrap gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden"
           style={{
@@ -368,7 +368,7 @@ export default function JobSearchInterface() {
               href={job.job_url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="block bg-[#1e2d3d] rounded-xl border border-[#2a3441] p-5 hover:bg-[#243142] transition-all duration-200 shadow-sm cursor-pointer"
+              className="block bg-[#1a2332] rounded-xl border border-[#2a3441] p-5 hover:bg-[#243142] transition-all duration-200 shadow-sm cursor-pointer"
             >
               {/* Beautiful Layout - Matching Reference */}
               <div className="flex flex-col space-y-3">
