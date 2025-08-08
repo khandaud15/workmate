@@ -81,6 +81,7 @@ export default function JobSearchInterface() {
   ];
 
   const handleJobTitleChange = (value: string) => {
+    console.log('📝 Job title changed:', value);
     setSearchQuery(value);
     
     if (value.length > 1) {
@@ -96,10 +97,25 @@ export default function JobSearchInterface() {
       setShowSuggestions(false);
       setAutoFillSuggestion('');
     }
+    
+    // Mobile debugging
+    console.log('📱 Form state after job title change:', {
+      searchQuery: value,
+      location: location,
+      canSearch: !!(value.trim() && location.trim())
+    });
   };
 
   const handleLocationChange = (value: string) => {
+    console.log('📍 Location changed:', value);
     setLocation(value);
+    
+    // Mobile debugging
+    console.log('📱 Form state after location change:', {
+      searchQuery: searchQuery,
+      location: value,
+      canSearch: !!(searchQuery.trim() && value.trim())
+    });
   };
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -379,11 +395,25 @@ export default function JobSearchInterface() {
           {/* Search Button */}
           <button 
             onClick={startJobSearch}
+            onTouchStart={(e) => {
+              // Prevent double-tap zoom on mobile
+              e.preventDefault();
+              console.log('🔘 Touch start on search button');
+            }}
+            onTouchEnd={(e) => {
+              // Handle mobile touch
+              e.preventDefault();
+              console.log('🔘 Touch end on search button');
+              if (!isSearching && searchQuery.trim() && location.trim()) {
+                console.log('🔘 Triggering search from touch event');
+                startJobSearch();
+              }
+            }}
             disabled={isSearching || !searchQuery.trim() || !location.trim()}
-            className={`w-10 h-10 sm:w-auto sm:px-4 sm:py-2.5 h-10 rounded transition-colors flex items-center justify-center sm:gap-2 text-sm font-medium ${
+            className={`w-10 h-10 sm:w-auto sm:px-4 sm:py-2.5 h-10 rounded transition-colors flex items-center justify-center sm:gap-2 text-sm font-medium touch-manipulation ${
               isSearching || !searchQuery.trim() || !location.trim()
                 ? 'bg-[#2a3441] text-gray-400 cursor-not-allowed border border-[#3a4651]'
-                : 'bg-[#2a3441] hover:bg-[#3a4651] text-gray-300 hover:text-white border border-[#3a4651]'
+                : 'bg-[#2a3441] hover:bg-[#3a4651] text-gray-300 hover:text-white border border-[#3a4651] active:bg-[#4a5661]'
             }`}
           >
             {isSearching ? (

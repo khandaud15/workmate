@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Debug Test</title>
+</head>
+<body>
+    <h1>Mobile Debug Test</h1>
+    <p>Open this on your mobile device and test the job search at: <a href="https://talexus.ai/dashboard/jobs" target="_blank">https://talexus.ai/dashboard/jobs</a></p>
+    
+    <h2>Debug Steps:</h2>
+    <ol>
+        <li>Open browser console on mobile (Chrome: Menu > More tools > Developer tools)</li>
+        <li>Fill in job title: "data scientist"</li>
+        <li>Fill in location: "US"</li>
+        <li>Check if search button becomes enabled (loses gray color)</li>
+        <li>Tap search button</li>
+        <li>Watch console for any errors</li>
+    </ol>
+    
+    <h2>Common Mobile Issues:</h2>
+    <ul>
+        <li>Touch events not working properly</li>
+        <li>Input focus/blur issues on mobile keyboards</li>
+        <li>Viewport scaling affecting click targets</li>
+        <li>Mobile browser differences (Safari vs Chrome)</li>
+        <li>Network timeouts on mobile connections</li>
+    </ul>
+    
+    <script>
+        // Mobile detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        console.log('Is Mobile:', isMobile);
+        console.log('User Agent:', navigator.userAgent);
+        console.log('Screen Size:', window.screen.width + 'x' + window.screen.height);
+        console.log('Viewport Size:', window.innerWidth + 'x' + window.innerHeight);
+    </script>
+</body>
+</html>
